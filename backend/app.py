@@ -1,6 +1,8 @@
+from flask_cors import CORS
 from flask import Flask, render_template # <--- Make sure render_template is imported
 
 app = Flask(__name__)
+CORS(app) # This line enables CORS for all routes in your app
 
 @app.route('/')
 def landing_page(): # Or whatever you named your function

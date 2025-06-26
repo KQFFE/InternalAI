@@ -332,7 +332,7 @@ body {
   padding-right: 1rem; /* Add some padding on the right for the arrow */
   text-decoration: none; /* Remove default underline from anchor */
   color: var(--dark-text-color); /* Default text color for news items */
-  transition: color 0.3s ease; /* Smooth transition for hover effect */
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
 }
 
 .news-item-link:last-child {
@@ -340,13 +340,22 @@ body {
 }
 
 .news-item-link:hover {
-  color: var(--light-blue-link); /* Change text color on hover */
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Added: Underline on hover */
+}
+
+/* Ensure the text content within the link is aligned to the start */
+.news-item-link > div {
+  display: flex; /* Make the div a flex container */
+  flex-direction: column; /* Stack children vertically */
+  align-items: flex-start; /* Align children (p and h3) to the start (left) */
+  flex-grow: 1; /* Allow this div to take up available space */
 }
 
 .news-item-meta {
   font-size: 0.875rem; /* text-sm */
   color: var(--dark-text-color);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0; /* Changed from 0.25rem to 0 to remove space below */
 }
 
 .news-item-meta-bold {
@@ -356,8 +365,9 @@ body {
 .news-item-title {
   font-size: 1.25rem; /* text-xl */
   font-weight: 600; /* font-semibold */
-  margin-top: 0.25rem; /* mt-1 */
+  margin-top: 0; /* Changed from 0.25rem to 0 to remove space above */
   color: inherit; /* Inherit color from parent link */
+  line-height: 1.2; /* Adjust line-height for closer stacking if needed */
 }
 
 .news-item-arrow {
@@ -368,8 +378,8 @@ body {
 }
 
 .news-item-link:hover .news-item-arrow {
-  transform: translateX(4px); /* Arrow moves on hover */
-  color: var(--light-blue-link); /* Arrow color changes on hover */
+  transform: translateX(8px); /* Changed: Arrow moves a bit more to the side */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
 }
 
 /* New: Style for "Fler nyheter" link */
@@ -383,11 +393,12 @@ body {
   font-weight: 600; /* font-semibold */
   color: var(--dark-text-color); /* Apply dark text color */
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
 }
 
 .more-news-link:hover {
-  color: var(--light-blue-link);
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Added: Underline on hover */
 }
 
 .more-news-link .arrow-icon {
@@ -396,7 +407,8 @@ body {
 }
 
 .more-news-link:hover .arrow-icon {
-  transform: translateX(4px);
+  transform: translateX(8px); /* Changed: Arrow moves a bit more to the side */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
 }
 
 
@@ -550,72 +562,48 @@ body {
 
 .footer-link:hover,
 .footer-bottom-link:hover {
-  color: var(--light-blue-link); /* Light blue on hover */
+  color: var(--dark-text-color); /* Stays dark on hover */
   text-decoration: underline; /* Add underline on hover */
 }
 
 /* Column 1: Become one of us */
 .become-one-of-us-column {
   position: relative; /* Crucial for positioning absolute children */
-  overflow: hidden; /* Hide the parts of the rotated text that go outside */
-  min-height: 350px; /* Increased min-height to give more room for large text */
+  min-height: 250px; /* Increased min-height to give more room for large text */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Push content to the bottom of the column */
+  justify-content: flex-start; /* Aligns content to the top */
   padding-bottom: 1rem; /* Space below the content */
 }
 
-/* Styling for the large, rotated "Become one of us" heading */
+/* Styling for the "Become one of us" heading */
 .become-one-of-us-column .become-one-of-us-heading {
-  position: absolute;
+  position: relative;
+  text-align: left;
   white-space: nowrap; /* Prevent text wrapping */
-  font-size: 10rem; /* Increased font size for more background fill */
+  font-size: 1.2rem; /* Increased font size for more background fill */
   font-weight: 800; /* Extra bold for impact */
-  color: rgba(60, 60, 60, 0.1); /* Dark grey with low opacity for background effect */
-  pointer-events: none; /* Allows clicks to pass through to elements beneath */
-  z-index: 0; /* Ensures it's behind other content */
-
-  left: 50%;
-  top: 50%;
-  /* These values are highly dependent on your screen/container size.
-    **YOU MUST TWEAK THESE IN DEV TOOLS.**
-    - translateY moves the rotated text HORIZONTALLY (left/right on screen).
-      A larger POSITIVE value pushes it further LEFT.
-    - translateX moves the rotated text VERTICALLY (up/down on screen).
-      A negative value moves it UP, a positive value moves it DOWN.
-  */
-  transform: translate(-50%, -50%) rotate(-90deg) translateX(-100px) translateY(700px); /* Start with these */
-}
-
-/* Hide the large rotated text on smaller screens (e.g., mobile) */
-@media (max-width: 767px) {
-  .become-one-of-us-column .become-one-of-us-heading {
-    display: none; /* Hide the large rotated text on mobile */
-  }
-  /* Adjust column height for mobile when rotated text is hidden */
-  .become-one-of-us-column {
-    min-height: auto; /* Allow height to collapse when the large text is hidden */
-    justify-content: flex-start; /* Align content to top on mobile */
-  }
+  margin-top: 0; /* Ensures no extra top margin */
 }
 
 /* Ensure the link "Hitta ditt nya jobb här" is visible and clickable */
-.become-one-of-us-link { /* Using new class name */
-  position: relative; /* Bring link above the rotated text */
-  z-index: 1; /* Ensure it's clickable */
-  text-align: left; /* Align link text to the left */
-  display: inline-flex; /* For inline-flex behavior */
-  align-items: center; /* Vertically align items */
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 600; /* font-semibold */
-  color: var(--dark-text-color); /* Ensure link color is dark */
+.become-one-of-us-link {
+  margin-top: auto; /* This will push the element to the end of the flex container */
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--dark-text-color);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
 }
 
 .become-one-of-us-link:hover {
-  color: var(--light-blue-link);
-  text-decoration: underline;
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Underline on hover */
 }
 
 /* Arrow icon styling */
@@ -625,7 +613,8 @@ body {
 }
 
 .become-one-of-us-link:hover .arrow-icon {
-  transform: translateX(4px); /* Move arrow on hover */
+  transform: translateX(8px); /* Changed: Move arrow more on hover */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
 }
 
 

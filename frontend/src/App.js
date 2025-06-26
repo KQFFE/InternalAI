@@ -167,8 +167,8 @@ function App() {
           <div className="news-grid-container"> {/* Replaced grid grid-cols-1 gap-8 mb-16 */}
             <a href="#" className="news-item-link group"> {/* Retained group for arrow hover, but other classes are custom */}
               <div>
-                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p> {/* Replaced text-sm font-semibold */}
-                <h3 className="news-item-title">Knowit acquires Ascend, strengthening its position in management consultancy and digital transformation</h3> {/* Replaced text-xl font-semibold mt-1 */}
+                <p className="news-item-meta">2025-06-26 <span className="news-item-meta-bold">Summer Project 2025</span></p> {/* Replaced text-sm font-semibold */}
+                <h3 className="news-item-title">Kristoffer, Sasan, Sakshi and Johanna is creating a landing page and automating a process, by using AI for everything.</h3> {/* Replaced text-xl font-semibold mt-1 */}
               </div>
               <span className="news-item-arrow"> {/* Replaced transform transition-transform duration-300 group-hover:translate-x-1 */}
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -178,8 +178,8 @@ function App() {
             </a>
             <a href="#" className="news-item-link group">
               <div>
-                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p>
-                <h3 className="news-item-title">Knowit further strengthens its investment in cyber security</h3>
+                <p className="news-item-meta">2025-07-01 <span className="news-item-meta-bold">Summer Project 2025</span></p>
+                <h3 className="news-item-title">The team request earlier vacation leave due to information overflow</h3>
               </div>
               <span className="news-item-arrow">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -187,20 +187,10 @@ function App() {
                 </svg>
               </span>
             </a>
-            <a href="#" className="news-item-link group">
-              <div>
-                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p>
-                <h3 className="news-item-title">Interim report January – September 2023: Stable quarter with good profitability</h3>
-              </div>
-              <span className="news-item-arrow">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-            </a>
+            
           </div>
           <a href="#" className="more-news-link">
-            Fler nyheter
+            More news
             <span className="arrow-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

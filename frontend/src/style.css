@@ -14,7 +14,7 @@
   --dark-blue-elements: #2b2b4e;
   --light-blue-link: #61dafb;
   --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
-  --light-yellow-orange-bg: #FFE7D9; /* For News and Footer sections, matching 4.png */
+  --light-yellow-orange-bg: #fffef6; /* For News section, updated to #fffef6 */
   --dark-text-color: #3C3C3C; /* Darker text for beige/light orange sections */
   --gray-text: #777777; /* Lighter gray for paragraphs in light sections */
   --footer-border-color: #d1d5db; /* A light gray for the footer top border */
@@ -294,7 +294,7 @@ body {
 
 /* News Section specific styling */
 .news-section-container {
-  background-color: var(--light-yellow-orange-bg);
+  background-color: var(--light-yellow-orange-bg); /* Updated to new variable value */
   padding: 4rem 1rem; /* py-16 px-4 */
   color: var(--dark-text-color);
 }
@@ -488,7 +488,7 @@ body {
 
 /* NEW: Footer specific styles (plain CSS, replacing Tailwind layout) */
 .footer-section {
-  background-color: var(--light-yellow-orange-bg);
+  background-color: #FFD6B8; /* Directly set the footer background color */
   color: var(--dark-text-color);
   padding: 4rem 0 4rem 0; /* Top, Right, Bottom, Left - use 0 for left/right to let container handle it */
 }

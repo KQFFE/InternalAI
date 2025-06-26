@@ -6,7 +6,7 @@
     <title>Knowit - Building the future takes a whole set of digitalization skills.</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css"> <!-- Linked external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Linked external CSS file -->
     <script>
         // Tailwind CSS configuration for custom colors and font family
         tailwind.config = {

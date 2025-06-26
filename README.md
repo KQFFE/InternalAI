@@ -1,6 +1,6 @@
 # InternalAI Project
 
-Welcome to the InternalAI project! This project aims to [**BRIEFLY EXPLAIN WHAT YOUR PROJECT DOES IN SIMPLE TERMS** - e.g., "provide a smart AI assistant for internal company use," or "automate tasks using artificial intelligence."].
+Welcome to the InternalAI project!
 
 Don't worry if you've never coded before or used GitHub – this guide is made for you! We'll walk you through everything you need to get started, step-by-step.
 

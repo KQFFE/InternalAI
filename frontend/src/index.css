@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Your existing CSS (like body styles, .cookie-modal, etc.) can go below this */
 /* Make sure your @font-face rule from style.css is still in style.css or move it here */
 

@@ -129,31 +129,31 @@ function App() {
 
       {/* Hero Section */}
       <section className="hero-gradient-bg">
-        <header className="px-4 py-6 flex justify-between items-center">
-          <div className="text-2xl font-bold">Knowit</div>
+        <header className="hero-header-nav-container"> {/* Replaced px-4 py-6 flex justify-between items-center */}
+          <div className="app-logo-text">Knowit</div> {/* Replaced text-2xl font-bold */}
           <nav>
-            <ul className="flex space-x-6">
-              <li><a href="#" className="text-white hover:underline">Services</a></li>
-              <li><a href="#" className="text-white hover:underline">About</a></li>
-              <li><a href="#" className="text-white hover:underline">Contact</a></li>
+            <ul className="main-nav-list"> {/* Replaced flex space-x-6 */}
+              <li><a href="#" className="main-nav-link">Services</a></li> {/* Replaced text-white hover:underline */}
+              <li><a href="#" className="main-nav-link">About</a></li> {/* Replaced text-white hover:underline */}
+              <li><a href="#" className="main-nav-link">Contact</a></li> {/* Replaced text-white hover:underline */}
             </ul>
           </nav>
         </header>
 
-        <main className="flex flex-col items-center justify-center text-center px-4 py-16">
-          <h1 className="text-5xl font-extrabold mb-4">Shaping a better future with code</h1>
-          <p className="text-xl mb-8">We are a digitalization company that develops solutions and services.</p>
-          <button className="bg-light-blue-link text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90">
+        <main className="hero-main-content"> {/* Replaced flex flex-col items-center justify-center text-center px-4 py-16 */}
+          <h1 className="hero-title">Shaping a better future with code</h1> {/* Replaced text-5xl font-extrabold mb-4 */}
+          <p className="hero-subtitle">We are a digitalization company that develops solutions and services.</p> {/* Replaced text-xl mb-8 */}
+          <button className="hero-button"> {/* Replaced bg-light-blue-link text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 */}
             Read more
           </button>
         </main>
 
         <div className="gradient-box">
-          <div className="text-lg font-semibold">
+          <div className="gradient-box-item"> {/* Replaced text-lg font-semibold */}
             <h3>We create unique customer experiences</h3>
             <p>We are a digitalization company that develops solutions and services.</p>
           </div>
-          <div className="text-lg font-semibold">
+          <div className="gradient-box-item"> {/* Replaced text-lg font-semibold */}
             <h3>Innovation through collaboration</h3>
             <p>We are a digitalization company that develops solutions and services.</p>
           </div>
@@ -161,45 +161,45 @@ function App() {
       </section>
 
       {/* News Section */}
-      <section className="bg-beige py-16 px-4 text-darkblue">
-        <div className="max-w-screen-xl mx-auto">
-          <h2 className="text-3xl font-bold news-heading">News</h2>
-          <div className="grid grid-cols-1 gap-8 mb-16">
-            <a href="#" className="group">
+      <section className="news-section-container"> {/* Replaced bg-beige py-16 px-4 text-darkblue */}
+        <div className="news-content-wrapper"> {/* Replaced max-w-screen-xl mx-auto */}
+          <h2 className="news-heading">News</h2>
+          <div className="news-grid-container"> {/* Replaced grid grid-cols-1 gap-8 mb-16 */}
+            <a href="#" className="news-item-link group"> {/* Retained group for arrow hover, but other classes are custom */}
               <div>
-                <p className="text-sm">2023-11-20 <span className="font-semibold">Press release</span></p>
-                <h3 className="text-xl font-semibold mt-1">Knowit acquires Ascend, strengthening its position in management consultancy and digital transformation</h3>
+                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p> {/* Replaced text-sm font-semibold */}
+                <h3 className="news-item-title">Knowit acquires Ascend, strengthening its position in management consultancy and digital transformation</h3> {/* Replaced text-xl font-semibold mt-1 */}
               </div>
-              <span className="transform transition-transform duration-300 group-hover:translate-x-1">
+              <span className="news-item-arrow"> {/* Replaced transform transition-transform duration-300 group-hover:translate-x-1 */}
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
             </a>
-            <a href="#" className="group">
+            <a href="#" className="news-item-link group">
               <div>
-                <p className="text-sm">2023-11-20 <span className="font-semibold">Press release</span></p>
-                <h3 className="text-xl font-semibold mt-1">Knowit further strengthens its investment in cyber security</h3>
+                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p>
+                <h3 className="news-item-title">Knowit further strengthens its investment in cyber security</h3>
               </div>
-              <span className="transform transition-transform duration-300 group-hover:translate-x-1">
+              <span className="news-item-arrow">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
             </a>
-            <a href="#" className="group">
+            <a href="#" className="news-item-link group">
               <div>
-                <p className="text-sm">2023-11-20 <span className="font-semibold">Press release</span></p>
-                <h3 className="text-xl font-semibold mt-1">Interim report January – September 2023: Stable quarter with good profitability</h3>
+                <p className="news-item-meta">2023-11-20 <span className="news-item-meta-bold">Press release</span></p>
+                <h3 className="news-item-title">Interim report January – September 2023: Stable quarter with good profitability</h3>
               </div>
-              <span className="transform transition-transform duration-300 group-hover:translate-x-1">
+              <span className="news-item-arrow">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
             </a>
           </div>
-          <a href="#" className="text-lg font-semibold text-right block more-news-link">
+          <a href="#" className="more-news-link">
             Fler nyheter
             <span className="arrow-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

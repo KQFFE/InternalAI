@@ -6,7 +6,7 @@
     <title>Knowit - Building the future takes a whole set of digitalization skills.</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css"> <!-- Linked external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Linked external CSS file -->
     <script>
         // Tailwind CSS configuration for custom colors and font family
         tailwind.config = {
@@ -118,18 +118,18 @@
                 </div>
             </div>
         </main>
-
-        <!-- Slider Navigation -->
-        <div class="flex justify-center items-center pb-6 md:pb-10 space-x-4">
-            <span class="text-lg">01 / 03</span>
-            <button type="button" class="text-white text-2xl" onclick="plusSlides(-1)" aria-label="Previous slide">&larr;</button>
-            <button type="button" class="text-white text-2xl" onclick="plusSlides(1)" aria-label="Next slide">&rarr;</button>
-        </div>
     </div>
 
     <!-- Middle Section: Slideshow and YouTube Clip -->
     <section class="bg-beige text-darkblue py-16 md:py-24 px-6">
         <div class="container mx-auto">
+            <!-- Slider Navigation - Moved here -->
+            <div class="flex justify-center items-center pb-6 md:pb-10 space-x-4 mb-8">
+                <span class="text-darkblue text-lg">01 / 03</span>
+                <button type="button" class="text-darkblue text-2xl" onclick="plusSlides(-1)" aria-label="Previous slide">&larr;</button>
+                <button type="button" class="text-darkblue text-2xl" onclick="plusSlides(1)" aria-label="Next slide">&rarr;</button>
+            </div>
+
             <div class="slideshow-container mb-16">
                 <!-- Slide 1 -->
                 <div class="mySlides fade grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-8 rounded-xl shadow-lg">

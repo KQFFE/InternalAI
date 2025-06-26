@@ -8,14 +8,15 @@ Don't worry if you've never coded before or used GitHub – this guide is made f
 
 ## Table of Contents
 
-1.  [Getting Started (For Absolute Beginners)](#1-getting-started-for-absolute-beginners)
+1.  [Running the Servers Locally](#1-running-the-servers-locally)
+2.  [Getting Started (For Absolute Beginners)](#2-getting-started-for-absolute-beginners)
     * [What is the Command Prompt (PowerShell)?](#what-is-the-command-prompt-powershell)
     * [Step 1: Install Python](#step-1-install-python)
     * [Step 2: Install Git](#step-2-install-git)
     * [Step 3: Get the Project Files (Clone the Repository)](#step-3-get-the-project-files-clone-the-repository)
     * [Step 4: Set Up Your Project Environment (Virtual Environment)](#step-4-set-up-your-project-environment-virtual-environment)
     * [Step 5: Install Project Dependencies](#step-5-install-project-dependencies)
-2.  [Running the Server Locally](#2-running-the-server-locally)
+    * [Step 6: Install Frontend Dependencies](#step-6-install-frontend-dependencies)
 3.  [Making Changes & Contributing (Your First Steps with Git)](#3-making-changes--contributing-your-first-steps-with-git)
     * [The Idea of Branches](#the-idea-of-branches)
     * [Step A: Start Your Own Workspace (Create a New Branch)](#step-a-start-your-own-workspace-create-a-new-branch)
@@ -27,7 +28,57 @@ Don't worry if you've never coded before or used GitHub – this guide is made f
 
 ---
 
-## 1. Getting Started (For Absolute Beginners)
+## 1. Running the Servers Locally
+
+Once you have completed the [Getting Started](#2-getting-started-for-absolute-beginners) steps below, you can run both the Backend (Flask) and Frontend (React) servers. You will need **two separate PowerShell windows** open for this, one for each server.
+
+### 1.1 Running the Backend (Flask) Server
+
+1.  **Open your first PowerShell window.**
+2.  **Navigate to your project root:**
+    ```powershell
+    cd D:\Dev\InternalAI
+    ```
+    *(Adjust `D:\Dev\InternalAI` to your actual project path)*
+3.  **Activate your virtual environment:**
+    ```powershell
+    .\venv\Scripts\Activate.ps1
+    ```
+    You should see `(venv)` at the beginning of your prompt.
+4.  **Navigate to the `backend` folder:**
+    ```powershell
+    cd backend
+    ```
+5.  **Set the Flask application environment variable:**
+    ```powershell
+    $env:FLASK_APP = "app.py"
+    ```
+6.  **Run the Flask server:**
+    ```powershell
+    flask run
+    ```
+    You should see messages like `Running on http://127.0.0.1:5000`. Keep this window open and running. To stop the server, press `Ctrl + C`.
+
+### 1.2 Running the Frontend (React) Server
+
+1.  **Open your second PowerShell window.**
+2.  **Navigate to your project root:**
+    ```powershell
+    cd D:\Dev\InternalAI
+    ```
+3.  **Navigate to the `frontend` folder:**
+    ```powershell
+    cd frontend
+    ```
+4.  **Start the React development server:**
+    ```powershell
+    npm start
+    ```
+    This will open your browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this window open and running. To stop the server, press `Ctrl + C`.
+
+---
+
+## 2. Getting Started (For Absolute Beginners)
 
 This section will help you set up your computer to work on the InternalAI project.
 
@@ -63,7 +114,7 @@ Git is a tool that helps us manage changes to our code and collaborate with othe
 2.  **Run the Installer:** Double-click the downloaded `.exe` file.
     * You can generally click "Next" through most of the options, accepting the defaults. The default options are usually fine for beginners.
 3.  **Verify Git Installation:** Open a **NEW** PowerShell window. Type:
-    ```powersership
+    ```powershell
     git --version
     ```
     You should see `git version X.X.X`.
@@ -107,9 +158,9 @@ A "virtual environment" (or "venv") is like a separate, clean box for your proje
 
     * **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
 
-### Step 5: Install Project Dependencies
+### Step 5: Install Project Dependencies (Backend)
 
-"Dependencies" are other Python tools or libraries that our InternalAI project needs to run.
+"Dependencies" are other Python tools or libraries that our InternalAI project (specifically the backend) needs to run.
 
 1.  **Install Them:** While your `(venv)` is active and you're in `PS D:\Dev\InternalAI>`, type:
     ```powershell
@@ -117,33 +168,20 @@ A "virtual environment" (or "venv") is like a separate, clean box for your proje
     ```
     This command reads a file called `requirements.txt` which lists all the necessary tools, and `pip` (Python's package installer) will download and install them into your `venv`. This might take a few moments.
 
----
+### Step 6: Install Frontend Dependencies (React)
 
-## 2. Running the Server Locally
+The frontend also has its own set of dependencies.
 
-Now that everything is set up, let's start the InternalAI server on your own computer!
-
-1.  **Navigate to the Backend Folder:** The main server code is in a folder called `backend`.
+1.  **Go to the `frontend` folder:**
     ```powershell
-    cd backend
+    cd frontend
     ```
-    Your prompt should now be `(venv) PS D:\Dev\InternalAI\backend>`.
-
-2.  **Set the Flask Application:** This tells your system which file starts the server.
+    Your prompt should now be `(venv) PS D:\Dev\InternalAI\frontend>`.
+2.  **Install Frontend Dependencies:**
     ```powershell
-    $env:FLASK_APP = "app.py"
+    npm install
     ```
-    *(Note: This command sets a temporary setting for your current PowerShell window. It doesn't permanently change anything on your computer.)*
-
-3.  **Run the Flask Server:**
-    ```powershell
-    flask run
-    ```
-
-4.  **Check if it's Running:**
-    * You should see messages in your PowerShell window like `Running on http://127.0.0.1:5000`.
-    * Open your web browser and go to `http://127.0.0.1:5000`. You might see a simple message, an error, or a blank page depending on the backend, but if the page tries to load, your server is likely running!
-    * To stop the server, go back to your PowerShell window and press `Ctrl + C` (hold Control and press C).
+    This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries. This might take a few moments.
 
 ---
 
@@ -161,7 +199,7 @@ Think of your branch as your **personal workspace**. You can make all the change
 
 Before you start making any changes, always create a new branch.
 
-1.  **Go to the Project Root:** Make sure your PowerShell prompt is `(venv) PS D:\Dev\InternalAI>`. If you're in `backend`, type `cd ..` to go up one level.
+1.  **Go to the Project Root:** Make sure your PowerShell prompt is `(venv) PS D:\Dev\InternalAI>`. If you're in a subfolder (like `backend` or `frontend`), type `cd ..` until you are in the `InternalAI` folder.
 
 2.  **Create and Switch to a New Branch:**
     ```powershell
@@ -172,7 +210,7 @@ Before you start making any changes, always create a new branch.
 
 ### Step B: Make Your Code Changes
 
-* Now, use your code editor (like VS Code, Notepad++, etc.) to open the project files (e.g., `D:\Dev\InternalAI\backend\app.py`).
+* Now, use your code editor (like VS Code, Notepad++, etc.) to open the project files (e.g., `D:\Dev\InternalAI\backend\app.py` or `D:\Dev\InternalAI\frontend\src\App.js`).
 * Make the changes you want.
 * **Save your files** normally.
 
@@ -248,6 +286,9 @@ Now, others can review your code!
 
 * **`(venv) PS D:\Dev\InternalAI> ` doesn't show `(venv)`:**
     * You forgot to run `.\venv\Scripts\Activate.ps1`. Run it again in your PowerShell window. Remember to do this every time you start a new session.
+
+* **`npm` is not recognized:**
+    * You might not have Node.js and npm installed. You can download them from [https://nodejs.org/](https://nodejs.org/). `npm` usually comes with Node.js.
 
 * **`git push` gives `non-fast-forward` error:**
     * See "Step D: Share Your Changes (Push)" above. You need to `git pull` first.

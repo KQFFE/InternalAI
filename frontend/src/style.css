@@ -8,19 +8,34 @@
 }
 */
 
+/* Define CSS Variables for consistent theming */
+:root {
+  --dark-background: #1a1a2e;
+  --dark-blue-elements: #2b2b4e;
+  --light-blue-link: #61dafb;
+  --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
+  --light-yellow-orange-bg: #FFE7D9; /* For News and Footer sections, matching 4.png */
+  --dark-text-color: #3C3C3C; /* Darker text for beige/light orange sections */
+  --gray-text: #777777; /* Lighter gray for paragraphs in light sections */
+  --footer-border-color: #d1d5db; /* A light gray for the footer top border */
+  --news-item-border-color: #e0e0e0; /* A very subtle light gray for news item borders */
+}
+
 body {
-    font-family: 'Courier New', monospace; /* Change this line */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif; /* Reverted to a standard sans-serif font stack */
     margin: 0;
     padding: 0;
-    background-color: #1a1a2e;
-    color: #ffffff;
+    background-color: var(--dark-background);
+    color: #ffffff; /* Default text color for dark sections */
 }
 
 /* ... other existing CSS ... */
 
 /* Gradient background for the hero section */
 .hero-gradient-bg {
-    background: linear-gradient(135deg, #2b2b4e, #1a1a2e);
+    background: linear-gradient(135deg, var(--dark-blue-elements), var(--dark-background));
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -42,7 +57,7 @@ body {
 }
 
 .cookie-content {
-    background-color: #2a2a4a;
+    background-color: #2a2a4a; /* A darker background for the modal */
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
@@ -63,7 +78,7 @@ body {
     font-size: 0.9rem;
     line-height: 1.5;
     margin-bottom: 1rem;
-    color: #d0d0d0;
+    color: #d0d0d0; /* Light gray for paragraph text */
 }
 
 .cookie-buttons button {
@@ -71,80 +86,98 @@ body {
     border-radius: 0.5rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
 .cookie-buttons .deny-all {
     background-color: transparent;
-    border: 1px solid #d0d0d0;
-    color: #d0d0d0;
+    border: 1px solid white;
+    color: white;
 }
 
 .cookie-buttons .deny-all:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .cookie-buttons .accept-all {
-    background-color: #007bff;
+    background-color: #4CAF50; /* Green for accept */
     color: white;
-    border: none;
 }
 
 .cookie-buttons .accept-all:hover {
-    background-color: #0056b3;
+    background-color: #45a049;
 }
 
 .cookie-details-toggle {
-    background-color: transparent;
+    background: none;
     border: none;
-    color: #007bff;
+    padding: 0;
     cursor: pointer;
     font-size: 0.9rem;
     margin-top: 1rem;
 }
 
-.cookie-details-toggle:hover {
-    text-decoration: underline;
-}
-
 .cookie-preferences {
-    display: none;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #3a3a5a; /* Slightly lighter background for preferences */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
 }
 
 .cookie-preferences label {
     display: flex;
     align-items: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     font-size: 0.9rem;
     color: #d0d0d0;
 }
 
 .cookie-preferences input[type="checkbox"] {
     margin-right: 0.5rem;
-    width: 1rem;
-    height: 1rem;
+    accent-color: var(--light-blue-link); /* Highlight checkbox with link color */
 }
 
-/* Custom styling for the gradient box */
-.gradient-box {
-    background: linear-gradient(135deg, #e0c8f5, #8a2be2); /* Lighter purple to dark purple */
-    border-radius: 1rem;
-    height: 300px; /* Example height, adjust as needed */
-    width: 100%;
+.text-lightblue {
+    color: var(--light-blue-link);
 }
 
-/* Slideshow specific styling */
+.text-darkblue {
+    color: var(--dark-text-color);
+}
+
+.bg-beige { /* Renaming this to be more semantic for the news section background */
+    background-color: var(--light-yellow-orange-bg); /* Apply new background color */
+}
+
+/* Adjustments for the slider navigation */
 .slideshow-container {
+    max-width: 1000px; /* Adjust as needed */
     position: relative;
-    max-width: 1000px;
     margin: auto;
-    border-radius: 1rem;
-    overflow: hidden;
 }
 
+/* New: Style for the news section heading */
+section .news-heading {
+  color: var(--dark-text-color); /* Apply dark text color */
+  text-align: left; /* Align to left as per image */
+  margin-top: 0; /* Adjust margin as necessary */
+  margin-bottom: 3rem; /* Spacing below heading */
+}
+
+/* New: Style for "Fler nyheter" link */
+.more-news-link {
+  display: flex;
+  justify-content: flex-end; /* Align to the right as per image */
+  width: 100%; /* Ensure it takes full width to align */
+  margin-top: 2rem; /* Spacing above the link */
+  margin-bottom: 6rem; /* Spacing below the link before the next section/footer */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+}
+
+
+/* Slideshow images */
 .mySlides {
     display: none;
 }
@@ -202,7 +235,7 @@ body {
     background-color: #717171;
 }
 
-/* Fading animation */
+/* Fade animation */
 .fade {
     animation-name: fade;
     animation-duration: 1.5s;
@@ -213,19 +246,255 @@ body {
     to {opacity: 1}
 }
 
-/* Responsive iframe */
+/* Video container */
 .video-container {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    height: 0;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
 }
 
 .video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Gradient box at the bottom of hero section */
+.gradient-box {
+  background: linear-gradient(90deg, #5b5b7e, #4b4b6e); /* Darker gradient for the box */
+  border-radius: 1rem;
+  min-height: 100px; /* Adjust height as needed */
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  position: relative;
+  padding: 1rem;
+}
+
+/* NEW: Footer specific styles (plain CSS, replacing Tailwind layout) */
+.footer-section {
+    background-color: var(--light-yellow-orange-bg);
+    color: var(--dark-text-color);
+    padding: 4rem 0 4rem 0; /* Top, Right, Bottom, Left - use 0 for left/right to let container handle it */
+}
+
+.footer-container {
+    max-width: 1200px; /* Max width for content, adjust if needed */
+    margin-left: auto; /* Center the container */
+    margin-right: auto; /* Center the container */
+    padding-left: 1rem; /* Horizontal padding */
+    padding-right: 1rem; /* Horizontal padding */
+}
+
+.footer-main-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column on small screens */
+    gap: 2rem; /* Spacing between grid items */
+    margin-bottom: 4rem; /* Spacing below the main grid */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    .footer-main-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    }
+}
+
+@media (min-width: 1024px) { /* lg breakpoint */
+    .footer-main-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columns on large screens */
+    }
+}
+
+/* Styling for footer columns (CONTACT, ABOUT, BUSINESS AREAS) */
+.footer-column ul {
+    list-style: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.footer-column ul li {
+    margin-bottom: 0.5rem; /* Spacing between list items */
+}
+
+.footer-column-heading { /* For CONTACT, ABOUT KNOWIT, BUSINESS AREAS headings */
+    color: var(--dark-text-color);
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+}
+
+.footer-text,
+.footer-link {
+    color: var(--dark-text-color);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    display: block; /* Make links/paragraphs take full width for hover area */
+    text-decoration: none; /* Remove default underline */
+    transition: color 0.2s ease-in-out; /* Smooth transition for hover */
+}
+
+.footer-link:hover,
+.footer-bottom-link:hover {
+  color: var(--light-blue-link); /* Light blue on hover */
+  text-decoration: underline; /* Add underline on hover */
+}
+
+/* Column 1: Become one of us */
+.become-one-of-us-column {
+    position: relative; /* Crucial for positioning absolute children */
+    overflow: hidden; /* Hide the parts of the rotated text that go outside */
+    min-height: 350px; /* Increased min-height to give more room for large text */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Push content to the bottom of the column */
+    padding-bottom: 1rem; /* Space below the content */
+}
+
+/* Styling for the large, rotated "Become one of us" heading */
+.become-one-of-us-column .become-one-of-us-heading {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 1rem;
+    white-space: nowrap; /* Prevent text wrapping */
+    font-size: 10rem; /* Increased font size for more background fill */
+    font-weight: 800; /* Extra bold for impact */
+    color: rgba(60, 60, 60, 0.1); /* Dark grey with low opacity for background effect */
+    pointer-events: none; /* Allows clicks to pass through to elements beneath */
+    z-index: 0; /* Ensures it's behind other content */
+
+    left: 50%;
+    top: 50%;
+    /* These values are highly dependent on your screen/container size.
+       **YOU MUST TWEAK THESE IN DEV TOOLS.**
+       - translateY moves the rotated text HORIZONTALLY (left/right on screen).
+         A larger POSITIVE value pushes it further LEFT.
+       - translateX moves the rotated text VERTICALLY (up/down on screen).
+         A negative value moves it UP, a positive value moves it DOWN.
+    */
+    transform: translate(-50%, -50%) rotate(-90deg) translateX(-100px) translateY(700px); /* Start with these */
+}
+
+/* Hide the large rotated text on smaller screens (e.g., mobile) */
+@media (max-width: 767px) {
+  .become-one-of-us-column .become-one-of-us-heading {
+    display: none; /* Hide the large rotated text on mobile */
+  }
+  /* Adjust column height for mobile when rotated text is hidden */
+  .become-one-of-us-column {
+    min-height: auto; /* Allow height to collapse when the large text is hidden */
+    justify-content: flex-start; /* Align content to top on mobile */
+  }
+}
+
+/* Ensure the link "Hitta ditt nya jobb här" is visible and clickable */
+.become-one-of-us-link { /* Using new class name */
+  position: relative; /* Bring link above the rotated text */
+  z-index: 1; /* Ensure it's clickable */
+  text-align: left; /* Align link text to the left */
+  display: inline-flex; /* For inline-flex behavior */
+  align-items: center; /* Vertically align items */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+}
+
+/* Arrow icon styling */
+.arrow-icon {
+  margin-left: 0.5rem; /* Spacing from text */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.become-one-of-us-link:hover .arrow-icon {
+  transform: translateX(4px); /* Move arrow on hover */
+}
+
+
+/* Bottom Footer Links section */
+.footer-bottom-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem; /* text-sm */
+    color: var(--dark-text-color);
+    margin-top: 2rem; /* Adjusted from 8, 2rem aligns with image better */
+    padding-top: 1rem; /* Adjusted from 4, 1rem aligns with image better */
+    border-top: 1px solid var(--footer-border-color); /* Apply border */
+}
+
+.footer-bottom-links-left,
+.footer-bottom-links-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem; /* Spacing between links */
+}
+
+.footer-bottom-links-left {
+    margin-bottom: 1rem; /* Margin for wrapping on mobile */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    .footer-bottom-links-left {
+        margin-bottom: 0; /* Remove margin on larger screens */
+    }
+}
+
+.footer-bottom-link {
+    color: var(--dark-text-color);
+    text-decoration: none;
+}
+
+/* General Link Hover Effect for arrows (if needed for other sections too) */
+/* Kept for consistency, but the specific link classes above are more direct */
+.group:hover .transform {
+  transform: translateX(4px); /* Slight movement on hover */
+}
+
+/* News Section specific adjustments */
+section.bg-beige h2 {
+    text-align: left; /* Align to the left as per image */
+    margin-bottom: 2rem; /* More space below heading */
+}
+
+/* News item individual links and their borders */
+section.bg-beige .grid.grid-cols-1.gap-8.mb-16 a {
+    /* These are still Tailwind classes in App.js for news section, might need refactoring too if issues persist */
+    border-bottom: 1px solid var(--news-item-border-color); /* Use subtle news item border color */
+    padding-bottom: 1rem; /* Spacing below text to border */
+    margin-bottom: 1rem; /* Spacing between news items */
+    display: flex; /* Ensure it's a flex container for content and arrow */
+    align-items: center; /* Vertically align content */
+    justify-content: space-between; /* Push arrow to the right */
+    padding-right: 1rem; /* Add some padding on the right for the arrow */
+    text-decoration: none; /* Remove default underline from anchor */
+    color: var(--dark-text-color); /* Default text color for news items */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+section.bg-beige .grid.grid-cols-1.gap-8.mb-16 a:hover {
+    color: var(--light-blue-link); /* Change color on hover */
+}
+
+
+/* Remove border from the last news item */
+section.bg-beige .grid.grid-cols-1.gap-8.mb-16 a:last-child {
+    border-bottom: none;
+}
+
+/* News item text content (date/bold, and title) */
+section.bg-beige .grid.grid-cols-1.gap-8.mb-16 a > div {
+    flex-grow: 1; /* Allow content div to take available space */
+}
+
+/* The arrow for news items */
+section.bg-beige .grid.grid-cols-1.gap-8.mb-16 a > span {
+    flex-shrink: 0; /* Prevent arrow from shrinking */
+    margin-left: 1rem; /* Space between text and arrow */
+    color: var(--dark-text-color); /* Ensure arrow color is dark */
+    transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+section.bg-beige .grid.cols-1.gap-8.mb-16 a:hover > span {
+    transform: translateX(4px); /* Arrow moves on hover */
+    color: var(--light-blue-link); /* Arrow color changes on hover */
 }

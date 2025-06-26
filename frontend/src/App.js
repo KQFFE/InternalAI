@@ -272,9 +272,9 @@ function App() {
               <span>© 2023 Knowit AB</span>
             </div>
             <div className="footer-bottom-links-right"> {/* Replaced flex/flex-wrap/space-x-4 */}
-              <a href="#" className="footer-bottom-link" aria-label="LinkedIn">LinkedIn</a>
-              <a href="#" className="footer-bottom-link" aria-label="Facebook">Facebook</a>
-              <a href="#" className="footer-bottom-link" aria-label="Instagram">Instagram</a>
+              <a href="https://www.linkedin.com/company/knowit/" className="footer-bottom-link" aria-label="LinkedIn">LinkedIn</a>
+              <a href="https://www.facebook.com/weareknowit" className="footer-bottom-link" aria-label="Facebook">Facebook</a>
+              <a href="https://www.instagram.com/weareknowit/" className="footer-bottom-link" aria-label="Instagram">Instagram</a>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+/*
 @font-face {
   font-family: 'BagossStandard';
   src: url('./fonts/BagossStandard.woff') format('woff');
@@ -5,18 +6,17 @@
   font-style: normal;
   font-display: swap;
 }
-
-/* Your existing CSS rules go below this */
-/* .cookie-modal { ... } */
-/* ... */
+*/
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Courier New', monospace; /* Change this line */
     margin: 0;
     padding: 0;
-    background-color: #1a1a2e; /* Dark blue background */
-    color: #ffffff; /* White text by default */
+    background-color: #1a1a2e;
+    color: #ffffff;
 }
+
+/* ... other existing CSS ... */
 
 /* Gradient background for the hero section */
 .hero-gradient-bg {

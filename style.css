@@ -1,0 +1,219 @@
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a2e; /* Dark blue background */
+    color: #ffffff; /* White text by default */
+}
+
+/* Gradient background for the hero section */
+.hero-gradient-bg {
+    background: linear-gradient(135deg, #2b2b4e, #1a1a2e);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Cookie consent modal specific styling */
+.cookie-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.cookie-content {
+    background-color: #2a2a4a;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+    max-width: 90%;
+    width: 500px;
+    color: white;
+    text-align: left;
+}
+
+.cookie-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.cookie-content p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    color: #d0d0d0;
+}
+
+.cookie-buttons button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.cookie-buttons .deny-all {
+    background-color: transparent;
+    border: 1px solid #d0d0d0;
+    color: #d0d0d0;
+}
+
+.cookie-buttons .deny-all:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.cookie-buttons .accept-all {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.cookie-buttons .accept-all:hover {
+    background-color: #0056b3;
+}
+
+.cookie-details-toggle {
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.cookie-details-toggle:hover {
+    text-decoration: underline;
+}
+
+.cookie-preferences {
+    display: none;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cookie-preferences label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #d0d0d0;
+}
+
+.cookie-preferences input[type="checkbox"] {
+    margin-right: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Custom styling for the gradient box */
+.gradient-box {
+    background: linear-gradient(135deg, #e0c8f5, #8a2be2); /* Lighter purple to dark purple */
+    border-radius: 1rem;
+    height: 300px; /* Example height, adjust as needed */
+    width: 100%;
+}
+
+/* Slideshow specific styling */
+.slideshow-container {
+    position: relative;
+    max-width: 1000px;
+    margin: auto;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.mySlides {
+    display: none;
+}
+
+.mySlides img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev {
+    left: 0;
+    border-radius: 0 3px 3px 0;
+}
+
+/* On hover, add a black background with a little opacity */
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+/* The dots/bullets/indicators */
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+    background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+}
+
+/* Responsive iframe */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+}

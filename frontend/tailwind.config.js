@@ -16,8 +16,10 @@ module.exports = {
         beige: '#f5f5dc',
       },
       fontFamily: {
-        bagoss: ['BagossStandard', 'Arial', 'sans-serif'], // Define your custom font here
-        inter: ['Inter', 'sans-serif'], // Keep this if you still use Inter
+        // This is where you add your custom font
+        bagoss: ['BagossStandard', 'sans-serif'], // 'bagoss' is the utility class name (e.g., font-bagoss)
+        // You can also add other custom fonts here if needed
+        // inter: ['Inter', 'sans-serif'], // If you want to use font-inter via Tailwind
       },
     },
   },

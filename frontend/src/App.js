@@ -1,3 +1,4 @@
+// import './fonts/BagossStandard.woff'; This is the font knowit is using for logo, but downloading from knowit.se corrupts it or something.
 import React, { useState, useEffect } from 'react'; // Import useState and useEffect hooks
 import './App.css'; // You might want to keep or replace this with your styles.css
 import './style.css'; // Make sure you moved your style.css here and are importing it
@@ -164,11 +165,11 @@ function App() {
       )}
 
       {/* Main Content */}
-      <div className="hero-gradient-bg font-inter">
+      <div className="hero-gradient-bg">
         {/* Header Section */}
         <header className="flex justify-between items-center p-6 md:p-10 container mx-auto">
           {/* Apply font-bagoss class here for the Knowit logo */}
-          <div className="text-2xl font-bold font-bagoss">knowit</div> {/* Changed from font-oswald to font-bagoss */}
+          <div className="text-2xl font-bold">knowit</div> {/* Changed from font-oswald to font-bagoss */}
           <nav className="flex items-center space-x-6">
             <a href="#" className="text-white text-lg" aria-label="Search">Sök</a>
             <a href="#" className="text-white text-lg" aria-label="Menu">Meny ☰</a>

@@ -56,7 +56,7 @@ function App() {
     // This useEffect will run whenever slideIndex changes
     // It's the React way to handle side effects like showing/hiding slides
     const slides = document.getElementsByClassName("mySlides"); // Using getElementsByClassName for direct DOM manipulation temporarily,
-                                                            // but ideally, this would be done by mapping through an array of slide data and conditionally rendering classes.
+                                                              // but ideally, this would be done by mapping through an array of slide data and conditionally rendering classes.
     if (slides.length === 0) return; // Prevent error if slides are not yet rendered
 
     // Loop logic similar to your original JS
@@ -167,7 +167,8 @@ function App() {
       <div className="hero-gradient-bg font-inter">
         {/* Header Section */}
         <header className="flex justify-between items-center p-6 md:p-10 container mx-auto">
-          <div className="text-2xl font-bold">knowit</div>
+          {/* Apply font-bagoss class here for the Knowit logo */}
+          <div className="text-2xl font-bold font-bagoss">knowit</div> {/* Changed from font-oswald to font-bagoss */}
           <nav className="flex items-center space-x-6">
             <a href="#" className="text-white text-lg" aria-label="Search">Sök</a>
             <a href="#" className="text-white text-lg" aria-label="Menu">Meny ☰</a>

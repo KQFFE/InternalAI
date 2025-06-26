@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'BagossStandard';
+  src: url('./fonts/BagossStandard.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Your existing CSS rules go below this */
+/* .cookie-modal { ... } */
+/* ... */
+
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;

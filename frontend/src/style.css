@@ -10,7 +10,7 @@
 
 /* Define CSS Variables for consistent theming */
 :root {
-  --dark-background: #1a1a2e;
+  --dark-background: #0B0B26;
   --dark-blue-elements: #2b2b4e;
   --light-blue-link: #61dafb;
   --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
@@ -40,6 +40,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-bottom: 1rem;
 }
 
 /* Hero Section: Header and Navigation */
@@ -48,6 +49,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.app-logo-image {
+  height: 40px; /* Adjust as needed */
+  width: auto;
 }
 
 .app-logo-text {
@@ -295,7 +301,7 @@ body {
 /* News Section specific styling */
 .news-section-container {
   background-color: var(--light-yellow-orange-bg); /* Updated to new variable value */
-  padding: 4rem 1rem; /* py-16 px-4 */
+  padding: 1rem 1rem; /* py-16 px-4 */
   color: var(--dark-text-color);
 }
 
@@ -356,10 +362,6 @@ body {
   font-size: 0.875rem; /* text-sm */
   color: var(--dark-text-color);
   margin-bottom: 0; /* Changed from 0.25rem to 0 to remove space below */
-}
-
-.news-item-meta-bold {
-  font-weight: 600; /* font-semibold */
 }
 
 .news-item-title {
@@ -517,7 +519,8 @@ body {
   display: grid;
   grid-template-columns: 1fr; /* Default to single column on small screens */
   gap: 2rem; /* Spacing between grid items */
-  margin-bottom: 4rem; /* Spacing below the main grid */
+  margin-bottom: 1rem; /* Spacing below the main grid */
+  align-items: start; /* Added: Align all grid items to the top */
 }
 
 @media (min-width: 768px) { /* md breakpoint */
@@ -533,6 +536,10 @@ body {
 }
 
 /* Styling for footer columns (CONTACT, ABOUT, BUSINESS AREAS) */
+.footer-column { /* Added this rule */
+  padding-top: 0; /* Ensures consistent top spacing */
+}
+
 .footer-column ul {
   list-style: none; /* Remove bullet points */
   padding: 0; /* Remove default padding */
@@ -548,6 +555,7 @@ body {
   font-weight: 700;
   font-size: 1.125rem;
   margin-bottom: 1rem;
+  margin-top: 0; /* Ensures all footer headings start at the top */
 }
 
 .footer-text,
@@ -574,6 +582,7 @@ body {
   flex-direction: column;
   justify-content: flex-start; /* Aligns content to the top */
   padding-bottom: 1rem; /* Space below the content */
+  padding-top: 0; /* Added: Ensures consistent top spacing */
 }
 
 /* Styling for the "Become one of us" heading */
@@ -613,7 +622,7 @@ body {
 }
 
 .become-one-of-us-link:hover .arrow-icon {
-  transform: translateX(8px); /* Changed: Move arrow more on hover */
+  transform: translateX(8px); /* Move arrow more on hover */
   color: var(--dark-text-color); /* Arrow color also stays dark on hover */
 }
 
@@ -628,7 +637,6 @@ body {
   color: var(--dark-text-color);
   margin-top: 2rem; /* Adjusted from 8, 2rem aligns with image better */
   padding-top: 1rem; /* Adjusted from 4, 1rem aligns with image better */
-  border-top: 1px solid var(--footer-border-color); /* Apply border */
 }
 
 .footer-bottom-links-left,

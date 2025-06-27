@@ -146,7 +146,7 @@ function App() {
           <h1 className="hero-title">Shaping a better future with code</h1> {/* Replaced text-5xl font-extrabold mb-4 */}
           <p className="hero-subtitle">We are a digitalization company that develops solutions and services.</p> {/* Replaced text-xl mb-8 */}
           <button className="hero-button"> {/* Replaced bg-light-blue-link text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 */}
-            Read more
+            Read more about our team
           </button>
         </main>
 

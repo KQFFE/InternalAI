@@ -4,7 +4,8 @@ Welcome to the InternalAI project!
 
 Don't worry if you've never coded before or used GitHub – this guide is made for you! We'll walk you through everything you need to get started, step-by-step.
 
-For styling, you can reference Knowit's Visual Identity Guidelines: https://www.knowit.se/globalassets/brand-book/2024-assets/knowitvisuald240828.pdf
+For styling, you can reference Knowit's [Visual Identity Guidelines](https://www.knowit.se/globalassets/brand-book/2024-assets/knowitvisuald240828.pdf)
+
 ---
 
 ## Table of Contents

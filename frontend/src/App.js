@@ -85,7 +85,8 @@ function App() {
       {showCookieModal && (
         <div className="cookie-modal">
           <div className="cookie-content">
-            <h2>This website uses cookies</h2>
+            {/* Changed to div to avoid breaking heading order if rendered before main H1 */}
+            <div className="cookie-modal-title">This website uses cookies</div> 
             <p>
               We use cookies to personalize content and ads, to provide social media features and to analyze our traffic. We also share information about your use of our site with our social media, advertising and analytics partners.
             </p>
@@ -151,12 +152,14 @@ function App() {
         </main>
 
         <div className="gradient-box">
-          <div className="gradient-box-item"> {/* Replaced text-lg font-semibold */}
-            <h3>We create unique customer experiences</h3>
+          <div className="gradient-box-item">
+            {/* Changed from h3 to h2 for correct heading hierarchy */}
+            <h2 className="gradient-box-item-title">We create unique customer experiences</h2>
             <p>We are a digitalization company that develops solutions and services.</p>
           </div>
-          <div className="gradient-box-item"> {/* Replaced text-lg font-semibold */}
-            <h3>Innovation through collaboration</h3>
+          <div className="gradient-box-item">
+            {/* Changed from h3 to h2 for correct heading hierarchy */}
+            <h2 className="gradient-box-item-title">Innovation through collaboration</h2>
             <p>We are a digitalization company that develops solutions and services.</p>
           </div>
         </div>

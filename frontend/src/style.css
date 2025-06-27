@@ -176,6 +176,12 @@ body {
   z-index: 1000;
 }
 
+.cookie-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
 .cookie-content {
   background-color: #2a2a4a; /* A darker background for the modal */
   padding: 2rem;

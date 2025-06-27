@@ -323,7 +323,7 @@ body {
   text-align: left; /* Align to left as per image */
   font-size: 2rem; /* text-3xl */
   font-weight: 700; /* font-bold */
-  margin-top: 0; /* Adjust margin as necessary */
+  margin-top: 6rem; /* Adjust margin as necessary */
   margin-bottom: 3rem; /* Spacing below heading */
 }
 

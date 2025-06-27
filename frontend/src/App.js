@@ -130,7 +130,9 @@ function App() {
       {/* Hero Section */}
       <section className="hero-gradient-bg">
         <header className="hero-header-nav-container"> {/* Replaced px-4 py-6 flex justify-between items-center */}
-          <div className="app-logo-text">Knowit</div> {/* Replaced text-2xl font-bold */}
+          <div className="app-logo-text">
+            <img src="knowit-logo.png" alt="Knowit-logo" className="app-logo-image" />
+          </div>
           <nav>
             <ul className="main-nav-list"> {/* Replaced flex space-x-6 */}
               <li><a href="#" className="main-nav-link">Services</a></li> {/* Replaced text-white hover:underline */}

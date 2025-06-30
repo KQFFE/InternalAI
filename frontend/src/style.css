@@ -12,7 +12,7 @@
 :root {
   --dark-background: #0B0B26;
   --dark-blue-elements: #2b2b4e;
-  --light-blue-link: #61dafb;
+  --mellow-blue: #044d90;
   --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
   --light-yellow-orange-bg: #FEFBE6; /* For News section, updated to #fffef6 */
   --dark-text-color: #3C3C3C; /* Darker text for beige/light orange sections */
@@ -102,7 +102,7 @@ body {
 }
 
 .hero-button {
-  background-color: var(--light-blue-link);
+  background-color: var(--mellow-blue);
   color: white;
   font-weight: 600; /* font-semibold */
   padding: 0.75rem 1.5rem; /* py-3 px-6 */
@@ -243,7 +243,7 @@ body {
 }
 
 .cookie-buttons .save-preferences {
-  background-color: var(--light-blue-link);
+  background-color: var(--mellow-blue);
   color: white;
 }
 
@@ -259,7 +259,7 @@ body {
   cursor: pointer;
   font-size: 0.9rem;
   margin-top: 1rem;
-  color: var(--light-blue-link); /* Make it look like a link */
+  color: var(--mellow-blue); /* Make it look like a link */
   text-decoration: underline;
 }
 
@@ -280,12 +280,12 @@ body {
 
 .cookie-preferences input[type="checkbox"] {
   margin-right: 0.5rem;
-  accent-color: var(--light-blue-link); /* Highlight checkbox with link color */
+  accent-color: var(--mellow-blue); /* Highlight checkbox with link color */
 }
 
 /* Utility classes (can be removed if no longer used after full conversion) */
 .text-lightblue {
-  color: var(--light-blue-link);
+  color: var(--mellow-blue);
 }
 
 .text-darkblue {

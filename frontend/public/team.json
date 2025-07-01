@@ -7,8 +7,8 @@
     "active": true
   },
   {
-    "name": "Buren, Daniel",
-    "role": "Tester",
+    "name": "Burén, Daniel",
+    "role": "Business Analyst",
     "profilePicture": "/img/daniel-buren.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/danielburen-example",
     "active": true
@@ -147,11 +147,7 @@
     "active": true
   },
   {
-    "name": "Hildenborg, Johnny",
-    "role": "Manager",
-    "profilePicture": "/img/johnny-hildenborg.jpg",
-    "linkedinUrl": "https://www.linkedin.com/in/johnnyhildenborg-example",
-    "active": true
+   
   },
   {
     "name": "Blomqvist, Patrik",
@@ -169,7 +165,7 @@
   },
   {
     "name": "Schulze, Johanna",
-    "role": "Tester",
+    "role": "Business Analyst & Product Owner",
     "profilePicture": "/img/johanna-schulze.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/johannaschulze-example",
     "active": true
@@ -239,7 +235,7 @@
   },
   {
     "name": "Wallenman, Sofie",
-    "role": "Tester",
+    "role": "Manager",
     "profilePicture": "/img/sofie-wallenman.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/sofiewallenman-example",
     "active": true

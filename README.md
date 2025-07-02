@@ -30,6 +30,8 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
 
 ---
 
+## 0. Make sure python is installed, and that you ONLY have one instance on your machine.
+
 ## 1. Running the Servers Locally
 
 Once you have completed the [Getting Started](#2-getting-started-for-absolute-beginners) steps below, you can run both the Backend (Flask) and Frontend (React) servers. You will need **two separate PowerShell windows** open for this, one for each server.

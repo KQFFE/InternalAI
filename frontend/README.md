@@ -452,7 +452,7 @@ Now, others can review your code!
         * If still not working, you might need to manually add Python to your system's PATH. (Search online for "add python to path windows" if this happens).
     * **`pip` is not recognized / `No module named venv`:**
         * This usually means Python wasn't installed correctly or its path isn't set. Re-check Step 2.1 - Install Python.
-    * **`(venv) PS D:\Projects\InternalAI> ` doesn't show `(venv)`:**
+    * **`(venv) PS C:\Path\To\Your\InternalAI\Project> ` doesn't show `(venv)`:**
         * You forgot to run `.\venv\Scripts\Activate.ps1`. Run it again in your PowerShell window. Remember to do this every time you start a new session.
     * **`npm` is not recognized:**
         * You might not have Node.js and npm installed. You can download them from [https://nodejs.org/](https://nodejs.org/). `npm` usually comes with Node.js.

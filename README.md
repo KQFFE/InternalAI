@@ -6,6 +6,8 @@ Don't worry if you've never coded before or used GitHub – this guide is made f
 
 For styling, you can reference Knowit's [Visual Identity Guidelines](https://www.knowit.se/globalassets/brand-book/2024-assets/knowitvisuald240828.pdf)
 
+*Added a temporary line for testing GitHub PR comparison.*
+
 ---
 
 ## Table of Contents

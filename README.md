@@ -299,6 +299,130 @@ Now, others can review your code!
 * **`git push` gives `non-fast-forward` error:**
     * See "Step D: Share Your Changes (Push)" above. You need to `git pull` first.
 
+
+Absolutely, Johanna — here's a full Table of Contents with each section expanded into clear, helpful documentation you can paste into your README.md. I’ve tailored it to reflect a React-based GitHub project like yours, using React Router and local development:
+
+📚 Table of Contents
+- Project Overview
+- Installation & Setup
+- Running the Development Server
+- Project Structure
+- Creating New Pages & Routes
+- Linking Between Pages
+- Deployment
+- Contributing
+- License
+
+1. 📘 Project Overview
+This is the frontend for InternalAI, a React-based web application. It uses:
+- React for the UI
+- React Router for client-side navigation
+- Node.js + npm for development tools
+The goal is to deliver a modern, component-based UI experience for users working with our InternalAI platform.
+
+2. 💻 Installation & Setup
+To get started locally:
+git clone https://github.com/yourusername/your-repo.git
+cd frontend
+npm install
+
+
+This installs all project dependencies listed in package.json.
+
+3. 🚀 Running the Development Server
+To start the frontend in development mode:
+npm start
+
+
+This launches the app at:
+- http://localhost:3000 — for local preview
+- http://<your-network-ip>:3000 — for testing across devices on the same network
+💡 The app uses hot reloading, so any changes in the code will reflect instantly in the browser.
+
+4. 🗂 Project Structure
+frontend/
+├── public/           # Static assets (index.html, favicon, etc.)
+├── src/
+│   ├── components/   # Reusable components
+│   ├── pages/        # Page-level components (e.g. HomePage, About)
+│   ├── App.js        # Main application layout
+│   └── index.js      # Entry point to the React app
+├── package.json      # Project metadata and scripts
+└── README.md         # You’re reading it 😉
+
+
+
+5. 🧱 Creating New Pages & Routes
+To add a new page and route:
+- Create a component in src/pages/:
+// src/pages/About.js
+function About() {
+  return <h2>About InternalAI</h2>;
+}
+export default About;
+- Set up routing in App.js:
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import About from './pages/About';
+import HomePage from './pages/HomePage';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+- Install router (if needed):
+npm install react-router-dom
+
+
+
+6. 🔗 Linking Between Pages
+You can add internal navigation using <Link> from React Router:
+import { Link } from 'react-router-dom';
+
+function HomePage() {
+  return (
+    <div>
+      <h1>Welcome to InternalAI</h1>
+      <Link to="/about">
+        <button>Go to About Page</button>
+      </Link>
+    </div>
+  );
+}
+
+
+This ensures navigation happens without a full page reload.
+
+7. 🚢 Deployment
+To prepare for deployment:
+npm run build
+
+
+This creates a production-ready version of the app inside the build/ folder. You can deploy it using:
+- GitHub Pages
+- Netlify
+- Vercel
+- Azure Static Web Apps
+Make sure to follow the hosting provider's instructions for deploying a React app.
+
+8. 🤝 Contributing
+- Fork the repository
+- Create a new branch:
+git checkout -b feature/something-new
+- Make your changes and commit:
+git commit -m "Add: new feature or fix"
+- Push your branch and open a Pull Request
+We welcome thoughtful suggestions and contributions!
+
+9. 📄 License
+This project is licensed under the MIT License.
+
+
 ---
 
 We're excited to have you contribute to InternalAI! If you get stuck at any point, don't hesitate to ask for help. Good luck!

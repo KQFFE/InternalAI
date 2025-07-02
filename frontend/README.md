@@ -11,10 +11,10 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
 ## Table of Contents
 
 1.  [Running the Servers Locally (After Initial Setup)](#1-running-the-servers-locally-after-initial-setup)
-    * [1.1 Running on Windows (without WSL)](#11-running-on-windows-without-wsl)
+    * [1.1 Running on Windows](#11-running-on-windows-without-wsl)
     * [1.2 Running on Windows (with WSL)](#12-running-on-windows-with-wsl)
 2.  [First-Time Setup: Getting Started](#2-first-time-setup-getting-started)
-    * [2.1 Setup for Windows (without WSL)](#21-setup-for-windows-without-wsl)
+    * [2.1 Setup for Windows](#21-setup-for-windows-without-wsl)
     * [2.2 Setup for Windows (with WSL)](#22-setup-for-windows-with-wsl)
 3.  [Making Changes & Contributing (Your First Steps with Git)](#3-making-changes--contributing-your-first-steps-with-git)
 4.  [Troubleshooting Common Issues](#4-troubleshooting-common-issues)
@@ -25,7 +25,7 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
 
 Once you've completed the "First-Time Setup" steps below for your chosen environment, you can run both the Backend (Flask) and Frontend (React) servers. You will need **two separate terminal windows/tabs** open for this, one for each server.
 
-### 1.1 Running on Windows (without WSL)
+### 1.1 Running on Windows
 
 1.  **Open your first PowerShell window.**
 2.  **Navigate to your project root:**
@@ -120,7 +120,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
 
 This section will help you set up your computer to work on the InternalAI project. Choose the setup method that suits your preference: **Windows (without WSL)** or **Windows (with WSL)**.
 
-### 2.1 Setup for Windows (without WSL)
+### 2.1 Setup for Windows
 
 This is the traditional way to set up your development environment directly on Windows.
 

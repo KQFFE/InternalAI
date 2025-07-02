@@ -544,7 +544,9 @@ body {
 /* Styling for footer columns (CONTACT, ABOUT, BUSINESS AREAS) */
 .footer-column { /* Added this rule */
   padding-top: 0; /* Ensures consistent top spacing */
+  text-align: left
 }
+
 
 .footer-column ul {
   list-style: none; /* Remove bullet points */

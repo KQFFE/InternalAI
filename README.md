@@ -20,7 +20,8 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
     * [3.1 Setup for Windows](#31-setup-for-windows)
     * [3.2 Setup for Windows (with WSL)](#32-setup-for-windows-with-wsl)
 4.  [Making Changes & Contributing (Your First Steps with Git)](#4-making-changes--contributing-your-first-steps-with-git)
-5.  [Troubleshooting Common Issues](#5-troubleshooting-common-issues)
+5.  [Creating a New Release Tag](#5-creating-a-new-release-tag)
+6.  [Troubleshooting Common Issues](#6-troubleshooting-common-issues)
 
 ---
 
@@ -417,8 +418,6 @@ This method involves setting up a Linux environment within Windows using WSL. Th
 
 ## 4. Making Changes & Contributing (Your First Steps with Git)
 
-*This section remains the same as your original README for now.*
-
 ### The Idea of Branches
 
 Imagine the project's code as a tree with a `main` branch (the stable, main version). When you want to work on something new or fix a bug, you don't work directly on `main`. Instead, you create a "new branch" from `main`.
@@ -504,7 +503,79 @@ Now, others can review your code!
 
 ---
 
-## 5. Troubleshooting Common Issues
+## 5. Creating a New Release Tag
+
+Git tags are like permanent bookmarks that point to specific commits in your repository's history. They are typically used to mark release points (e.g., `v1.0.0`, `v1.0.1`).
+
+### When to Create a Tag
+
+* When you have finished a set of changes that constitute a new version of the software.
+* After your changes have been merged into the `main` branch (or your designated release branch).
+
+### Best Practices for Tag Naming
+
+It's highly recommended to use [Semantic Versioning](https://semver.org/) for your tags, which follows the pattern `MAJOR.MINOR.PATCH` (e.g., `v1.0.0`, `v1.2.3`).
+
+### How to Create and Push a Tag
+
+1.  **Ensure you are on the `main` branch and it's up-to-date:**
+    First, navigate to your project's root directory in your terminal (PowerShell or WSL).
+    ```bash
+    git checkout main
+    git pull origin main
+    ```
+    This ensures your local `main` branch has the latest changes from GitHub.
+
+2.  **Create the Tag:**
+    We recommend using **annotated tags** as they store metadata like the tagger name, email, and date, and can have a message.
+    ```bash
+    git tag -a v1.0.0 -m "Release version 1.0.0 - Initial stable release"
+    ```
+    * Replace `v1.0.0` with your desired version number (e.g., `v1.0.1`, `v2.0.0`).
+    * Replace `"Release version 1.0.0 - Initial stable release"` with a brief, descriptive message for this release.
+
+3.  **Push the Tag to GitHub:**
+    Tags are not pushed automatically with your commits. You need to explicitly push them.
+    ```bash
+    git push origin v1.0.0
+    ```
+    * Replace `v1.0.0` with the tag name you just created.
+
+    To push *all* your local tags to the remote (if you've created several):
+    ```bash
+    git push origin --tags
+    ```
+
+### Viewing Tags
+
+* **List all local tags:**
+    ```bash
+    git tag
+    ```
+* **View details of a specific tag:**
+    ```bash
+    git show v1.0.0
+    ```
+
+### Deleting Tags (If Necessary)
+
+Sometimes you might need to remove a tag if it was created incorrectly.
+
+1.  **Delete a local tag:**
+    ```bash
+    git tag -d v1.0.0
+    ```
+2.  **Delete a remote tag on GitHub:**
+    You must first delete it locally, then push the deletion to the remote.
+    ```bash
+    git push origin :refs/tags/v1.0.0
+    # Or more simply:
+    # git push origin --delete v1.0.0
+    ```
+
+---
+
+## 6. Troubleshooting Common Issues
 
 * **Windows specific issues:**
     * **`python` is not recognized:**

@@ -144,19 +144,19 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         ```
 3.  **Run the tests:**
     ```powershell
-    npm run test
+    npm run test:e2e
     ```
     * This command will start Jest in **watch mode**. By default, it tries to run tests related to files changed since your last Git commit.
     * If you see "No tests found related to files changed since last commit.", simply **press `a` then Enter** at the prompt to run all tests.
     * To run all tests **immediately without entering watch mode** (e.g., for CI/CD pipelines or a quick full run), you can use:
         ```powershell
-        npm run test -- --watchAll=false
+        npm run test:e2e -- --watchAll=false
         ```
     * For convenience, you can also add a shortcut in your `frontend/package.json` file. Under the `"scripts"` section, add:
         ```json
         "test:all": "react-scripts test --watchAll=false"
         ```
-        Then, you can run all tests directly with `npm run test:all`.
+        Then, you can run all tests directly with `npm run test:e2e:all`.
 
 ### 2.2 Where to Add New Tests
 
@@ -175,7 +175,7 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
             └── HomePage.js
             └── HomePage.test.js <-- Test file for HomePage.js
         ```
-    * `react-scripts` (which `npm run test` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
+    * `react-scripts` (which `npm run test:e2e` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
 
 ---
 

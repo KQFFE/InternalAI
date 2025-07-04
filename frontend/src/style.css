@@ -11,7 +11,6 @@
 /* Define CSS Variables for consistent theming */
 :root {
   --dark-background: #0B0B26;
-  --dark-blue-elements: #2b2b4e;
   --mellow-blue: #044d90;
   --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
   --light-yellow-orange-bg: #FEFBE6; /* For News section, updated to #fffef6 */
@@ -35,7 +34,6 @@ body {
 
 /* Gradient background for the hero section */
 .hero-gradient-bg {
-  background: linear-gradient(135deg, var(--dark-blue-elements), var(--dark-background));
   min-height: 100vh;
   display: flex;
   flex-direction: column;

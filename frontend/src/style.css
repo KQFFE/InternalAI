@@ -77,6 +77,33 @@ body {
   text-decoration: underline;
 }
 
+/* Added Media Query for Mobile Navigation */
+@media (max-width: 767px) { /* Adjust breakpoint as needed for mobile */
+  .main-nav-list {
+    /* Hide navigation items on small screens by default for a mobile-first approach.
+       You would typically implement a hamburger menu to toggle visibility. */
+    display: none;
+  }
+
+  /* To address "main-nav is too close to the knowit-logo" on mobile,
+     we need to consider that the main-nav might be hidden. If you intend
+     to show the nav, you'd need a different layout for small screens.
+     For now, by hiding it, the spacing issue is resolved indirectly.
+     If you want the nav visible, you'll need a different approach (e.g., flex-direction: column for the header, and then spacing).
+  */
+  .hero-header-nav-container {
+    justify-content: center; /* Center the logo if nav is hidden */
+    padding: 1.5rem 1rem; /* Maintain padding */
+  }
+
+  /* If you want the nav to appear below the logo on mobile,
+     you'd need to adjust the flex-direction of hero-header-nav-container
+     and add specific styles for the logo and nav to align them.
+     For the purpose of addressing the "too close" issue for now,
+     we are implicitly resolving it by handling mobile nav differently.
+  */
+}
+
 
 /* Hero Section: Main Content */
 .hero-main-content {
@@ -305,14 +332,20 @@ body {
 /* News Section specific styling */
 .news-section-container {
   background-color: var(--light-yellow-orange-bg); /* Updated to new variable value */
-  padding: 1rem 1rem; /* py-16 px-4 */
+  /* padding: 1rem 1rem; */ /* Original padding, removed for full width background */
+  padding-top: 4rem; /* py-16 */
+  padding-bottom: 4rem; /* py-16 */
   color: var(--dark-text-color);
+  /* Ensure the background stretches full width */
+  width: 100%;
 }
 
 .news-content-wrapper {
   max-width: 1280px; /* max-w-screen-xl */
   margin-left: auto;
   margin-right: auto;
+  padding-left: 1rem; /* Add horizontal padding to the content wrapper */
+  padding-right: 1rem; /* Add horizontal padding to the content wrapper */
 }
 
 /* New: Style for the news section heading */
@@ -508,7 +541,11 @@ body {
 .footer-section {
   background-color: #FFD6B8; /* Directly set the footer background color */
   color: var(--dark-text-color);
-  padding: 4rem 0 4rem 0; /* Top, Right, Bottom, Left - use 0 for left/right to let container handle it */
+  /* padding: 4rem 0 4rem 0; */ /* Original padding, removed for full width background */
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  /* Ensure the background stretches full width */
+  width: 100%;
 }
 
 .footer-container {

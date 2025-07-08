@@ -1,0 +1,91 @@
+/* General page container styling for the License page */
+.license-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  /* Use Knowit's dark blue background */
+  background-color: #1A232E; /* Dark blue background from Knowit style */
+  color: #FFFFFF; /* White text for contrast */
+
+  max-width: 900px;
+  margin: 20px auto; /* Centers the container */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Slightly darker shadow for dark background */
+}
+
+.license-container h1 {
+  text-align: center;
+  color: #FFFFFF; /* White for main heading */
+  margin-bottom: 20px;
+}
+
+.license-container h2 {
+  color: #CAD2DE; /* Lighter grey for subheadings for readability */
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #34495e; /* Darker border for contrast */
+  padding-bottom: 5px;
+}
+
+/* Paragraph text */
+.license-container p {
+    color: #E0E6ED; /* Slightly off-white for body text */
+}
+
+
+/* File input styling */
+.license-container input[type="file"] {
+  display: block;
+  margin-bottom: 20px;
+  padding: 8px;
+  border: 1px solid #34495e; /* Darker border */
+  border-radius: 4px;
+  background-color: #2C3E50; /* Slightly lighter dark blue for input background */
+  color: #FFFFFF; /* White text */
+}
+
+/* Table styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse; /* Removes space between borders */
+  margin-top: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #34495e; /* Darker border for table cells */
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #3498DB; /* Knowit accent blue for header background */
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Alternating row colors for better readability on a dark theme */
+.data-table tbody tr:nth-child(even) {
+  background-color: #2C3E50; /* Slightly lighter dark blue for even rows */
+}
+.data-table tbody tr:nth-child(odd) {
+  background-color: #1A232E; /* Main background color for odd rows */
+}
+
+
+.data-table tbody tr:hover {
+  background-color: #4A607A; /* Lighter dark blue to highlight row on hover */
+}
+
+/* Styling for pre tag if you still want to show raw JSON (optional) */
+.license-container pre {
+  background-color: #2C3E50; /* Darker background for pre tag */
+  color: #E0E6ED; /* Lighter text for code */
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto; /* Adds scrollbar for wide content */
+  white-space: pre-wrap; /* Wraps long lines */
+  word-break: break-all; /* Breaks words if necessary */
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; // For React 18+
 import './index.css';
+import './style.css'; // <-- This line should be added here
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -11,14 +12,7 @@ root.render(
   </React.StrictMode>
 );
 
-// If you were using an older version of React (e.g., React 17) and
-// it was previously working, your index.js might have looked like this:
-// import ReactDOM from 'react-dom';
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// );
-
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

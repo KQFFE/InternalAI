@@ -1,0 +1,706 @@
+/*
+@font-face {
+  font-family: 'BagossStandard';
+  src: url('./fonts/BagossStandard.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* Define CSS Variables for consistent theming */
+:root {
+  --dark-background: #0B0B26;
+  --mellow-blue: #044d90;
+  --beige-section-bg: #f5f5dc; /* Original beige, will be overridden for news/footer */
+  --light-yellow-orange-bg: #FEFBE6; /* For News section, updated to #fffef6 */
+  --dark-text-color: #3C3C3C; /* Darker text for beige/light orange sections */
+  --gray-text: #777777; /* Lighter gray for paragraphs in light sections */
+  --footer-border-color: #d1d5db; /* A light gray for the footer top border */
+  --news-item-border-color: #e0e0e0; /* A very subtle light gray for news item borders */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; /* Reverted to a standard sans-serif font stack */
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark-background);
+  color: #ffffff; /* Default text color for dark sections */
+}
+
+/* ... other existing CSS ... */
+
+/* Gradient background for the hero section */
+.hero-gradient-bg {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+}
+
+/* Hero Section: Header and Navigation */
+.hero-header-nav-container {
+  padding: 1.5rem 1rem; /* px-4 py-6 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-logo-image {
+  height: 40px; /* Adjust as needed */
+  width: auto;
+}
+
+.app-logo-text {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+}
+
+.main-nav-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 1.5rem; /* space-x-6 (24px) */
+}
+
+.main-nav-link {
+  color: white;
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.main-nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Added Media Query for Mobile Navigation */
+@media (max-width: 767px) { /* Adjust breakpoint as needed for mobile */
+  .main-nav-list {
+    /* Hide navigation items on small screens by default for a mobile-first approach.
+       You would typically implement a hamburger menu to toggle visibility. */
+    display: none;
+  }
+
+  /* To address "main-nav is too close to the knowit-logo" on mobile,
+     we need to consider that the main-nav might be hidden. If you intend
+     to show the nav, you'd need a different layout for small screens.
+     For now, by hiding it, the spacing issue is resolved indirectly.
+     If you want the nav visible, you'll need a different approach (e.g., flex-direction: column for the header, and then spacing).
+  */
+  .hero-header-nav-container {
+    justify-content: center; /* Center the logo if nav is hidden */
+    padding: 1.5rem 1rem; /* Maintain padding */
+  }
+
+  /* If you want the nav to appear below the logo on mobile,
+     you'd need to adjust the flex-direction of hero-header-nav-container
+     and add specific styles for the logo and nav to align them.
+     For the purpose of addressing the "too close" issue for now,
+     we are implicitly resolving it by handling mobile nav differently.
+  */
+}
+
+
+/* Hero Section: Main Content */
+.hero-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1rem; /* px-4 py-16 */
+}
+
+.hero-title {
+  font-size: 3rem; /* text-5xl */
+  font-weight: 800; /* font-extrabold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.hero-subtitle {
+  font-size: 1.25rem; /* text-xl */
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.hero-button {
+  background-color: var(--mellow-blue);
+  color: white;
+  font-weight: 600; /* font-semibold */
+  padding: 0.75rem 1.5rem; /* py-3 px-6 */
+  border-radius: 0.5rem; /* rounded-lg */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.hero-button:hover {
+  background-color: rgba(97, 218, 251, 0.9); /* hover:bg-opacity-90 */
+}
+
+
+/* Gradient box at the bottom of hero section */
+.gradient-box {
+  background: linear-gradient(90deg, #5b5b7e, #4b4b6e); /* Darker gradient for the box */
+  border-radius: 1rem;
+  min-height: 100px; /* Adjust height as needed */
+  display: flex;
+  flex-direction: column; /* Default to column for mobile */
+  align-items: flex-start; /* Align items to start */
+  justify-content: space-between;
+  position: relative;
+  padding: 1rem;
+  margin: 1rem; /* Add some margin for spacing */
+  gap: 1rem; /* Gap between items */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .gradient-box {
+    flex-direction: row; /* Row direction on larger screens */
+    align-items: flex-end; /* Align items to end on larger screens */
+    padding: 2rem; /* More padding on larger screens */
+    margin: 2rem;
+  }
+}
+
+.gradient-box-item {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: white; /* Ensure text color is white */
+}
+
+.gradient-box-item h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem; /* Match text-lg */
+  font-weight: 600; /* Match font-semibold */
+}
+
+.gradient-box-item p {
+  font-size: 0.9rem; /* Smaller text for paragraph */
+  font-weight: 400; /* Normal font weight for paragraph */
+  color: #d0d0d0;
+  margin-bottom: 0;
+}
+
+
+/* Cookie consent modal specific styling */
+.cookie-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.cookie-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+.cookie-content {
+  background-color: #2a2a4a; /* A darker background for the modal */
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+  width: 500px;
+  color: white;
+  text-align: left;
+}
+
+.cookie-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.cookie-content p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  color: #d0d0d0; /* Light gray for paragraph text */
+}
+
+.cookie-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 1rem; /* Space between buttons */
+  margin-top: 1.5rem; /* Space above buttons */
+}
+
+.cookie-buttons button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.cookie-buttons .deny-all {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.cookie-buttons .deny-all:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.cookie-buttons .accept-all {
+  background-color: #4CAF50; /* Green for accept */
+  color: white;
+}
+
+.cookie-buttons .accept-all:hover {
+  background-color: #45a049;
+}
+
+.cookie-buttons .save-preferences {
+  background-color: var(--mellow-blue);
+  color: white;
+}
+
+.cookie-buttons .save-preferences:hover {
+  background-color: #5ac4f0;
+}
+
+
+.cookie-details-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  color: var(--mellow-blue); /* Make it look like a link */
+  text-decoration: underline;
+}
+
+.cookie-preferences {
+  background-color: #3a3a5a; /* Slightly lighter background for preferences */
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+.cookie-preferences label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #d0d0d0;
+}
+
+.cookie-preferences input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: var(--mellow-blue); /* Highlight checkbox with link color */
+}
+
+/* Utility classes (can be removed if no longer used after full conversion) */
+.text-lightblue {
+  color: var(--mellow-blue);
+}
+
+.text-darkblue {
+  color: var(--dark-text-color);
+}
+
+.bg-beige { /* Renaming this to be more semantic for the news section background */
+  background-color: var(--light-yellow-orange-bg); /* Apply new background color */
+}
+
+
+/* Adjustments for the slider navigation */
+.slideshow-container {
+  max-width: 1000px; /* Adjust as needed */
+  position: relative;
+  margin: auto;
+}
+
+/* News Section specific styling */
+.news-section-container {
+  background-color: var(--light-yellow-orange-bg); /* Updated to new variable value */
+  /* padding: 1rem 1rem; */ /* Original padding, removed for full width background */
+  padding-top: 4rem; /* py-16 */
+  padding-bottom: 4rem; /* py-16 */
+  color: var(--dark-text-color);
+  /* Ensure the background stretches full width */
+  width: 100%;
+}
+
+.news-content-wrapper {
+  max-width: 1280px; /* max-w-screen-xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* Add horizontal padding to the content wrapper */
+  padding-right: 1rem; /* Add horizontal padding to the content wrapper */
+}
+
+/* New: Style for the news section heading */
+.news-heading {
+  color: var(--dark-text-color); /* Apply dark text color */
+  text-align: left; /* Align to left as per image */
+  font-size: 2rem; /* text-3xl */
+  font-weight: 700; /* font-bold */
+  margin-top: 6rem; /* Adjust margin as necessary */
+  margin-bottom: 3rem; /* Spacing below heading */
+}
+
+.news-grid-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to single column */
+  gap: 2rem; /* gap-8 */
+  margin-bottom: 4rem; /* mb-16 */
+}
+
+.news-item-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem; /* Spacing below text to border */
+  margin-bottom: 1rem; /* Spacing between news items */
+  border-bottom: 1px solid var(--news-item-border-color); /* Use subtle news item border color */
+  padding-right: 1rem; /* Add some padding on the right for the arrow */
+  text-decoration: none; /* Remove default underline from anchor */
+  color: var(--dark-text-color); /* Default text color for news items */
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
+}
+
+.news-item-link:last-child {
+  border-bottom: none; /* Remove border from the last news item */
+}
+
+.news-item-link:hover {
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Added: Underline on hover */
+}
+
+/* Ensure the text content within the link is aligned to the start */
+.news-item-link > div {
+  display: flex; /* Make the div a flex container */
+  flex-direction: column; /* Stack children vertically */
+  align-items: flex-start; /* Align children (p and h3) to the start (left) */
+  flex-grow: 1; /* Allow this div to take up available space */
+}
+
+.news-item-meta {
+  font-size: 0.875rem; /* text-sm */
+  color: var(--dark-text-color);
+  margin-bottom: 0; /* Changed from 0.25rem to 0 to remove space below */
+}
+
+.news-item-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600; /* font-semibold */
+  margin-top: 0; /* Changed from 0.25rem to 0 to remove space above */
+  color: inherit; /* Inherit color from parent link */
+  line-height: 1.2; /* Adjust line-height for closer stacking if needed */
+}
+
+.news-item-arrow {
+  flex-shrink: 0; /* Prevent arrow from shrinking */
+  margin-left: 1rem; /* Space between text and arrow */
+  color: var(--dark-text-color); /* Ensure arrow color is dark */
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.news-item-link:hover .news-item-arrow {
+  transform: translateX(8px); /* Changed: Arrow moves a bit more to the side */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
+}
+
+/* New: Style for "Fler nyheter" link */
+.more-news-link {
+  display: flex;
+  justify-content: flex-end; /* Align to the right as per image */
+  width: 100%; /* Ensure it takes full width to align */
+  margin-top: 2rem; /* Spacing above the link */
+  margin-bottom: 6rem; /* Spacing below the link before the next section/footer */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: var(--dark-text-color); /* Apply dark text color */
+  text-decoration: none;
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
+}
+
+.more-news-link:hover {
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Added: Underline on hover */
+}
+
+.more-news-link .arrow-icon {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.more-news-link:hover .arrow-icon {
+  transform: translateX(8px); /* Changed: Arrow moves a bit more to the side */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
+}
+
+
+/* Slideshow images */
+.mySlides {
+  display: none;
+}
+
+.mySlides img {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev {
+  left: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+/* On hover, add a black background with a little opacity */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fade animation */
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+/* Video container */
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* NEW: Footer specific styles (plain CSS, replacing Tailwind layout) */
+.footer-section {
+  background-color: #FFD6B8; /* Directly set the footer background color */
+  color: var(--dark-text-color);
+  /* padding: 4rem 0 4rem 0; */ /* Original padding, removed for full width background */
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  /* Ensure the background stretches full width */
+  width: 100%;
+}
+
+.footer-container {
+  max-width: 1200px; /* Max width for content, adjust if needed */
+  margin-left: auto; /* Center the container */
+  margin-right: auto; /* Center the container */
+  padding-left: 1rem; /* Horizontal padding */
+  padding-right: 1rem; /* Horizontal padding */
+}
+
+.footer-main-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to single column on small screens */
+  gap: 2rem; /* Spacing between grid items */
+  margin-bottom: 1rem; /* Spacing below the main grid */
+  align-items: start; /* Added: Align all grid items to the top */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .footer-main-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+  }
+}
+
+@media (min-width: 1024px) { /* lg breakpoint */
+  .footer-main-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on large screens */
+  }
+}
+
+/* Styling for footer columns (CONTACT, ABOUT, BUSINESS AREAS) */
+.footer-column { /* Added this rule */
+  padding-top: 0; /* Ensures consistent top spacing */
+  text-align: left
+}
+
+
+.footer-column ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+.footer-column ul li {
+  margin-bottom: 0.5rem; /* Spacing between list items */
+}
+
+.footer-column-heading { /* For CONTACT, ABOUT KNOWIT, BUSINESS AREAS headings */
+  color: var(--dark-text-color);
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  margin-top: 0; /* Ensures all footer headings start at the top */
+}
+
+.footer-text,
+.footer-link {
+  color: var(--dark-text-color);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  display: block; /* Make links/paragraphs take full width for hover area */
+  text-decoration: none; /* Remove default underline */
+  transition: color 0.2s ease-in-out; /* Smooth transition for hover */
+}
+
+.footer-link:hover,
+.footer-bottom-link:hover {
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Add underline on hover */
+}
+
+/* Column 1: Become one of us */
+.become-one-of-us-column {
+  position: relative; /* Crucial for positioning absolute children */
+  min-height: 250px; /* Increased min-height to give more room for large text */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Aligns content to the top */
+  padding-bottom: 1rem; /* Space below the content */
+  padding-top: 0; /* Added: Ensures consistent top spacing */
+}
+
+/* Styling for the "Become one of us" heading */
+.become-one-of-us-column .become-one-of-us-heading {
+  position: relative;
+  text-align: left;
+  white-space: nowrap; /* Prevent text wrapping */
+  font-size: 1.2rem; /* Increased font size for more background fill */
+  font-weight: 800; /* Extra bold for impact */
+  margin-top: 0; /* Ensures no extra top margin */
+}
+
+/* Ensure the link "Hitta ditt nya jobb här" is visible and clickable */
+.become-one-of-us-link {
+  margin-top: auto; /* This will push the element to the end of the flex container */
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--dark-text-color);
+  text-decoration: none;
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Added text-decoration for smooth transition */
+}
+
+.become-one-of-us-link:hover {
+  color: var(--dark-text-color); /* Stays dark on hover */
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Arrow icon styling */
+.arrow-icon {
+  margin-left: 0.5rem; /* Spacing from text */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.become-one-of-us-link:hover .arrow-icon {
+  transform: translateX(8px); /* Move arrow more on hover */
+  color: var(--dark-text-color); /* Arrow color also stays dark on hover */
+}
+
+
+/* Bottom Footer Links section */
+.footer-bottom-row {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem; /* text-sm */
+  color: var(--dark-text-color);
+  margin-top: 2rem; /* Adjusted from 8, 2rem aligns with image better */
+  padding-top: 1rem; /* Adjusted from 4, 1rem aligns with image better */
+}
+
+.footer-bottom-links-left,
+.footer-bottom-links-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* Spacing between links */
+}
+
+.footer-bottom-links-left {
+  margin-bottom: 1rem; /* Margin for wrapping on mobile */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .footer-bottom-links-left {
+    margin-bottom: 0; /* Remove margin on larger screens */
+  }
+}
+
+.footer-bottom-link {
+  color: var(--dark-text-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}

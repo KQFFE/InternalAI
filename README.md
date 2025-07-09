@@ -524,7 +524,6 @@ This simply means their computer can't find the new tool the code is trying to u
 ## The Fix:
 To make sure everyone's code works smoothly after new packages are added, your teammates just need to run one simple command in their terminal (while inside the frontend folder of the project):
 
-```bash
 npm install
 
 This command tells their computer, "Hey, go check our project's list of tools (package.json) and install any new ones, or update existing ones, that I don't have yet!" It's like updating their toolbox.

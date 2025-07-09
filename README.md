@@ -528,6 +528,7 @@ npm install
 
 This command tells their computer, "Hey, go check our project's list of tools (package.json) and install any new ones, or update existing ones, that I don't have yet!" It's like updating their toolbox.
 
+---------------------------------------------------------------------------------------------------------------------------
 
 Now, others can review your code!
 

@@ -508,11 +508,11 @@ Once your changes are on your branch on GitHub, you create a Pull Request (PR). 
 4.  **Add a Title & Description:** Give your PR a clear title and explain what your changes do.
 5.  **Create Pull Request:** Click the green button.
 
-##Note:
+### Note:
 -Just a friendly reminder about something important when you add new tools (which we call "packages") to your project's main code.
 If you or someone on your team adds a new package, like xlsx or papaparse (which are tools for handling spreadsheets or data), your colleagues won't automatically have these tools on their computers.
 
-##What happens if they don't update?
+## What happens if they don't update?
 
 They might see an error like this when they try to run the code:
 
@@ -521,7 +521,7 @@ They might see an error like this when they try to run the code:
 
 This simply means their computer can't find the new tool the code is trying to use.
 
-##The Fix:
+## The Fix:
 To make sure everyone's code works smoothly after new packages are added, your teammates just need to run one simple command in their terminal (while inside the frontend folder of the project):
 
 npm install

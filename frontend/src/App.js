@@ -20,7 +20,6 @@ function HomePageContent() {
   const handleLicenseClick = () => {
     navigate('/license'); // Navigate to your /license route
   };
-
   // --- Slideshow Logic (kept from incoming, if applicable) ---
   useEffect(() => {
     let slideIndex = 0;
@@ -73,17 +72,21 @@ function HomePageContent() {
         <main className="hero-main-content">
           <h1 className="hero-title">Shaping a better future with code</h1>
           <p className="hero-subtitle">We are a digitalization company that develops solutions and services.</p>
-          <button className="hero-button" onClick={handleReadMoreClick}>
-            Read more about our team
-          </button>
-          {/* NEW: License button next to "Read more about our team" */}
-          <button
-            className="hero-button" // Reusing hero-button class for styling consistency
-            onClick={handleLicenseClick}
-            style={{ marginLeft: '10px' }} // Added inline style for spacing
-          >
-            License
-          </button>
+          {/* >>> START OF NEW CONTAINER FOR BUTTONS <<< */}
+          <div className="homepage-buttons-container">
+            <button className="hero-button" onClick={handleReadMoreClick}>
+              Read more about our team
+            </button>
+            {/* NEW: License button next to "Read more about our team" */}
+            <button
+              className="hero-button" // Reusing hero-button class for styling consistency
+              onClick={handleLicenseClick}
+              // REMOVED: style={{ marginLeft: '10px' }} - We'll use CSS for spacing now
+            >
+              License
+            </button>
+          </div>
+          {/* >>> END OF NEW CONTAINER FOR BUTTONS <<< */}
         </main>
 
         <div className="gradient-box">

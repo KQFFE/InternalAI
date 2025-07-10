@@ -77,7 +77,7 @@ function HomePageContent() {
             <button className="hero-button" onClick={handleReadMoreClick}>
               Read more about our team
             </button>
-            {/* NEW: License button next to "Read more about our team" */}
+            {/* NEW: License button next to "Read more about our team " */}
             <button
               className="hero-button" // Reusing hero-button class for styling consistency
               onClick={handleLicenseClick}

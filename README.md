@@ -56,6 +56,16 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```
     You should see messages like `Running on http://127.0.0.1:5000`. Keep this window open and running. To stop the server, press `Ctrl + C`.
 
+    OR you can run
+    ```powershell
+    python app.py
+    ```
+    Both commands start Flask's built-in develpoment server but the second version is simpler to set up and easier for testing and debugging.
+    Observe that since we are running python3 the above command may not work - you can tell your environment once and for all that python is ineed python3:
+    ```powershell
+    sudo apt install python-is-python3
+    ```
+
 7.  **Open your second PowerShell window.**
 8.  **Navigate to your project root:**
     ```powershell
@@ -117,7 +127,32 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     npm start
     ```
     * This will usually automatically open your web browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
+11. **Alternative super lazy start using aliases**
+    In your environment there is .bashrc file that you find on the same level as your username. Open it in any editor (or write: nano ~/.bashrc) and add these lines at the bottom of the file, save and close:
+ ```   
+ # InternalAI Development Aliases
 
+# Backend setup and run
+alias backend="cd ~/projects/InternalAI && source .venv/bin/activate && cd backend && python3 app.py"
+
+# Frontend setup and run  
+alias frontend="cd ~/projects/InternalAI/frontend && npm start"
+
+
+# Project navigation
+alias proj="cd ~/projects/InternalAI"
+
+# Git shortcuts for the project
+alias gstatus="cd ~/projects/InternalAI && git status"
+alias gcommit="cd ~/projects/InternalAI && git add . && git commit -m"
+alias gfresh="cd ~/projects/InternalAI && git pull origin main"
+alias gdeploy="cd ~/projects/InternalAI && git add . && git commit -m 'Deploy updates' && git push origin main"
+
+# Environment info
+alias envinfo="cd ~/projects/InternalAI && source .venv/bin/activate && echo '📁 Project: InternalAI' && echo '🐍 Python:' && python3 --version && echo '📦 Flask:' && pip show flask | grep Version && echo '⚛️  Node:' && node --version && echo '📦 npm:' && npm --version"
+ ```
+ now restart your WSL and you can use the aliases. Just writing 'backend' for instance gets you in the correct directory, run the activate scprit and starts app.py
+ 
 ---
 
 ## 2. Running Tests
@@ -234,7 +269,8 @@ This is the traditional way to set up your development environment directly on W
         ```
         Your PowerShell prompt should now look something like `(YourChosenLocation)\InternalAI>`. This is your main project folder!
     4.  **In order to normalise end-of-line between the windows and linux machines run once:**
-        ```git config --global core.autocrlf true
+        ```powershell
+        git config --global core.autocrlf true
         ```
 
 5.  **Set Up Your Project Environment (Virtual Environment):**
@@ -383,10 +419,12 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```
         * Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI$`. This is your main project folder!
     6.  **In order to normalise end-of-line between the windows and linux machines run once:**
-        ```git config --global core.autocrlf input
+        ```powershell
+        git config --global core.autocrlf input
         ```
     7.  **Observe that if you are using a bash you need to change your directory by a command like:**
-        ```cd //wsl.localhost/Ubuntu/home/your_username/projects/InternalAI
+        ```bash
+        cd //wsl.localhost/Ubuntu/home/your_username/projects/InternalAI
         ```
 
 5.  **Set Up Python Backend Dependencies:**

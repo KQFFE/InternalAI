@@ -234,7 +234,8 @@ This is the traditional way to set up your development environment directly on W
         ```
         Your PowerShell prompt should now look something like `(YourChosenLocation)\InternalAI>`. This is your main project folder!
     4.  **In order to normalise end-of-line between the windows and linux machines run once:**
-        ```git config --global core.autocrlf true
+        ```powershell
+        git config --global core.autocrlf true
         ```
 
 5.  **Set Up Your Project Environment (Virtual Environment):**
@@ -383,10 +384,12 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```
         * Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI$`. This is your main project folder!
     6.  **In order to normalise end-of-line between the windows and linux machines run once:**
-        ```git config --global core.autocrlf input
+        ```powershell
+        git config --global core.autocrlf input
         ```
     7.  **Observe that if you are using a bash you need to change your directory by a command like:**
-        ```cd //wsl.localhost/Ubuntu/home/your_username/projects/InternalAI
+        ```bash
+        cd //wsl.localhost/Ubuntu/home/your_username/projects/InternalAI
         ```
 
 5.  **Set Up Python Backend Dependencies:**

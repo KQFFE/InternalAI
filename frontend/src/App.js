@@ -6,10 +6,9 @@ import './style.css'; // From incoming
 import logo from './knowit-logo.png'; // From incoming (assuming you prefer this over logo.svg for the main landing page)
 import TeamPage from './TeamPage'; // From incoming
 
-// Main Homepage Content Component with Updated Design
+// Main Homepage Content Component with RESTORED Original Design
 function HomePageContent() {
     const navigate = useNavigate(); // Hook to programmatically navigate
-    const [slideIndex, setSlideIndex] = useState(1);
 
     const handleReadMoreClick = () => {
         navigate('/team'); // Navigate to the /team route
@@ -19,34 +18,9 @@ function HomePageContent() {
         navigate('/license'); // Navigate to your /license route
     };
 
-    // Slideshow Logic
-    useEffect(() => {
-        showSlides(slideIndex);
-    }, [slideIndex]);
-
-    const plusSlides = (n) => {
-        let newIndex = slideIndex + n;
-        const slides = document.getElementsByClassName("mySlides");
-        if (newIndex > slides.length) { newIndex = 1; }
-        if (newIndex < 1) { newIndex = slides.length; }
-        setSlideIndex(newIndex);
-    };
-
-    const showSlides = (n) => {
-        const slides = document.getElementsByClassName("mySlides");
-        for (let i = 0; i < slides.length; i++) {
-            if (slides[i]) {
-                slides[i].style.display = "none";
-            }
-        }
-        if (slides[n - 1]) {
-            slides[n - 1].style.display = "grid";
-        }
-    };
-
     return (
         <>
-            {/* Hero Section with Updated Design */}
+            {/* Hero Section with RESTORED Original Design */}
             <div className="hero-gradient-bg font-inter">
                 {/* Header Section */}
                 <header className="flex justify-between items-center p-6 md:p-10 container mx-auto">
@@ -57,185 +31,80 @@ function HomePageContent() {
                     </div>
                     <nav className="flex items-center space-x-6">
                         <Link to="/" className="text-white text-lg hover:underline">Home</Link>
+                        <a href="#" className="text-white text-lg hover:underline">Services</a>
+                        <a href="#" className="text-white text-lg hover:underline">About</a>
                         <Link to="/team" className="text-white text-lg hover:underline">Team</Link>
                         <Link to="/license" className="text-white text-lg hover:underline">License</Link>
                         <a href="#" className="text-white text-lg hover:underline">Contact</a>
                     </nav>
                 </header>
 
-                {/* Hero Section */}
-                <main className="flex-grow flex flex-col justify-center items-start p-6 md:p-10 container mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-8 max-w-3xl text-white">
-                        Building the future takes a whole set of digitalization skills. Welcome to our world.
+                {/* RESTORED Hero Section with Original Content */}
+                <main className="flex-grow flex flex-col justify-center items-center text-center p-6 md:p-10 container mx-auto">
+                    <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-8 max-w-4xl text-white">
+                        Shaping a better future with code
                     </h1>
-                    <div className="flex flex-wrap gap-4 mb-16">
+                    <p className="text-xl md:text-2xl mb-12 max-w-2xl text-white opacity-90">
+                        We are a digitalization company that develops solutions and services.
+                    </p>
+                    <div className="homepage-buttons-container">
                         <button
                             onClick={handleReadMoreClick}
-                            className="text-white text-lg flex items-center space-x-2 group hover:underline"
+                            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
                         >
-                            Our Team
-                            <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
+                            Read more about our team
                         </button>
                         <button
                             onClick={handleLicenseClick}
-                            className="text-white text-lg flex items-center space-x-2 group hover:underline"
+                            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
                         >
                             License
-                            <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
                         </button>
-                        <a href="#" className="text-white text-lg flex items-center space-x-2 group hover:underline">
-                            Career
-                            <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
-                        </a>
-                    </div>
-
-                    {/* Gradient Box */}
-                    <div className="gradient-box relative w-full mb-8 flex items-end p-4 bg-gradient-to-r from-purple-800 to-blue-800 rounded-lg">
-                        <p className="text-white text-sm opacity-80">
-                            Design inspired by the Nordic sky above Knowit, Malmö ©
-                        </p>
-                        <div className="absolute bottom-4 right-4 flex items-center space-x-4 text-white text-sm">
-                            <span>15°C</span>
-                            <span>1.2 m/s</span>
-                            <span>07:12</span>
-                        </div>
                     </div>
                 </main>
             </div>
 
-            {/* Middle Section: Slideshow */}
-            <section className="bg-yellow-100 text-gray-800 py-16 md:py-24 px-6">
+            {/* RESTORED Middle Section: Two Cards */}
+            <section className="bg-gray-100 text-gray-800 py-16 md:py-24 px-6">
                 <div className="container mx-auto">
-                    {/* Slider Navigation */}
-                    <div className="flex justify-center items-center pb-6 md:pb-10 space-x-4 mb-8">
-                        <span className="text-gray-800 text-lg">0{slideIndex} / 03</span>
-                        <button
-                            type="button"
-                            className="text-gray-800 text-2xl hover:text-blue-600 transition-colors"
-                            onClick={() => plusSlides(-1)}
-                        >
-                            ←
-                        </button>
-                        <button
-                            type="button"
-                            className="text-gray-800 text-2xl hover:text-blue-600 transition-colors"
-                            onClick={() => plusSlides(1)}
-                        >
-                            →
-                        </button>
-                    </div>
-
-                    <div className="slideshow-container mb-16">
-                        {/* Slide 1 */}
-                        <div className="mySlides fade grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-8 rounded-xl shadow-lg">
-                            <div className="flex flex-col items-center justify-center p-4">
-                                <img
-                                    src="https://placehold.co/200x100/eeeeee/333333?text=InternalAI+Logo"
-                                    alt="InternalAI Project Logo"
-                                    className="mb-4 max-w-full h-auto"
-                                />
-                            </div>
-                            <div className="text-gray-800">
-                                <h3 className="text-2xl font-semibold mb-4">InternalAI Summer Project 2025</h3>
-                                <p className="text-gray-700 leading-relaxed mb-4">
-                                    Our team is creating a comprehensive landing page and automating processes using AI
-                                    for everything. This project showcases modern full-stack development with React,
-                                    Flask, and Azure deployment, all powered by AI assistance for maximum efficiency.
-                                </p>
-                                <button
-                                    onClick={handleReadMoreClick}
-                                    className="text-blue-600 flex items-center space-x-2 group hover:underline"
-                                >
-                                    Meet our team
-                                    <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                </button>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                        {/* Card 1 */}
+                        <div className="bg-white p-8 rounded-xl shadow-lg">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-800">We create unique customer experiences</h3>
+                            <p className="text-gray-600 leading-relaxed">
+                                We are a digitalization company that develops solutions and services.
+                            </p>
                         </div>
 
-                        {/* Slide 2 */}
-                        <div className="mySlides fade grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-8 rounded-xl shadow-lg">
-                            <div className="flex flex-col items-center justify-center p-4">
-                                <img
-                                    src="https://placehold.co/200x100/eeeeee/333333?text=AI+Innovation"
-                                    alt="AI Innovation"
-                                    className="mb-4 max-w-full h-auto"
-                                />
-                            </div>
-                            <div className="text-gray-800">
-                                <h3 className="text-2xl font-semibold mb-4">AI-Powered Development</h3>
-                                <p className="text-gray-700 leading-relaxed mb-4">
-                                    Experience the future of software development where AI assists in every step,
-                                    from code generation to deployment automation, making development faster and more efficient.
-                                </p>
-                                <a href="#" className="text-blue-600 flex items-center space-x-2 group hover:underline">
-                                    Learn more
-                                    <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Slide 3 */}
-                        <div className="mySlides fade grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-8 rounded-xl shadow-lg">
-                            <div className="flex flex-col items-center justify-center p-4">
-                                <img
-                                    src="https://placehold.co/200x100/eeeeee/333333?text=Full+Stack"
-                                    alt="Full Stack Development"
-                                    className="mb-4 max-w-full h-auto"
-                                />
-                            </div>
-                            <div className="text-gray-800">
-                                <h3 className="text-2xl font-semibold mb-4">Modern Full-Stack Architecture</h3>
-                                <p className="text-gray-700 leading-relaxed mb-4">
-                                    Built with React frontend, Flask backend, and Azure cloud deployment.
-                                    A complete modern web application showcasing best practices in full-stack development.
-                                </p>
-                                <button
-                                    onClick={handleLicenseClick}
-                                    className="text-blue-600 flex items-center space-x-2 group hover:underline"
-                                >
-                                    View license
-                                    <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Video Section */}
-                    <div className="video-container rounded-xl overflow-hidden shadow-lg bg-gray-200 p-8 text-center">
-                        <h3 className="text-2xl font-semibold mb-4">Project Demo</h3>
-                        <p className="text-gray-600 mb-4">Watch our team demonstrate the InternalAI project capabilities</p>
-                        <div className="bg-gray-300 rounded-lg p-8">
-                            <p className="text-gray-500">Demo video coming soon...</p>
+                        {/* Card 2 */}
+                        <div className="bg-white p-8 rounded-xl shadow-lg">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-800">Innovation through collaboration</h3>
+                            <p className="text-gray-600 leading-relaxed">
+                                We are a digitalization company that develops solutions and services.
+                            </p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* News Section with Updated Design */}
-            <section className="bg-orange-200 text-gray-800 py-16 md:py-24 px-6 font-inter">
+            {/* RESTORED News Section */}
+            <section className="bg-yellow-100 text-gray-800 py-16 md:py-24 px-6 font-inter">
                 <div className="container mx-auto">
                     <h2 className="text-3xl font-semibold mb-12">News</h2>
 
                     {/* News Links */}
                     <div className="grid grid-cols-1 gap-8 mb-16">
-                        <a href="#" className="flex justify-between items-center border-b border-gray-800 pb-4 group">
+                        <a href="#" className="flex justify-between items-center border-b border-gray-400 pb-4 group">
                             <div>
                                 <p className="text-gray-600 text-sm mb-1">2025-06-26 <span className="font-bold">Summer Project 2025</span></p>
-                                <p className="text-xl font-medium">Kristoffer, Sasan, Sakshi and Johanna are creating a landing page and automating a process, using AI for everything.</p>
+                                <p className="text-xl font-medium">Kristoffer, Sasan, Sakshi and Johanna is creating a landing page and automating a process, by using AI for everything.</p>
                             </div>
                             <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
                         </a>
-                        <a href="#" className="flex justify-between items-center border-b border-gray-800 pb-4 group">
+                        <a href="#" className="flex justify-between items-center border-b border-gray-400 pb-4 group">
                             <div>
                                 <p className="text-gray-600 text-sm mb-1">2025-07-01 <span className="font-bold">Summer Project 2025</span></p>
-                                <p className="text-xl font-medium">The team requests earlier vacation leave due to information overflow</p>
-                            </div>
-                            <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
-                        </a>
-                        <a href="#" className="flex justify-between items-center border-b border-gray-800 pb-4 group">
-                            <div>
-                                <p className="text-gray-600 text-sm mb-1">2025-07-10 <span className="font-bold">Project Update</span></p>
-                                <p className="text-xl font-medium">Full-stack deployment pipeline successfully configured with Azure CI/CD</p>
+                                <p className="text-xl font-medium">The team request earlier vacation leave due to information overflow</p>
                             </div>
                             <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
                         </a>
@@ -243,20 +112,25 @@ function HomePageContent() {
 
                     <a href="#" className="flex items-center space-x-2 text-gray-800 font-semibold text-lg group mb-24">
                         More news
-                        <span className="text-2xl group-hover:rotate-90 transition-transform duration-300">+</span>
+                        <span className="text-2xl group-hover:rotate-90 transition-transform duration-300">→</span>
                     </a>
+                </div>
+            </section>
 
-                    {/* Footer Columns with Updated Design */}
+            {/* RESTORED Footer Section */}
+            <section className="bg-orange-200 text-gray-800 py-16 md:py-24 px-6 font-inter">
+                <div className="container mx-auto">
+                    {/* Footer Columns */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                         <div>
-                            <h3 className="text-5xl font-bold mb-8 transform -rotate-6 origin-bottom-left max-w-xs leading-none">
+                            <h3 className="text-4xl font-bold mb-8 transform -rotate-6 origin-bottom-left max-w-xs leading-none">
                                 Become one of us
                             </h3>
                             <button
                                 onClick={handleReadMoreClick}
                                 className="flex items-center space-x-2 text-gray-800 font-semibold text-lg group hover:underline"
                             >
-                                Join our team
+                                Hitta ditt nya jobb här
                                 <span className="transform transition-transform duration-300 group-hover:translate-x-1">→</span>
                             </button>
                         </div>
@@ -264,33 +138,31 @@ function HomePageContent() {
                         <div>
                             <h4 className="font-bold text-lg mb-4">CONTACT</h4>
                             <ul className="space-y-2 text-sm">
-                                <li>InternalAI Team</li>
-                                <li><a href="tel:+4670090000" className="hover:underline">+46 700 900 00</a></li>
-                                <li><a href="mailto:info@internalai.se" className="hover:underline">info@internalai.se</a></li>
-                                <li>Knowit Quality Services Syd</li>
-                                <li>Malmö, Sweden</li>
-                                <li><a href="#" className="hover:underline">Visit us</a></li>
+                                <li>Box 3390, SE-103 68 Stockholm</li>
+                                <li>Besök: Mäster Samuelsgatan 60, Stockholm</li>
+                                <li><a href="tel:+46102797000" className="hover:underline">Tel: +46 10 279 70 00</a></li>
+                                <li><a href="mailto:info@knowit.se" className="hover:underline">E-mail: info@knowit.se</a></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-lg mb-4">ABOUT PROJECT</h4>
+                            <h4 className="font-bold text-lg mb-4">ABOUT KNOWIT</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to="/team" className="hover:underline">Our Team</Link></li>
-                                <li><a href="#" className="hover:underline">Technology Stack</a></li>
-                                <li><a href="#" className="hover:underline">Project Goals</a></li>
-                                <li><Link to="/license" className="hover:underline">License</Link></li>
-                                <li><a href="#" className="hover:underline">Documentation</a></li>
+                                <li><a href="#" className="hover:underline">Our history</a></li>
+                                <li><a href="#" className="hover:underline">Our values</a></li>
+                                <li><a href="#" className="hover:underline">Our employees</a></li>
+                                <li><a href="#" className="hover:underline">Investor relations</a></li>
+                                <li><a href="#" className="hover:underline">Career</a></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-lg mb-4">TECHNOLOGIES</h4>
+                            <h4 className="font-bold text-lg mb-4">BUSINESS AREAS</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="#" className="hover:underline">React Frontend</a></li>
-                                <li><a href="#" className="hover:underline">Flask Backend</a></li>
-                                <li><a href="#" className="hover:underline">Azure Deployment</a></li>
-                                <li><a href="#" className="hover:underline">AI Integration</a></li>
+                                <li><a href="#" className="hover:underline">Knowit Experience</a></li>
+                                <li><a href="#" className="hover:underline">Knowit Connectivity</a></li>
+                                <li><a href="#" className="hover:underline">Knowit Solutions</a></li>
+                                <li><a href="#" className="hover:underline">Knowit Insight</a></li>
                             </ul>
                         </div>
                     </div>
@@ -299,14 +171,14 @@ function HomePageContent() {
                     <div className="flex flex-wrap justify-between items-center text-sm text-gray-800">
                         <div className="flex flex-wrap space-x-4 mb-4 md:mb-0">
                             <a href="#" className="hover:underline">Cookie Policy</a>
-                            <a href="#" className="hover:underline">Privacy Policy</a>
-                            <a href="#" className="hover:underline">Terms of Service</a>
-                            <span>© 2025 InternalAI Team</span>
+                            <a href="#" className="hover:underline">Hantering av personuppgifter</a>
+                            <a href="#" className="hover:underline">Whistleblower</a>
+                            <span>© 2023 Knowit AB</span>
                         </div>
                         <div className="flex flex-wrap space-x-4">
                             <a href="#" className="hover:underline">LinkedIn</a>
-                            <a href="#" className="hover:underline">GitHub</a>
-                            <a href="#" className="hover:underline">Contact</a>
+                            <a href="#" className="hover:underline">Facebook</a>
+                            <a href="#" className="hover:underline">Instagram</a>
                         </div>
                     </div>
                 </div>
@@ -357,14 +229,10 @@ function App() {
         setShowCookieModal(false);
     };
 
-    const toggleDetails = () => {
-        console.log("Toggle cookie details");
-    };
-
     return (
         <Router>
             <div className="App font-inter">
-                {/* Cookie Consent Modal with Updated Design */}
+                {/* Cookie Consent Modal */}
                 {showCookieModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
                         <div className="bg-gray-800 text-white p-8 rounded-xl max-w-md mx-4 shadow-2xl">

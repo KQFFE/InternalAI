@@ -40,14 +40,16 @@ function TeamPage() {
               <img src="knowit-logo.png" alt="Knowit-logo" className="app-logo-image" />
             </Link>
           </div>
-          <nav>
-            <ul className="main-nav-list">
-              <li><Link to="/" className="main-nav-link">Home</Link></li>
-              <li><a href="#" className="main-nav-link">Services</a></li>
-              <li><a href="#" className="main-nav-link">About</a></li>
-              <li><a href="#" className="main-nav-link">Contact</a></li>
-            </ul>
-          </nav>
+                <nav className="main-nav-list flex items-center space-x-6"
+                    role="navigation"
+                    aria-label="Main navigation">
+                    <ul className="main-nav-list">
+                        <li><Link to="/" className="main-nav-link">Home</Link></li>
+                        <li><a href="#" className="main-nav-link">Services</a></li>
+                        <li><a href="#" className="main-nav-link">About</a></li>
+                        <li><a href="#" className="main-nav-link">Contact</a></li>
+                    </ul>
+                </nav>
         </header>
         <div className="team-container loading">Loading team data...</div>
       </div>

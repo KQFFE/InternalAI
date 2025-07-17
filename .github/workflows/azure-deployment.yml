@@ -140,7 +140,7 @@ jobs:
         echo "✅ Deployment package ready"
     
     # ================================
-    # STEP 9: DEPLOY TO AZURE (MAIN BRANCH ONLY)
+    # STEP 9: DEPLOY TO AZURE (MAIN BRANCH ONLY) 
     # ================================
     - name: 🚀 Deploy to Azure App Service
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'

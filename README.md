@@ -21,7 +21,8 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
     * [3.2 Setup for Windows (with WSL)](#32-setup-for-windows-with-wsl)
 4.  [Making Changes & Contributing (Your First Steps with Git)](#4-making-changes--contributing-your-first-steps-with-git)
 5.  [Creating a New Release Tag](#5-creating-a-new-release-tag)
-6.  [Troubleshooting Common Issues](#6-troubleshooting-common-issues)
+6.  [CI-CD (Continuous Integration and Continuous Deployment)](#6-CI-CD-(Continuous-Integration-and-Continuous-Deployment))
+7.  [Troubleshooting Common Issues](#7-troubleshooting-common-issues)
 
 ---
 
@@ -644,8 +645,174 @@ Sometimes you might need to remove a tag if it was created incorrectly.
     ```
 
 ---
+## 6. CI-CD (Continuous Integration and Continuous Deployment)
+# 🚀 **GitHub Actions Pipeline Triggers**
 
-## 6. Troubleshooting Common Issues
+## 🎯 **When the Pipeline Runs**
+
+Looking at your `.github/workflows/azure-deployment.yml`, the pipeline is configured to run on:
+
+```yaml
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+```
+
+### ✅ **Automatic Triggers:**
+
+1. **Push to main branch** - 🚀 **DEPLOYS TO AZURE**
+   ```bash
+   git push origin main
+   # OR
+   gdeploy  # (using your alias)
+   ```
+
+2. **Pull Request to main branch** - 🧪 **BUILDS & TESTS ONLY**
+   ```bash
+   # When you create a PR targeting main branch
+   # Pipeline runs but doesn't deploy
+   ```
+
+## 🔄 **What Happens Automatically**
+
+### 📤 **On Push to Main:**
+```
+You push → GitHub detects push → Pipeline starts → Full deployment
+```
+
+**Pipeline Steps (All Automatic):**
+1. ✅ **Checkout code** from your repository
+2. ✅ **Build React app** (npm install, npm run build)
+3. ✅ **Setup Python** and install Flask dependencies
+4. ✅ **Integrate React with Flask** (copy build files)
+5. ✅ **Deploy to Azure** App Service
+6. ✅ **Your app is live** at `https://your-app-name.azurewebsites.net`
+
+### 🧪 **On Pull Request:**
+```
+You create PR → GitHub detects PR → Pipeline starts → Build & test only
+```
+
+**Pipeline Steps (No Deployment):**
+1. ✅ **Checkout code** from PR branch
+2. ✅ **Build React app** (test if it builds)
+3. ✅ **Setup Python** and test Flask
+4. ✅ **Integration test** (verify everything works together)
+5. ❌ **Skip deployment** (only builds/tests)
+
+## 🎯 **Deployment Conditions**
+
+### 🚀 **WILL Deploy:**
+- ✅ **Direct push to main**
+- ✅ **Merge PR into main**
+- ✅ **Any commit to main branch**
+
+### 🧪 **WON'T Deploy (Test Only):**
+- ❌ **Push to feature branch**
+- ❌ **Open PR (not merged yet)**
+- ❌ **Push to any branch except main**
+
+## 📋 **Common Development Scenarios**
+
+### Scenario 1: Direct Push (Most Common)
+```bash
+# You make changes and push directly
+git add .
+git commit -m "Add new feature"
+git push origin main
+# → Pipeline runs → Deploys to Azure ✅
+```
+
+### Scenario 2: Feature Branch Workflow
+```bash
+# Create feature branch
+git checkout -b feature/new-feature
+git add .
+git commit -m "Add new feature"
+git push origin feature/new-feature
+# → No pipeline runs ❌
+
+# Create pull request on GitHub
+# → Pipeline runs but doesn't deploy (just tests) 🧪
+
+# Merge PR on GitHub
+# → Pipeline runs and deploys ✅
+```
+
+### Scenario 3: Using Your Alias
+```bash
+gdeploy
+# → Commits changes → Pushes to main → Pipeline runs → Deploys ✅
+```
+
+## 👀 **How to Monitor the Pipeline**
+
+### 📊 **GitHub Actions Tab:**
+1. Go to your GitHub repository
+2. Click **"Actions"** tab
+3. See all workflow runs with status:
+   - 🟡 **Yellow**: Running
+   - ✅ **Green**: Success (deployed)
+   - ❌ **Red**: Failed
+
+### 📱 **Real-time Monitoring:**
+```
+GitHub → Actions → Latest workflow run → Click to see live logs
+```
+
+### 🔔 **Notifications:**
+- **GitHub** sends email notifications on success/failure
+- **Azure** shows deployment status in App Service
+
+## ⏱️ **Timeline Expectations**
+
+### 🚀 **Typical Deployment:**
+```
+Push to main → 2-3 minutes → React build → 1-2 minutes → Deploy → 1-2 minutes → Live
+Total: ~5-8 minutes
+```
+
+### 🧪 **PR Testing:**
+```
+Create PR → 2-3 minutes → Build test → 1-2 minutes → Results
+Total: ~3-5 minutes
+```
+
+## 🔧 **Pipeline Configuration Details**
+
+### 📝 **From Your Workflow File:**
+```yaml
+# Only deploys on main branch pushes
+- name: 🚀 Deploy to Azure App Service
+  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+```
+
+### 🎯 **Environment Variables:**
+```yaml
+env:
+  AZURE_WEBAPP_NAME: internalai-webapp-prod  # Your app name
+```
+
+## 📋 **Summary**
+
+### ✅ **Completely Automatic:**
+- **No manual intervention** needed
+- **Runs on every push** to main
+- **Deploys immediately** after successful build
+- **Notifies you** of success/failure
+
+### 🎯 **Your Workflow:**
+1. **Make changes** locally
+2. **Push to main** (`git push origin main` or `gdeploy`)
+3. **GitHub Actions runs** automatically
+4. **Check progress** in Actions tab
+5. **App is live** in ~5-8 minutes
+
+**The pipeline is 100% automatic - just push to main and it handles everything!** 🚀
+___
+## 7. Troubleshooting Common Issues
 
 * **Windows specific issues:**
     * **`python` is not recognized:**

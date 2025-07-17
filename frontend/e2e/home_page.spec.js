@@ -118,15 +118,9 @@ test.describe('Home Page (Landing Page) tests', () => {
         // More robust cookie modal handling
         const cookieModal = page.locator('.cookie-modal');
         if (await cookieModal.isVisible()) {
-            // Wait for the accept button to be ready and click it
-            await page.locator('#accept-all-cookies').waitFor({ state: 'visible' });
             await page.locator('#accept-all-cookies').click();
-
-            // Wait for the modal to actually disappear with retries
-            await page.waitForFunction(() => {
-                const modal = document.querySelector('.cookie-modal');
-                return !modal || modal.style.display === 'none' || !modal.offsetParent;
-            }, { timeout: 15000 });
+            // Wait for modal to be actually removed from DOM
+            await expect(cookieModal).toBeHidden({ timeout: 15000 });
         }
 
         // Wait for navigation to be ready
@@ -144,12 +138,8 @@ test.describe('Home Page (Landing Page) tests', () => {
     });
 
     test('should navigate to /team page when team button is clicked', async ({ page }) => {
-        // Ensure cookie modal is dismissed before clicking team button
-        const cookieModal = page.locator('.cookie-modal');
-        if (await cookieModal.isVisible()) {
-            await page.locator('#accept-all-cookies').click();
-            await expect(cookieModal).toBeHidden({ timeout: 15000 });
-        }
+        // Use the existing dismissCookieModal function
+        await dismissCookieModal(page);
 
         // Wait for the team button to be clickable
         await expect(page.locator('#team-button')).toBeVisible();
@@ -213,7 +203,8 @@ test.describe('Home Page (Landing Page) tests', () => {
         const moreNewsLink = page.locator('#more-news-link');
         await expect(moreNewsLink).toBeVisible();
         await expect(moreNewsLink).toHaveText(/More news/);
-        await expect(moreNewsLink).toHaveAttribute('href', '#');
+        await expect(moreNewsLink).toHaveAttribute('type', 'button');
+        await expect(moreNewsLink).toHaveAttribute('aria-label', 'View all news articles')
     });
 
     test('should display footer content with contact information', async ({ page }) => {

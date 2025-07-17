@@ -16,6 +16,26 @@ function HomePageContent() {
         navigate('/license');
     };
 
+    const handleContactClick = () => {
+        // Add contact functionality here
+        console.log('Contact clicked');
+    };
+
+    const handleCareerClick = () => {
+        // Add career functionality here
+        console.log('Career clicked');
+    };
+
+    const handleServicesClick = () => {
+        // Add services functionality here
+        console.log('Services clicked');
+    };
+
+    const handleAboutClick = () => {
+        // Add about functionality here
+        console.log('About clicked');
+    };
+
     return (
         <>
             {/* Hero Section */}
@@ -34,11 +54,11 @@ function HomePageContent() {
                     </div>
                     <nav className="main-nav-list flex items-center space-x-6" role="navigation" aria-label="Main navigation">
                         <Link to="/" className="main-nav-link text-white text-lg hover:underline" id="nav-home" aria-current="page">Home</Link>
-                        <a href="#" className="main-nav-link text-white text-lg hover:underline" id="nav-services" aria-label="Services page">Services</a>
-                        <a href="#" className="main-nav-link text-white text-lg hover:underline" id="nav-about" aria-label="About us page">About</a>
+                        <button onClick={handleServicesClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-services" aria-label="Services page">Services</button>
+                        <button onClick={handleAboutClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-about" aria-label="About us page">About</button>
                         <Link to="/team" className="main-nav-link text-white text-lg hover:underline" id="nav-team" aria-label="Our team page">Team</Link>
                         <Link to="/license" className="main-nav-link text-white text-lg hover:underline" id="nav-license" aria-label="License information">License</Link>
-                        <a href="#" className="main-nav-link text-white text-lg hover:underline" id="nav-contact" aria-label="Contact us">Contact</a>
+                        <button onClick={handleContactClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-contact" aria-label="Contact us">Contact</button>
                     </nav>
                 </header>
 
@@ -106,7 +126,12 @@ function HomePageContent() {
                     {/* News Links */}
                     <div className="grid grid-cols-1 gap-8 mb-16" role="list" aria-label="News articles">
                         <article className="news-item-link flex justify-between items-center border-b border-gray-400 pb-4 group" role="listitem">
-                            <a href="#" className="flex-grow" id="news-item-1" aria-label="Read article about Summer Project 2025 from June 26">
+                            <button
+                                onClick={() => console.log('News item 1 clicked')}
+                                className="flex-grow text-left bg-transparent border-none cursor-pointer"
+                                id="news-item-1"
+                                aria-label="Read article about Summer Project 2025 from June 26"
+                            >
                                 <div>
                                     <p className="news-item-meta text-gray-600 text-sm mb-1">
                                         <time dateTime="2025-06-26">2025-06-26</time>
@@ -116,12 +141,17 @@ function HomePageContent() {
                                         Kristoffer, Sasan, Sakshi and Johanna is creating a landing page and automating a process, by using AI for everything.
                                     </h3>
                                 </div>
-                            </a>
+                            </button>
                             <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300" aria-hidden="true">→</span>
                         </article>
 
                         <article className="news-item-link flex justify-between items-center border-b border-gray-400 pb-4 group" role="listitem">
-                            <a href="#" className="flex-grow" id="news-item-2" aria-label="Read article about Summer Project 2025 from July 1">
+                            <button
+                                onClick={() => console.log('News item 2 clicked')}
+                                className="flex-grow text-left bg-transparent border-none cursor-pointer"
+                                id="news-item-2"
+                                aria-label="Read article about Summer Project 2025 from July 1"
+                            >
                                 <div>
                                     <p className="news-item-meta text-gray-600 text-sm mb-1">
                                         <time dateTime="2025-07-01">2025-07-01</time>
@@ -131,15 +161,21 @@ function HomePageContent() {
                                         The team request earlier vacation leave due to information overflow
                                     </h3>
                                 </div>
-                            </a>
+                            </button>
                             <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300" aria-hidden="true">→</span>
                         </article>
                     </div>
 
-                    <a href="#" className="more-news-link flex items-center space-x-2 text-gray-800 font-semibold text-lg group mb-24" id="more-news-link" aria-label="View all news articles">
+                    <button
+                        onClick={() => console.log('More news clicked')}
+                        className="more-news-link flex items-center space-x-2 text-gray-800 font-semibold text-lg group mb-24 bg-transparent border-none cursor-pointer"
+                        id="more-news-link"
+                        aria-label="View all news articles"
+                        type="button"
+                    >
                         More news
                         <span className="text-2xl group-hover:rotate-90 transition-transform duration-300" aria-hidden="true">→</span>
-                    </a>
+                    </button>
                 </div>
             </section>
 
@@ -153,8 +189,8 @@ function HomePageContent() {
                                 Become one of us
                             </h3>
                             <button
-                                onClick={handleReadMoreClick}
-                                className="flex items-center space-x-2 text-gray-800 font-semibold text-lg group hover:underline"
+                                onClick={handleCareerClick}
+                                className="flex items-center space-x-2 text-gray-800 font-semibold text-lg group hover:underline bg-transparent border-none cursor-pointer"
                                 id="footer-careers-button"
                                 aria-label="Find your new job at Knowit"
                                 type="button"
@@ -180,11 +216,11 @@ function HomePageContent() {
                             <h4 className="footer-column-heading font-bold text-lg mb-4">ABOUT KNOWIT</h4>
                             <nav aria-label="About Knowit links">
                                 <ul className="space-y-2 text-sm">
-                                    <li><a href="#" className="hover:underline" id="about-history" aria-label="Learn about our history">Our history</a></li>
-                                    <li><a href="#" className="hover:underline" id="about-values" aria-label="Learn about our values">Our values</a></li>
-                                    <li><a href="#" className="hover:underline" id="about-employees" aria-label="Meet our employees">Our employees</a></li>
-                                    <li><a href="#" className="hover:underline" id="about-investors" aria-label="Investor relations information">Investor relations</a></li>
-                                    <li><a href="#" className="hover:underline" id="about-career" aria-label="Career opportunities">Career</a></li>
+                                    <li><a href="https://www.knowit.se/om-oss/var-historia/" className="hover:underline" id="about-history" aria-label="Learn about our history">Our history</a></li>
+                                    <li><a href="https://www.knowit.se/om-oss/varden/" className="hover:underline" id="about-values" aria-label="Learn about our values">Our values</a></li>
+                                    <li><a href="https://www.knowit.se/om-oss/medarbetare/" className="hover:underline" id="about-employees" aria-label="Meet our employees">Our employees</a></li>
+                                    <li><a href="https://www.knowit.se/investerare/" className="hover:underline" id="about-investors" aria-label="Investor relations information">Investor relations</a></li>
+                                    <li><a href="https://www.knowit.se/karriar/" className="hover:underline" id="about-career" aria-label="Career opportunities">Career</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -193,10 +229,10 @@ function HomePageContent() {
                             <h4 className="footer-column-heading font-bold text-lg mb-4">BUSINESS AREAS</h4>
                             <nav aria-label="Business areas links">
                                 <ul className="space-y-2 text-sm">
-                                    <li><a href="#" className="hover:underline" id="business-experience" aria-label="Learn about Knowit Experience">Knowit Experience</a></li>
-                                    <li><a href="#" className="hover:underline" id="business-connectivity" aria-label="Learn about Knowit Connectivity">Knowit Connectivity</a></li>
-                                    <li><a href="#" className="hover:underline" id="business-solutions" aria-label="Learn about Knowit Solutions">Knowit Solutions</a></li>
-                                    <li><a href="#" className="hover:underline" id="business-insight" aria-label="Learn about Knowit Insight">Knowit Insight</a></li>
+                                    <li><a href="https://www.knowit.se/tjanster/experience/" className="hover:underline" id="business-experience" aria-label="Learn about Knowit Experience">Knowit Experience</a></li>
+                                    <li><a href="https://www.knowit.se/tjanster/connectivity/" className="hover:underline" id="business-connectivity" aria-label="Learn about Knowit Connectivity">Knowit Connectivity</a></li>
+                                    <li><a href="https://www.knowit.se/tjanster/solutions/" className="hover:underline" id="business-solutions" aria-label="Learn about Knowit Solutions">Knowit Solutions</a></li>
+                                    <li><a href="https://www.knowit.se/tjanster/insight/" className="hover:underline" id="business-insight" aria-label="Learn about Knowit Insight">Knowit Insight</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -205,9 +241,9 @@ function HomePageContent() {
                     {/* Bottom Footer Links */}
                     <div className="footer-bottom-row flex flex-wrap justify-between items-center text-sm text-gray-800">
                         <div className="flex flex-wrap space-x-4 mb-4 md:mb-0">
-                            <a href="#" className="hover:underline" id="footer-cookies" aria-label="Read our cookie policy">Cookie Policy</a>
-                            <a href="#" className="hover:underline" id="footer-privacy" aria-label="Read about handling of personal data">Hantering av personuppgifter</a>
-                            <a href="#" className="hover:underline" id="footer-whistleblower" aria-label="Whistleblower information">Whistleblower</a>
+                            <a href="https://www.knowit.se/cookies/" className="hover:underline" id="footer-cookies" aria-label="Read our cookie policy">Cookie Policy</a>
+                            <a href="https://www.knowit.se/hantering-av-personuppgifter/" className="hover:underline" id="footer-privacy" aria-label="Read about handling of personal data">Hantering av personuppgifter</a>
+                            <a href="https://www.knowit.se/whistleblower/" className="hover:underline" id="footer-whistleblower" aria-label="Whistleblower information">Whistleblower</a>
                             <span id="footer-copyright">© 2023 Knowit AB</span>
                         </div>
                         <div className="flex flex-wrap space-x-4">
@@ -312,9 +348,14 @@ function App() {
                                     By clicking "Accept all" you agree to our use of all cookies.
                                 </p>
                             </div>
-                            <a href="#" className="text-blue-400 text-sm hover:underline block mb-4" id="cookie-info-link" aria-label="Read more about our cookie policy">
+                            <button
+                                onClick={() => console.log('Cookie info clicked')}
+                                className="text-blue-400 text-sm hover:underline block mb-4 bg-transparent border-none cursor-pointer"
+                                id="cookie-info-link"
+                                aria-label="Read more about our cookie policy"
+                            >
                                 Read more about our cookies
-                            </a>
+                            </button>
 
                             <fieldset className="cookie-preferences mb-4 bg-gray-700 p-4 rounded-lg">
                                 <legend className="sr-only">Cookie preferences</legend>

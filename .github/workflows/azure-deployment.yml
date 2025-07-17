@@ -113,22 +113,28 @@ jobs:
       run: |
         echo "Creating deployment package..."
         mkdir -p deployment
-        
+    
         # Copy Flask app files
         cp backend/app.py deployment/
-        cp requirements.txt deployment/
-        cp startup.sh deployment/
-        cp web.config deployment/
-        
+        cp backend/requirements.txt deployment/
+    
+        # Copy startup.sh and web.config if they exist
+        if [ -f "startup.sh" ]; then
+          cp startup.sh deployment/
+        fi
+        if [ -f "web.config" ]; then
+          cp web.config deployment/
+        fi
+    
         # Copy templates and static
         cp -r templates deployment/
         cp -r static deployment/
-        
+    
         # Copy any other necessary files
         if [ -f "team.json" ]; then
           cp team.json deployment/
         fi
-        
+    
         echo "Deployment package contents:"
         find deployment -type f | head -20
         echo "✅ Deployment package ready"

@@ -140,17 +140,21 @@ jobs:
         find deployment -type f | head -20
         echo "✅ Deployment package ready"
     
+# ================================
+    # STEP 9: DEPLOY TO AZURE (MAIN BRANCH ONLY)
     # ================================
-    # STEP 9: DEPLOY TO AZURE (MAIN BRANCH ONLY) 
-    # ================================
+    - name: 🔐 Azure Login
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
     - name: 🚀 Deploy to Azure App Service
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: './deployment'
-        slot-name: ''
 
     # ================================
     # STEP 10: DEPLOYMENT SUMMARY

@@ -127,6 +127,19 @@ jobs:
 
         # Skip startup.sh to avoid Oryx build conflicts
         echo "🚫 Skipping startup.sh - using Azure startup command for app execution"
+
+        # Create dummy startup.sh to satisfy Azure Oryx build system
+        cat > deployment/startup.sh << 'EOF'
+        #!/bin/bash
+        # Dummy startup.sh file to satisfy Azure Oryx build system
+        # This file exists only to prevent build errors
+        # Actual app startup is handled by Azure startup command
+        echo "Dummy startup.sh executed - Azure startup command will handle actual startup"
+        exit 0
+        EOF
+        chmod +x deployment/startup.sh
+        echo "✅ Created dummy startup.sh to satisfy Azure build system"
+
     
         # Copy templates and static
         cp -r templates deployment/

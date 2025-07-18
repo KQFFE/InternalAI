@@ -119,14 +119,10 @@ jobs:
         cp backend/app.py deployment/
         cp backend/requirements.txt deployment/
     
-        # Copy startup.sh and web.config if they exist
-        if [ -f "startup.sh" ]; then
-          cp startup.sh deployment/
-          chmod +x deployment/startup.sh
-          echo "✅ Copied startup.sh to deployment/"
-        fi
+        # Copy ONLY web.config (no startup.sh to avoid conflicts)
         if [ -f "web.config" ]; then
           cp web.config deployment/
+          echo "✅ Copied web.config to deployment/"
         fi
     
         # Copy templates and static

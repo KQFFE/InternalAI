@@ -6,7 +6,7 @@ echo "🚀 Starting InternalAI Flask application..."
 echo "📅 Start time: $(date)"
 
 # Environment variables
-export FLASK_APP=backend/app.py
+export FLASK_APP=app.py
 export FLASK_ENV=production
 export PYTHONPATH="/home/site/wwwroot:$PYTHONPATH"
 
@@ -27,6 +27,8 @@ if [ -f "app.py" ]; then
     echo "   ✅ app.py found"
 else
     echo "   ❌ app.py NOT found"
+    echo "   📁 Current directory contents:"
+    ls -la
     exit 1
 fi
 
@@ -70,8 +72,11 @@ python -c "
 try:
     import app
     print('   ✅ Flask app imports successfully')
+    print('   📊 Flask app info:', app.app.config.get('DEBUG', 'Not set'))
 except Exception as e:
     print(f'   ❌ Flask app import failed: {e}')
+    import traceback
+    traceback.print_exc()
     exit(1)
 "
 
@@ -79,10 +84,12 @@ except Exception as e:
 echo "⚙️  Configuring Gunicorn..."
 WORKERS=${WORKERS:-4}
 TIMEOUT=${TIMEOUT:-600}
-BIND_ADDRESS=${BIND_ADDRESS:-"0.0.0.0:8000"}
+PORT=${PORT:-8000}
+BIND_ADDRESS="0.0.0.0:$PORT"
 
 echo "   Workers: $WORKERS"
 echo "   Timeout: $TIMEOUT seconds"
+echo "   Port: $PORT"
 echo "   Bind address: $BIND_ADDRESS"
 
 # Start the application
@@ -100,4 +107,5 @@ exec gunicorn \
     --error-logfile '-' \
     --log-level info \
     --capture-output \
+    --preload \
     app:app

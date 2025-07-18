@@ -122,6 +122,8 @@ jobs:
         # Copy startup.sh and web.config if they exist
         if [ -f "startup.sh" ]; then
           cp startup.sh deployment/
+          chmod +x deployment/startup.sh
+          echo "✅ Copied startup.sh to deployment/"
         fi
         if [ -f "web.config" ]; then
           cp web.config deployment/
@@ -134,6 +136,7 @@ jobs:
         # Copy any other necessary files
         if [ -f "team.json" ]; then
           cp team.json deployment/
+          echo "✅ Copied team.json to deployment/static/"
         fi
     
         echo "Deployment package contents:"

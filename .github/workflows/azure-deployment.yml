@@ -122,8 +122,11 @@ jobs:
         # Copy ONLY web.config (no startup.sh to avoid conflicts)
         if [ -f "web.config" ]; then
           cp web.config deployment/
-          echo "✅ Copied web.config to deployment/"
+          echo "✅ Copied hybrid web.config (React Router + static files only)"
         fi
+
+        # Skip startup.sh to avoid Oryx build conflicts
+        echo "🚫 Skipping startup.sh - using Azure startup command for app execution"
     
         # Copy templates and static
         cp -r templates deployment/

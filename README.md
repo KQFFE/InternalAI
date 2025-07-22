@@ -8,6 +8,64 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
 
 ---
 
+## 📁 Project Structure
+
+Here's how the InternalAI project is organized:
+
+```
+InternalAI/
+├── 📁 .github/
+│   └── 📁 workflows/
+│       └── azure-deployment.yml     # CI/CD pipeline configuration
+├── 📁 backend/                      # Flask API server
+│   ├── app.py                       # Main Flask application
+│   └── requirements.txt             # Python dependencies
+├── 📁 frontend/                     # React web application
+│   ├── 📁 public/
+│   │   ├── index.html              # HTML template
+│   │   ├── team.json               # Team member data
+│   │   ├── favicon.ico             # Website icon
+│   │   └── 📁 img/                 # Team member photos
+│   ├── 📁 src/                     # React source code
+│   │   ├── App.js                  # Main React component
+│   │   ├── App.css                 # Global styles
+│   │   ├── index.js                # React entry point
+│   │   └── 📁 components/          # Reusable React components
+│   ├── 📁 e2e/                     # End-to-end tests (Playwright)
+│   │   ├── home_page.spec.js
+│   │   ├── team_data.spec.js
+│   │   └── team_page.spec.js
+│   ├── package.json                # Frontend dependencies & scripts
+│   └── package-lock.json           # Dependency lock file
+├── 📄 README.md                    # Project documentation (this file)
+├── 📄 .gitignore                   # Git ignore rules
+├── 📄 .gitattributes              # Git file handling rules
+├── 📄 startup.sh                   # Azure deployment startup script
+└── 📄 web.config                   # IIS/Azure configuration
+```
+
+### 🏗️ Architecture Overview
+
+**Full-Stack Structure:**
+- **Frontend (React)**: Modern web interface built with React, served statically
+- **Backend (Flask)**: Python API server that serves the React app and provides API endpoints
+- **Deployment**: Single Azure App Service that serves both frontend and backend
+- **Database**: Currently file-based (team.json), ready for database integration
+
+**Development Workflow:**
+1. **Frontend**: React development server (`npm start`) on port 3000
+2. **Backend**: Flask development server (`python app.py`) on port 5000  
+3. **Production**: Combined deployment where Flask serves React build files
+
+**Key Folders Explained:**
+- `backend/` - All server-side Python code and configurations
+- `frontend/src/` - React components, pages, and client-side logic
+- `frontend/public/` - Static assets (images, data files, icons)
+- `frontend/e2e/` - Automated browser tests using Playwright
+- `.github/workflows/` - Automated deployment and testing pipelines
+
+---
+
 ## Table of Contents
 
 1.  [Running the Servers Locally (After Initial Setup)](#1-running-the-servers-locally-after-initial-setup)
@@ -21,7 +79,7 @@ For styling, you can reference Knowit's [Visual Identity Guidelines](https://www
     * [3.2 Setup for Windows (with WSL)](#32-setup-for-windows-with-wsl)
 4.  [Making Changes & Contributing (Your First Steps with Git)](#4-making-changes--contributing-your-first-steps-with-git)
 5.  [Creating a New Release Tag](#5-creating-a-new-release-tag)
-6.  [CI-CD (Continuous Integration and Continuous Deployment)](#6-CI-CD-(Continuous-Integration-and-Continuous-Deployment))
+6.  [CI-CD (Continuous Integration and Continuous Deployment)](#6-ci-cd-continuous-integration-and-continuous-deployment)
 7.  [Troubleshooting Common Issues](#7-troubleshooting-common-issues)
 
 ---
@@ -61,11 +119,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```powershell
     python app.py
     ```
-    Both commands start Flask's built-in develpoment server but the second version is simpler to set up and easier for testing and debugging.
-    Observe that since we are running python3 the above command may not work - you can tell your environment once and for all that python is ineed python3:
-    ```powershell
-    sudo apt install python-is-python3
-    ```
+    Both commands start Flask's built-in development server but the second version is simpler to set up and easier for testing and debugging.
 
 7.  **Open your second PowerShell window.**
 8.  **Navigate to your project root:**
@@ -77,7 +131,11 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```powershell
     cd frontend
     ```
-10. **Start the React development server:**
+10. **Install frontend dependencies (if not already done):**
+    ```powershell
+    npm install
+    ```
+11. **Start the React development server:**
     ```powershell
     npm start
     ```
@@ -111,6 +169,12 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```
     * You should see messages like `Running on http://127.0.0.1:5000`. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
 
+    OR you can run
+    ```bash
+    python app.py
+    ```
+    Both commands start Flask's built-in development server but the second version is simpler to set up and easier for testing and debugging.
+
 7.  **Open your second WSL terminal (for Frontend):**
     * In VS Code, click the `+` icon next to your current terminal tab to open a new one, or go to "Terminal" > "New Terminal".
 8.  **Navigate to the `frontend` folder:**
@@ -123,12 +187,21 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     nvm use --lts
     ```
     * This makes sure your terminal is using the recommended Node.js version.
-10. **Start the React development server:**
+10. **Ensure Python command works (one-time setup):**
+    ```bash
+    sudo apt install python-is-python3
+    ```
+    * This ensures `python` command points to `python3` (required for Flask)
+11. **Install frontend dependencies (if not already done):**
+    ```bash
+    npm install
+    ```
+12. **Start the React development server:**
     ```bash
     npm start
     ```
     * This will usually automatically open your web browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
-11. **Alternative super lazy start using aliases**
+13. **Alternative super lazy start using aliases**
     In your environment there is .bashrc file that you find on the same level as your username. Open it in any editor (or write: nano ~/.bashrc) and add these lines at the bottom of the file, save and close:
  ```   
  # InternalAI Development Aliases
@@ -138,7 +211,6 @@ alias backend="cd ~/projects/InternalAI && source .venv/bin/activate && cd backe
 
 # Frontend setup and run  
 alias frontend="cd ~/projects/InternalAI/frontend && npm start"
-
 
 # Project navigation
 alias proj="cd ~/projects/InternalAI"
@@ -152,13 +224,15 @@ alias gdeploy="cd ~/projects/InternalAI && git add . && git commit -m 'Deploy up
 # Environment info
 alias envinfo="cd ~/projects/InternalAI && source .venv/bin/activate && echo '📁 Project: InternalAI' && echo '🐍 Python:' && python3 --version && echo '📦 Flask:' && pip show flask | grep Version && echo '⚛️  Node:' && node --version && echo '📦 npm:' && npm --version"
  ```
- now restart your WSL and you can use the aliases. Just writing 'backend' for instance gets you in the correct directory, run the activate scprit and starts app.py
- 
+ now restart your WSL and you can use the aliases. Just writing 'backend' for instance gets you in the correct directory, run the activate script and starts app.py
+
 ---
 
 ## 2. Running Tests
 
-Unit tests are crucial for ensuring the frontend components work as expected and to catch regressions early. The InternalAI frontend uses Jest and React Testing Library for testing.
+The InternalAI frontend uses two types of tests for comprehensive coverage:
+- **Jest Unit Tests** for component testing (using React Testing Library)
+- **Playwright E2E Tests** for end-to-end testing
 
 ### 2.1 How to Run Tests
 
@@ -178,40 +252,68 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         # Or, if you cloned to a different path:
         # cd /path/to/your/InternalAI/frontend
         ```
-3.  **Run the tests:**
-    ```powershell
-    npm run test:e2e
+
+#### **Unit Tests (Jest + React Testing Library):**
+3.  **Run unit tests:**
+    ```bash
+    npm test
     ```
     * This command will start Jest in **watch mode**. By default, it tries to run tests related to files changed since your last Git commit.
     * If you see "No tests found related to files changed since last commit.", simply **press `a` then Enter** at the prompt to run all tests.
     * To run all tests **immediately without entering watch mode** (e.g., for CI/CD pipelines or a quick full run), you can use:
-        ```powershell
-        npm run test:e2e -- --watchAll=false
+        ```bash
+        npm run test:all
         ```
-    * For convenience, you can also add a shortcut in your `frontend/package.json` file. Under the `"scripts"` section, add:
-        ```json
-        "test:all": "react-scripts test --watchAll=false"
-        ```
-        Then, you can run all tests directly with `npm run test:e2e:all`.
+
+#### **End-to-End Tests (Playwright):**
+4.  **Run E2E tests:**
+    ```bash
+    npm run test:e2e
+    ```
+    * This command runs Playwright tests that simulate real user interactions with your application.
+    * These tests run in headless browsers and test the full application flow.
 
 ### 2.2 Where to Add New Tests
 
-* **Frontend (React) Tests:**
-    * Frontend tests are located in the `frontend/src/` directory.
-    * For a component named `MyComponent.js` (or `.jsx`, `.ts`, `.tsx`), its unit tests should typically be in a file named `MyComponent.test.js` (or `MyComponent.test.jsx`, `MyComponent.test.ts`, `MyComponent.test.tsx`) in the **same directory** as the component.
+#### **Unit Tests (Jest):**
+* **Frontend (React) Unit Tests:**
+    * Unit tests should be located in the `frontend/src/` directory.
+    * For a component named `MyComponent.js` (or `.jsx`, `.ts`, `.tsx`), its unit tests should be in a file named `MyComponent.test.js` (or `MyComponent.test.jsx`, `MyComponent.test.ts`, `MyComponent.test.tsx`) in the **same directory** as the component.
     * Example File Structure:
         ```
         frontend/src/
         ├── App.js
-        ├── App.test.js        <-- Test file for App.js
+        ├── App.test.js        <-- Unit test file for App.js
         ├── components/
         │   ├── MyButton.js
-        │   └── MyButton.test.js <-- Test file for MyButton.js
+        │   └── MyButton.test.js <-- Unit test file for MyButton.js
         └── pages/
             └── HomePage.js
-            └── HomePage.test.js <-- Test file for HomePage.js
+            └── HomePage.test.js <-- Unit test file for HomePage.js
         ```
-    * `react-scripts` (which `npm run test:e2e` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
+    * `react-scripts` (which `npm test` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
+
+#### **End-to-End Tests (Playwright):**
+* **E2E Tests:**
+    * E2E tests are located in the `frontend/e2e/` directory.
+    * Use `.spec.js` extension for consistency with Playwright conventions.
+    * Current E2E test structure:
+        ```
+        frontend/e2e/
+        ├── home_page.spec.js    <-- Tests for home page functionality
+        ├── team_data.spec.js    <-- Tests for team data validation
+        └── team_page.spec.js    <-- Tests for team page interactions
+        ```
+    * Playwright (which `npm run test:e2e` uses) automatically finds `.spec.js` files within the `e2e` directory.
+
+### 2.3 Test Types Summary
+
+| Test Type | Command | Purpose | Location | Extension |
+|-----------|---------|---------|----------|-----------|
+| **Unit Tests** | `npm test` | Component testing | `frontend/src/` | `.test.js` |
+| **E2E Tests** | `npm run test:e2e` | Full app testing | `frontend/e2e/` | `.spec.js` |
+
+**Note:** Currently, the project primarily uses E2E tests. Unit tests can be added following the structure described above.
 
 ---
 
@@ -240,7 +342,7 @@ This is the traditional way to set up your development environment directly on W
         ```powershell
         python --version
         ```
-        You should see `Python 3.x.x` (e.g., `Python 3.10.5`). If you get an error, close PowerShell, restart your computer, and try again.
+        You should see `Python 3.x.x` (e.g., `Python 3.11.x`). If you get an error, close PowerShell, restart your computer, and try again.
 
 3.  **Install Git:**
     Git is a tool that helps us manage changes to our code and collaborate with others. GitHub is a website that uses Git.
@@ -261,15 +363,15 @@ This is the traditional way to set up your development environment directly on W
         * Then `cd YourChosenFolderName` (e.g., `cd Projects`) and press Enter to go inside that folder. Your prompt will show your current location.
     2.  **Clone the Project:** In your PowerShell window, inside your chosen folder (e.g., `PS D:\Projects>`), type this command:
         ```powershell
-        git clone [https://github.com/KnowitQSS/InternalAI.git](https://github.com/KnowitQSS/InternalAI.git)
+        git clone https://github.com/KnowitQSS/InternalAI.git
         ```
         This will download all the project files into a new folder named `InternalAI` inside your chosen location.
     3.  **Go into the Project Folder:**
         ```powershell
         cd InternalAI
         ```
-        Your PowerShell prompt should now look something like `(YourChosenLocation)\InternalAI>`. This is your main project folder!
-    4.  **In order to normalise end-of-line between the windows and linux machines run once:**
+        Your PowerShell prompt should now look something like `PS (YourChosenLocation)\InternalAI>`. This is your main project folder!
+    4.  **Configure Git for line endings:**
         ```powershell
         git config --global core.autocrlf true
         ```
@@ -289,12 +391,12 @@ This is the traditional way to set up your development environment directly on W
         * **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
 
 6.  **Install Project Dependencies (Backend):**
-    "Dependencies" are other Python tools or libraries that our InternalAI project (specifically the backend) needs to run.
+    "Dependencies" are other Python tools or libraries that our InternalAI project needs to run.
     1.  **Install Them:** While your `(venv)` is active and you're in your `InternalAI` project folder (e.g., `(venv) PS D:\Projects\InternalAI>`), type:
         ```powershell
-        pip install -r requirements.txt
+        pip install -r backend/requirements.txt
         ```
-        This command reads a file called `requirements.txt` which lists all the necessary tools, and `pip` (Python's package installer) will download and install them into your `venv`. This might take a few moments.
+        This command reads the `requirements.txt` file in the `backend` folder which lists all the necessary tools, and `pip` (Python's package installer) will download and install them into your `venv`. This might take a few moments.
 
 7.  **Install Frontend Dependencies (React):**
     The frontend also has its own set of dependencies. You'll need Node.js and npm installed globally for this.
@@ -344,8 +446,8 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         * Go to the Extensions view (Ctrl+Shift+X).
         * Search for `WSL` and install the "WSL" extension by Microsoft.
 
-2.  **Set Up Python 3.13 in WSL:**
-    * Your backend uses Python. We'll install a specific version in your WSL environment.
+2.  **Set Up Python 3.11 in WSL:**
+    * Your backend uses Python 3.11 (to match the production environment). We'll install this specific version in your WSL environment.
     1.  **Open VS Code and connect to WSL:** (Follow section 1.2, step 1)
     2.  **Open a WSL terminal:** (Follow section 1.2, step 2)
     3.  **Add the Python repository (PPA):** This gives us access to newer Python versions.
@@ -357,27 +459,27 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         sudo apt update
         ```
-    5.  **Install Python 3.13 and its virtual environment tool:**
+    5.  **Install Python 3.11 and its virtual environment tool:**
         ```bash
-        sudo apt install python3.13 python3.13-venv -y
+        sudo apt install python3.11 python3.11-venv python3.11-dev -y
         ```
-    6.  **Verify Python 3.13 installation:**
+    6.  **Make 'python' command point to Python 3.11:**
         ```bash
-        python3.13 --version
+        sudo apt install python-is-python3 -y
         ```
-        * You should see `Python 3.13.x`.
-    7.  **Ensure Python's package installer (pip) is ready:**
+    7.  **Verify Python 3.11 installation:**
         ```bash
-        python3.13 -m ensurepip --upgrade
+        python3.11 --version
+        python --version
         ```
-        * You might see a warning about `pip` not being on PATH, but you can ignore it for now as we'll use `python3.13 -m pip` to run it reliably.
+        * You should see `Python 3.11.x` for both commands.
 
 3.  **Install Node.js and npm in WSL:**
     * Your frontend uses Node.js and npm (Node Package Manager). We'll use `nvm` (Node Version Manager) to install them.
     1.  **In your WSL terminal (the same one or a new one):**
     2.  **Install `nvm`:**
         ```bash
-        curl -o- [https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh](https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh) | bash
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
         ```
         * After this, **close and then re-open your WSL terminal tab in VS Code** to make sure `nvm` starts correctly.
     3.  **Install a stable Node.js version using `nvm`:**
@@ -411,7 +513,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         * Your prompt should now be `your_username@your_wsl_distro_name:~/projects$`.
     4.  **Clone the project from GitHub:** This will download all the project files into a new folder named `InternalAI` inside `~/projects`.
         ```bash
-        git clone [https://github.com/KnowitQSS/InternalAI.git](https://github.com/KnowitQSS/InternalAI.git)
+        git clone https://github.com/KnowitQSS/InternalAI.git
         ```
         * This command creates the `InternalAI` folder automatically.
     5.  **Go into the project folder:**
@@ -419,13 +521,9 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         cd InternalAI
         ```
         * Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI$`. This is your main project folder!
-    6.  **In order to normalise end-of-line between the windows and linux machines run once:**
-        ```powershell
-        git config --global core.autocrlf input
-        ```
-    7.  **Observe that if you are using a bash you need to change your directory by a command like:**
+    6.  **Configure Git for line endings:**
         ```bash
-        cd //wsl.localhost/Ubuntu/home/your_username/projects/InternalAI
+        git config --global core.autocrlf input
         ```
 
 5.  **Set Up Python Backend Dependencies:**
@@ -434,7 +532,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         * Your prompt should be `your_username@your_wsl_distro_name:~/projects/InternalAI$`.
     2.  **Create the Python virtual environment:**
         ```bash
-        python3.13 -m venv .venv
+        python3.11 -m venv .venv
         ```
         * This creates a hidden folder named `.venv` inside your project.
     3.  **Activate the virtual environment:**
@@ -444,10 +542,9 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         * Your prompt will change to `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI$`, showing it's active.
     4.  **Install backend dependencies:**
         ```bash
-        pip install Flask flask-cors playwright pytest
+        pip install -r backend/requirements.txt
         ```
-        * This downloads and installs all the necessary Python libraries. This might take a few moments.
-        * (Note: If there's a `requirements.txt` file in your project root, you could also use `pip install -r requirements.txt`.)
+        * This reads the `requirements.txt` file in the `backend` folder and installs all necessary Python libraries. This might take a few moments.
 
 6.  **Set Up Frontend Dependencies:**
     * Your React frontend also needs its own tools.
@@ -461,7 +558,6 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         npm install
         ```
         * This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
-
 ---
 
 ## 4. Making Changes & Contributing (Your First Steps with Git)
@@ -472,26 +568,54 @@ Imagine the project's code as a tree with a `main` branch (the stable, main vers
 
 Think of your branch as your **personal workspace**. You can make all the changes you want on your branch without affecting the `main` code or other people's work until you're ready.
 
-### Step A: Start Your Own Workspace (Create a New Branch)
+### Step A: Start Fresh (Get Latest Changes)
 
-Before you start making any changes, always create a new branch.
+Before creating a new branch, always make sure you have the latest version of the project.
 
 1.  **Go to the Project Root:** Make sure your PowerShell/WSL terminal prompt is in your project's main `InternalAI` folder. If you're in a subfolder (like `backend` or `frontend`), type `cd ..` until you are in the `InternalAI` folder.
 
-2.  **Create and Switch to a New Branch:**
+2.  **Check which branch you're on:**
     ```bash
-    git checkout -b your-new-feature-branch-name
+    git branch
     ```
-    * Replace `your-new-feature-branch-name` with a short, descriptive name for what you're working on (e.g., `add-user-auth`, `fix-login-bug`, `update-readme`).
-    * You'll see a message like "Switched to a new branch 'your-new-feature-branch-name'".
+    * You should see `* main` (the asterisk shows your current branch). If not, switch to main: `git checkout main`
 
-### Step B: Make Your Code Changes
+3.  **Get the latest changes from GitHub:**
+    ```bash
+    git pull origin main
+    ```
+    * This downloads any new changes that others have made since you last updated.
 
-* Now, use your code editor (like VS Code, Notepad++, etc.) to open the project files (e.g., `C:\Path\To\Your\InternalAI\backend\app.py` or `C:\Path\To\Your\InternalAI\frontend\src\App.js` for Windows, or `/home/your_username/projects/InternalAI/backend/app.py` for WSL).
+### Step B: Start Your Own Workspace (Create a New Branch)
+
+Now create your personal workspace for the changes you want to make.
+
+1.  **Create and Switch to a New Branch:**
+    ```bash
+    git checkout -b your-feature-name
+    ```
+    * Replace `your-feature-name` with a short, descriptive name for what you're working on:
+        * **Good examples:** `add-user-auth`, `fix-login-bug`, `update-readme`, `team-page-design`
+        * **Bad examples:** `test`, `stuff`, `branch1`
+    * You'll see a message like "Switched to a new branch 'your-feature-name'".
+
+2.  **Verify you're on the right branch:**
+    ```bash
+    git branch
+    ```
+    * You should now see `* your-feature-name` (with the asterisk).
+
+### Step C: Make Your Code Changes
+
+* Now, use your code editor (like VS Code) to open the project files and make your changes.
+* **Examples of files you might edit:**
+    * `backend/app.py` - For backend/API changes
+    * `frontend/src/App.js` - For frontend/React changes
+    * `README.md` - For documentation updates
 * Make the changes you want.
 * **Save your files** normally.
 
-### Step C: Save Your Changes (Commit)
+### Step D: Save Your Changes (Commit)
 
 After you've made some changes and saved your files, you need to tell Git about them.
 
@@ -500,149 +624,316 @@ After you've made some changes and saved your files, you need to tell Git about 
     git status
     ```
     This command shows you:
-    * Files you've changed but haven't told Git to track yet (like new files, or modifications to existing files).
-    * Files that are "staged" (ready for your snapshot).
+    * Files you've changed (in red)
+    * Files that are "staged" and ready to commit (in green)
 
 2.  **Stage Your Changes (Prepare for the Snapshot):**
-    This tells Git, "Hey, these are the specific changes I want to include in my next saved version."
+    This tells Git which changes to include in your next save.
     ```bash
     git add .
     ```
-    The `.` (dot) means "add all changes in the current folder and its subfolders."
+    * The `.` (dot) means "add all changes in the current folder and its subfolders."
+    * **Alternative:** To add specific files only: `git add filename.txt`
 
-    Run `git status` again. Now your changes should be listed under "Changes to be committed."
+    Run `git status` again. Now your changes should be listed in green under "Changes to be committed."
 
 3.  **Commit Your Changes (Take the Snapshot):**
-    This creates a permanent record (a "commit") of your staged changes in your branch's history.
+    This creates a permanent record of your changes in your branch's history.
     ```bash
-    git commit -m "A short, clear message about what you changed"
+    git commit -m "Brief description of what you changed"
     ```
-    * Replace `"A short, clear message about what you changed"` with a brief summary.
-        * **Good examples:** "feat: Add new user registration endpoint", "fix: Correct calculation bug in AI module", "docs: Update README with setup instructions".
-        * **Bad examples:** "stuff", "changes", "oops".
+    * **Good commit message examples:**
+        * `"feat: Add user registration form"`
+        * `"fix: Correct login button alignment"`
+        * `"docs: Update setup instructions in README"`
+    * **Bad commit message examples:** `"stuff"`, `"changes"`, `"oops"`
 
-### Step D: Share Your Changes (Push)
+### Step E: Share Your Changes (Push)
 
-Committing saves changes to your computer. To send them to your branch on GitHub, you need to "push" them.
+Committing saves changes to your local computer. To send them to GitHub, you need to "push" them.
 
 1.  **Push to GitHub:**
     ```bash
-    git push --set-upstream origin your-new-feature-branch-name
+    git push --set-upstream origin your-feature-name
     ```
-    * The first time you push a new branch, you need the `--set-upstream origin your-new-feature-branch-name` part. This tells Git to link your local branch to a new one on GitHub.
+    * **Important:** Replace `your-feature-name` with the exact same name you used when creating your branch in Step B.
+    * The first time you push a new branch, you need the `--set-upstream origin your-feature-name` part. This creates the branch on GitHub.
     * After the first push, you can usually just use `git push`.
 
-    **What if it's rejected? (`non-fast-forward` error)**
-    If `git push` fails with a message like `! [rejected] (non-fast-forward)`, it means someone else updated the branch on GitHub since you last got changes.
-    * **Solution:** First, get their changes: `git pull`.
-    * Then, try to `git push` again. If Git says there are conflicts, you might need help resolving them (don't worry, it's normal!).
+2.  **What if it's rejected? (`non-fast-forward` error)**
+    If `git push` fails with a message like `! [rejected] (non-fast-forward)`, it means someone else updated the main branch since you created your branch.
+    * **Solution 1:** Get their changes: `git pull origin main`
+    * **Solution 2:** If that doesn't work, ask for help - merge conflicts can be tricky for beginners!
 
-### Step E: Propose Your Changes (Pull Request)
+### Step F: Propose Your Changes (Pull Request)
 
-Once your changes are on your branch on GitHub, you create a Pull Request (PR). This is how you ask for your changes to be reviewed and eventually merged into the `main` branch.
+Once your changes are on GitHub, create a Pull Request (PR) to ask for your changes to be reviewed and merged into the `main` branch.
 
 1.  **Go to GitHub:** Open your web browser and go to your project's GitHub page: `https://github.com/KnowitQSS/InternalAI`
-2.  **Look for the PR button:** GitHub will usually show a green banner like "your-new-feature-branch-name had recent pushes. Compare & pull request." Click this button.
-3.  **Set Branches:** Make sure the "base" branch is `main` (where you want your changes to go) and the "compare" branch is your `your-new-feature-branch-name`.
-4.  **Add a Title & Description:** Give your PR a clear title and explain what your changes do.
-5.  **Create Pull Request:** Click the green button.
 
-## Note:
--Just a friendly reminder about something important when you add new tools (which we call "packages") to your project's main code.
-If you or someone on your team adds a new package, like xlsx or papaparse (which are tools for handling spreadsheets or data), your colleagues won't automatically have these tools on their computers.
+2.  **Look for the PR Banner:** GitHub will usually show a yellow banner like:
+    ```
+    your-feature-name had recent pushes [Compare & pull request]
+    ```
+    Click the green **"Compare & pull request"** button.
 
-### What happens if they don't update?
+3.  **Set Up Your Pull Request:**
+    * **Base branch:** Should be `main` (where you want your changes to go)
+    * **Compare branch:** Should be `your-feature-name` (your branch)
+    * **Title:** Give it a clear title describing what you did
+    * **Description:** Explain what you changed and why
 
-They might see an error like this when they try to run the code:
+4.  **Create Pull Request:** Click the green **"Create pull request"** button.
 
-"Module not found: Error: Can't resolve 'xlsx'"
-"Module not found: Error: Can't resolve 'papaparse'"
+5.  **What happens next:**
+    * Others can review your code
+    * You might get feedback or requests for changes
+    * Once approved, someone will merge your changes into `main`
+    * Your changes will then be deployed automatically!
 
-This simply means their computer can't find the new tool the code is trying to use.
+### 🔧 Helpful Git Commands for Daily Use
 
-### The Fix:
-To make sure everyone's code works smoothly after new packages are added, your teammates just need to run one simple command in their terminal (while inside the frontend folder of the project):
-
+**Check your current status:**
+```bash
+git status          # See what's changed
+git branch          # See which branch you're on
 ```
-npm install 
+
+**Switch between branches:**
+```bash
+git checkout main               # Switch to main branch
+git checkout your-feature-name  # Switch to your feature branch
 ```
-This command tells their computer, "Hey, go check our project's list of tools (package.json) and install any new ones, or update existing ones, that I don't have yet!" It's like updating their toolbox.
 
----------------------------------------------------------------------------------------------------------------------------
+**Make more changes to your branch:**
+```bash
+git add .
+git commit -m "More improvements"
+git push                        # After first push, this is all you need
+```
 
-Now, others can review your code!
+### 📦 Important Note About Adding New Packages
+
+**If you add new tools (packages) to the project**, your teammates need to install them too!
+
+**For Frontend packages** (like `xlsx` or `papaparse`):
+* When you add: `npm install package-name`
+* Teammates need to run: `npm install` (in the `frontend` folder)
+
+**For Backend packages** (like `flask-cors` or `requests`):
+* When you add: `pip install package-name` 
+* Then update: `pip freeze > backend/requirements.txt`
+* Teammates need to run: `pip install -r backend/requirements.txt`
+
+**What happens if they don't update?**
+They'll see errors like:
+```
+Module not found: Error: Can't resolve 'xlsx'
+ModuleNotFoundError: No module named 'requests'
+```
+
+**The fix is simple:** Run the install commands above to update their toolbox!
+
+### 💡 Pro Tips for Beginners
+
+1. **Always start from `main`** - Follow Step A every time
+2. **Use descriptive branch names** - You'll thank yourself later
+3. **Commit often** - Small commits are easier to understand
+4. **Ask for help** - Git can be confusing at first, and that's normal!
+5. **Don't work directly on `main`** - Always use branches
+
+**Remember:** This workflow keeps everyone's changes organized and prevents conflicts. It might seem like extra steps at first, but it makes collaboration much smoother!
 
 ---
 
 ## 5. Creating a New Release Tag
 
-Git tags are like permanent bookmarks that point to specific commits in your repository's history. They are typically used to mark release points (e.g., `v1.0.0`, `v1.0.1`).
+Git tags are like permanent bookmarks that point to specific commits in your repository's history. They mark important milestones in your project's development, typically stable release points that you can always go back to.
 
-### When to Create a Tag
+### 🎯 What Are Release Tags For?
 
-* When you have finished a set of changes that constitute a new version of the software.
-* After your changes have been merged into the `main` branch (or your designated release branch).
+In the InternalAI project, tags serve several purposes:
+- **Mark stable versions** of your application
+- **Create reference points** for bug fixes and rollbacks  
+- **Generate GitHub releases** with changelogs
+- **Track project evolution** over time
+- **Communicate progress** to stakeholders
 
-### Best Practices for Tag Naming
+### ⚠️ Who Should Create Tags?
 
-It's highly recommended to use [Semantic Versioning](https://semver.org/) for your tags, which follows the pattern `MAJOR.MINOR.PATCH` (e.g., `v1.0.0`, `v1.2.3`).
+**Important:** Tags should typically be created by:
+- Project maintainers
+- Senior developers
+- Team leads
 
-### How to Create and Push a Tag
+**Not everyone needs to create tags** - they represent official releases, not individual feature completions.
 
-1.  **Ensure you are on the `main` branch and it's up-to-date:**
-    First, navigate to your project's root directory in your terminal (PowerShell or WSL).
-    ```bash
-    git checkout main
-    git pull origin main
-    ```
-    This ensures your local `main` branch has the latest changes from GitHub.
+### 📅 When to Create a Tag
 
-2.  **Create the Tag:**
-    We recommend using **annotated tags** as they store metadata like the tagger name, email, and date, and can have a message.
-    ```bash
-    git tag -a v1.0.0 -m "Release version 1.0.0 - Initial stable release"
-    ```
-    * Replace `v1.0.0` with your desired version number (e.g., `v1.0.1`, `v2.0.0`).
-    * Replace `"Release version 1.0.0 - Initial stable release"` with a brief, descriptive message for this release.
+Create a new tag when you have:
+- **Completed a significant feature** or set of features
+- **Fixed critical bugs** that warrant a new release
+- **Reached a project milestone** (MVP, beta, production-ready)
+- **Merged multiple pull requests** that together constitute a release
+- **Thoroughly tested** the current `main` branch
 
-3.  **Push the Tag to GitHub:**
-    Tags are not pushed automatically with your commits. You need to explicitly push them.
-    ```bash
-    git push origin v1.0.0
-    ```
-    * Replace `v1.0.0` with the tag name you just created.
+**Always tag AFTER**:
+- ✅ All changes are merged into `main`
+- ✅ CI/CD pipeline has successfully deployed
+- ✅ Basic testing confirms everything works
+- ✅ Team agrees the version is stable
 
-    To push *all* your local tags to the remote (if you've created several):
-    ```bash
-    git push origin --tags
-    ```
+### 🏷️ Semantic Versioning Guidelines
 
-### Viewing Tags
+This project uses [Semantic Versioning](https://semver.org/) with the pattern `MAJOR.MINOR.PATCH` (e.g., `v1.2.3`):
 
-* **List all local tags:**
-    ```bash
-    git tag
-    ```
-* **View details of a specific tag:**
-    ```bash
-    git show v1.0.0
-    ```
+| Version Part | When to Increment | Example |
+|--------------|-------------------|---------|
+| **MAJOR** (v**2**.0.0) | Breaking changes, major redesigns | Complete UI overhaul, API changes |
+| **MINOR** (v1.**3**.0) | New features, significant enhancements | New team member page, API endpoints |
+| **PATCH** (v1.2.**4**) | Bug fixes, small improvements | Fix login bug, update styling |
 
-### Deleting Tags (If Necessary)
+**Project-Specific Examples:**
+- `v0.1.0` - Initial MVP with basic functionality
+- `v0.2.0` - Added team management features  
+- `v0.2.1` - Fixed team page loading bug
+- `v1.0.0` - First production-ready release
+- `v1.1.0` - Added user authentication
+- `v1.1.1` - Fixed authentication redirect bug
 
-Sometimes you might need to remove a tag if it was created incorrectly.
+### 📋 How to Create and Push a Tag
 
-1.  **Delete a local tag:**
-    ```bash
-    git tag -d v1.0.0
-    ```
-2.  **Delete a remote tag on GitHub:**
-    You must first delete it locally, then push the deletion to the remote.
-    ```bash
-    git push origin :refs/tags/v1.0.0
-    # Or more simply:
-    # git push origin --delete v1.0.0
-    ```
+**Step 1: Prepare Your Environment**
+Navigate to your project's root directory in your terminal:
+```bash
+cd ~/projects/InternalAI  # For WSL
+# OR
+cd C:\Path\To\Your\InternalAI  # For Windows
+```
+
+**Step 2: Ensure You're on Latest Main**
+```bash
+git checkout main
+git pull origin main
+```
+This ensures you're tagging the latest stable version.
+
+**Step 3: Create an Annotated Tag**
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0: Initial production release
+
+- Added complete team management system
+- Implemented responsive design
+- Integrated with Azure deployment
+- Added comprehensive testing
+- Fixed all known bugs from beta"
+```
+
+**Key points:**
+- Replace `v1.0.0` with your chosen version number
+- Use a **descriptive message** that summarizes what's new
+- **Multi-line messages** are encouraged for significant releases
+
+**Step 4: Verify Your Tag**
+```bash
+git tag -l
+git show v1.0.0
+```
+This shows all tags and details of your new tag.
+
+**Step 5: Push the Tag to GitHub**
+```bash
+git push origin v1.0.0
+```
+
+**Alternative - Push all local tags:**
+```bash
+git push origin --tags
+```
+
+### 📊 Viewing and Managing Tags
+
+**List all tags:**
+```bash
+git tag                    # Simple list
+git tag -l "v1.*"         # Filter by pattern
+```
+
+**View tag details:**
+```bash
+git show v1.0.0           # Shows commit, message, and changes
+git log --oneline v1.0.0  # Shows commit history up to this tag
+```
+
+**Compare tags:**
+```bash
+git diff v1.0.0..v1.1.0   # See changes between versions
+```
+
+### 🗑️ Deleting Tags (If Necessary)
+
+Sometimes you need to remove an incorrect tag:
+
+**Delete local tag:**
+```bash
+git tag -d v1.0.0
+```
+
+**Delete remote tag from GitHub:**
+```bash
+git push origin --delete v1.0.0
+# OR
+git push origin :refs/tags/v1.0.0
+```
+
+**⚠️ Warning:** Deleting published tags can confuse team members and break dependencies!
+
+### 🚀 Creating GitHub Releases
+
+After pushing your tag, you can create a GitHub Release:
+
+1. Go to `https://github.com/KnowitQSS/InternalAI/releases`
+2. Click **"Create a new release"**
+3. Select your tag from the dropdown
+4. Add a release title: `InternalAI v1.0.0`
+5. Write release notes describing:
+   - New features
+   - Bug fixes  
+   - Breaking changes
+   - Upgrade instructions
+6. Click **"Publish release"**
+
+### 💡 Best Practices
+
+**Tag Naming:**
+- ✅ `v1.0.0`, `v1.2.3` (with 'v' prefix)
+- ❌ `release-1.0`, `version1`, `stable`
+
+**Tag Messages:**
+- ✅ Be specific: "Add user authentication system"
+- ❌ Generic: "New release", "Updates"
+
+**Timing:**
+- ✅ Tag after successful deployment and testing
+- ❌ Tag immediately after development
+
+**Communication:**
+- ✅ Announce new releases to the team
+- ✅ Update documentation
+- ❌ Create tags without telling anyone
+
+### 🔗 Integration with Your Workflow
+
+**Typical Release Process:**
+1. Complete feature development
+2. Merge all PRs into `main`
+3. Verify CI/CD deployment succeeds
+4. Test the deployed application
+5. Create and push tag
+6. Create GitHub release
+7. Communicate release to stakeholders
+
+**Remember:** Tags mark stable points in your project's history. Take time to ensure the code is truly ready before tagging!
 
 ---
 ## 6. CI-CD (Continuous Integration and Continuous Deployment)
@@ -650,7 +941,7 @@ Sometimes you might need to remove a tag if it was created incorrectly.
 
 ## 🎯 **When the Pipeline Runs**
 
-Looking at your `.github/workflows/azure-deployment.yml`, the pipeline is configured to run on:
+Looking at `.github/workflows/azure-deployment.yml`, the pipeline is configured to run on:
 
 ```yaml
 on:
@@ -658,6 +949,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 ```
 
 ### ✅ **Automatic Triggers:**
@@ -675,6 +967,12 @@ on:
    # Pipeline runs but doesn't deploy
    ```
 
+3. **Manual Trigger** - 🎮 **MANUAL DEPLOYMENT**
+   ```bash
+   # Can be triggered manually from GitHub Actions tab
+   # Go to Actions → Select workflow → Run workflow
+   ```
+
 ## 🔄 **What Happens Automatically**
 
 ### 📤 **On Push to Main:**
@@ -684,11 +982,14 @@ You push → GitHub detects push → Pipeline starts → Full deployment
 
 **Pipeline Steps (All Automatic):**
 1. ✅ **Checkout code** from your repository
-2. ✅ **Build React app** (npm install, npm run build)
-3. ✅ **Setup Python** and install Flask dependencies
-4. ✅ **Integrate React with Flask** (copy build files)
-5. ✅ **Deploy to Azure** App Service
-6. ✅ **Your app is live** at `https://your-app-name.azurewebsites.net`
+2. ✅ **Setup Node.js 18** and cache npm dependencies
+3. ✅ **Build React app** (npm ci, npm run build)
+4. ✅ **Setup Python 3.11** and cache pip dependencies
+5. ✅ **Install Flask dependencies** from requirements.txt
+6. ✅ **Integrate React with Flask** (copy build to templates/static)
+7. ✅ **Create deployment package** with dummy startup.sh
+8. ✅ **Deploy to Azure** App Service
+9. ✅ **Your app is live** at `https://qss-ai-webapp.azurewebsites.net`
 
 ### 🧪 **On Pull Request:**
 ```
@@ -697,10 +998,10 @@ You create PR → GitHub detects PR → Pipeline starts → Build & test only
 
 **Pipeline Steps (No Deployment):**
 1. ✅ **Checkout code** from PR branch
-2. ✅ **Build React app** (test if it builds)
-3. ✅ **Setup Python** and test Flask
-4. ✅ **Integration test** (verify everything works together)
-5. ❌ **Skip deployment** (only builds/tests)
+2. ✅ **Build React app** (test if it builds successfully)
+3. ✅ **Setup Python** and install Flask dependencies
+4. ✅ **Integration test** (verify React + Flask integration works)
+5. ❌ **Skip deployment** (only builds/tests, no Azure deployment)
 
 ## 🎯 **Deployment Conditions**
 
@@ -708,6 +1009,7 @@ You create PR → GitHub detects PR → Pipeline starts → Build & test only
 - ✅ **Direct push to main**
 - ✅ **Merge PR into main**
 - ✅ **Any commit to main branch**
+- ✅ **Manual workflow dispatch**
 
 ### 🧪 **WON'T Deploy (Test Only):**
 - ❌ **Push to feature branch**
@@ -745,6 +1047,13 @@ git push origin feature/new-feature
 ```bash
 gdeploy
 # → Commits changes → Pushes to main → Pipeline runs → Deploys ✅
+```
+
+### Scenario 4: Manual Deployment
+```bash
+# Go to GitHub → Actions → Select "Build and Deploy InternalAI to Azure"
+# → Click "Run workflow" → Select main branch → Run workflow
+# → Pipeline runs → Deploys to Azure ✅
 ```
 
 ## 👀 **How to Monitor the Pipeline**
@@ -792,8 +1101,17 @@ Total: ~3-5 minutes
 ### 🎯 **Environment Variables:**
 ```yaml
 env:
-  AZURE_WEBAPP_NAME: internalai-webapp-prod  # Your app name
+  AZURE_WEBAPP_NAME: qss-ai-webapp
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
 ```
+
+### 🛠️ **Technical Details:**
+- **Azure Actions Version**: azure/login@v2, azure/webapps-deploy@v2
+- **Node Setup**: actions/setup-node@v4 with npm caching
+- **Python Setup**: actions/setup-python@v4 with pip caching
+- **Deployment Package**: Creates dummy startup.sh to satisfy Azure Oryx build system
+- **Static Files**: React build integrated into Flask templates/static structure
 
 ## 📋 **Summary**
 
@@ -808,41 +1126,421 @@ env:
 2. **Push to main** (`git push origin main` or `gdeploy`)
 3. **GitHub Actions runs** automatically
 4. **Check progress** in Actions tab
-5. **App is live** in ~5-8 minutes
+5. **App is live** at `https://qss-ai-webapp.azurewebsites.net` in ~5-8 minutes
 
 **The pipeline is 100% automatic - just push to main and it handles everything!** 🚀
 ___
 ## 7. Troubleshooting Common Issues
 
-* **Windows specific issues:**
-    * **`python` is not recognized:**
-        * Make sure you checked "Add Python.exe to PATH" during installation.
-        * Restart your PowerShell window or even your computer.
-        * If still not working, you might need to manually add Python to your system's PATH. (Search online for "add python to path windows" if this happens).
-    * **`pip` is not recognized / `No module named venv`:**
-        * This usually means Python wasn't installed correctly or its path isn't set. Re-check Step 3.1 - Install Python.
-    * **`(venv) PS C:\Path\To\Your\InternalAI\Project> ` doesn't show `(venv)`:**
-        * You forgot to run `.\venv\Scripts\Activate.ps1`. Run it again in your PowerShell window. Remember to do this every time you start a new session.
-    * **`npm` is not recognized:**
-        * You might not have Node.js and npm installed. You can download them from [https://nodejs.org/](https://nodejs.org/). `npm` usually comes with Node.js.
+This section covers the most common problems you might encounter while setting up or working on the InternalAI project, organized by category for easy reference.
 
-* **WSL specific issues:**
-    * **`python3.13` is not found or `pip` is not recognized:**
-        * Double-check that you added the `deadsnakes` PPA and ran `sudo apt update` and `sudo apt install python3.13 python3.13-venv -y` in your WSL terminal.
-        * Ensure you ran `python3.13 -m ensurepip --upgrade`.
-    * **`(venv)` doesn't show in my prompt:**
-        * You forgot to run `source ../.venv/bin/activate` in your Python project directory. Remember to do this every time you open a new terminal tab for the backend.
-    * **`node` or `npm` commands are not recognized:**
-        * Ensure you installed `nvm` and then ran `nvm install --lts` and `nvm use --lts` in your WSL terminal. Remember to open a new terminal after installing `nvm`.
+### 🖥️ Windows-Specific Issues
 
-* **General project issues:**
-    * **Frontend errors like "Module not found: Error: Can't resolve 'react-router-dom'":**
-        * This means a JavaScript package is missing. While in your `frontend` directory, run `npm install <missing-package-name>` (e.g., `npm install react-router-dom`) or simply `npm install` again to re-check all dependencies.
-    * **Backend errors like "ModuleNotFoundError: No module named 'flask_cors'":**
-        * This means a Python package is missing. While your virtual environment is active in the project root or backend folder, run `pip install <missing-package-name>` (e.g., `pip install flask-cors`).
-    * **`git push` gives `non-fast-forward` error:**
-        * See "Step D: Share Your Changes (Push)" above. You need to `git pull` first.
+#### **`python` is not recognized as an internal or external command**
+**Symptoms:** PowerShell can't find Python when you type `python --version`
+
+**Solutions:**
+1. **Check installation:** Make sure you checked **"Add Python.exe to PATH"** during Python installation
+2. **Restart everything:** Close all PowerShell windows and restart your computer
+3. **Manual PATH fix:** If still not working:
+   - Search "Environment Variables" in Windows Start menu
+   - Click "Edit the system environment variables"
+   - Click "Environment Variables" button
+   - In "User variables", find "Path", click "Edit"
+   - Click "New" and add: `C:\Users\YourUsername\AppData\Local\Programs\Python\Python311`
+   - Replace `YourUsername` with your actual Windows username
+   - Restart PowerShell
+
+#### **`pip` is not recognized / `No module named venv`**
+**Symptoms:** Can't install packages or create virtual environments
+
+**Solutions:**
+1. **Reinstall Python:** Usually means Python wasn't installed correctly - re-run the installer from [python.org](https://www.python.org/downloads/)
+2. **Check PATH:** Same as above Python issue
+3. **Repair installation:** In Windows Settings → Apps → Python → Modify → Repair
+
+#### **Virtual environment not activating - `(venv)` doesn't show**
+**Symptoms:** Prompt doesn't show `(venv)` prefix
+
+**Solutions:**
+```powershell
+# Make sure you're in the project root
+cd C:\Path\To\Your\InternalAI\Project
+
+# Try activating again
+.\venv\Scripts\Activate.ps1
+
+# If permission error, run this once:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### **`npm` is not recognized**
+**Symptoms:** Node.js commands don't work
+
+**Solutions:**
+1. **Install Node.js:** Download from [nodejs.org](https://nodejs.org/) - choose LTS version
+2. **Restart terminal:** Close PowerShell and reopen after installation
+3. **Check installation:** `node --version` and `npm --version` should both work
 
 ---
 
+### 🐧 WSL-Specific Issues
+
+#### **`python3.11` is not found or `python` command fails**
+**Symptoms:** Can't find Python in WSL
+
+**Solutions:**
+```bash
+# Add the repository for newer Python versions
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+
+# Install Python 3.11 (matches production environment)
+sudo apt install python3.11 python3.11-venv python3.11-dev -y
+
+# Make python command work
+sudo apt install python-is-python3 -y
+
+# Verify installation
+python3.11 --version
+python --version
+```
+
+#### **WSL virtual environment not activating - `(venv)` doesn't show**
+**Symptoms:** Python virtual environment won't activate in WSL
+
+**Solutions:**
+```bash
+# Make sure you're in project root
+cd ~/projects/InternalAI
+
+# Create venv if it doesn't exist
+python3.11 -m venv .venv
+
+# Activate (note the dot before venv)
+source .venv/bin/activate
+
+# You should see (venv) in your prompt
+```
+
+#### **`nvm`, `node`, or `npm` commands not found in WSL**
+**Symptoms:** Node.js tools don't work in WSL
+
+**Solutions:**
+```bash
+# Install nvm first
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# IMPORTANT: Close and reopen your WSL terminal
+
+# Install Node.js LTS
+nvm install --lts
+nvm use --lts
+
+# Verify installation
+node --version
+npm --version
+```
+
+#### **Permission denied errors in WSL**
+**Symptoms:** `sudo: command not found` or permission errors
+
+**Solutions:**
+```bash
+# If sudo doesn't work, you might need to reinstall WSL
+# Or try running commands without sudo first
+
+# For npm permission issues:
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+### 📦 Package Installation Issues
+
+#### **Frontend: "Module not found" errors**
+**Symptoms:** 
+```
+Module not found: Error: Can't resolve 'react-router-dom'
+Module not found: Error: Can't resolve 'xlsx'
+```
+
+**Solutions:**
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Try installing the missing package specifically
+npm install react-router-dom
+# OR install all dependencies
+npm install
+
+# If still failing, clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### **Backend: "ModuleNotFoundError" in Python**
+**Symptoms:**
+```
+ModuleNotFoundError: No module named 'flask_cors'
+ModuleNotFoundError: No module named 'flask'
+```
+
+**Solutions:**
+```bash
+# Make sure virtual environment is active (you should see (venv))
+source .venv/bin/activate  # WSL
+# OR
+.\venv\Scripts\Activate.ps1  # Windows
+
+# Install backend dependencies
+pip install -r backend/requirements.txt
+
+# If specific package is missing:
+pip install flask flask-cors
+
+# Verify installation
+pip list | grep flask
+```
+
+#### **Package version conflicts**
+**Symptoms:** Installation fails with version conflict messages
+
+**Solutions:**
+```bash
+# For Python packages - create fresh virtual environment
+rm -rf .venv  # or venv on Windows
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+# For npm packages - clear cache
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+### 🔧 Development Server Issues
+
+#### **Flask server won't start**
+**Symptoms:** 
+```
+flask: command not found
+ModuleNotFoundError when running python app.py
+```
+
+**Solutions:**
+```bash
+# Make sure you're in the backend directory
+cd backend
+
+# Ensure virtual environment is active
+source ../.venv/bin/activate  # WSL
+# OR
+..\venv\Scripts\Activate.ps1  # Windows
+
+# Try the simpler approach
+python app.py
+
+# Or set Flask app explicitly
+export FLASK_APP=app.py  # WSL
+$env:FLASK_APP = "app.py"  # Windows
+flask run
+```
+
+#### **React server won't start**
+**Symptoms:**
+```
+npm start fails
+Port 3000 is already in use
+```
+
+**Solutions:**
+```bash
+# Make sure you're in frontend directory
+cd frontend
+
+# If port is in use, find and kill the process
+# On Windows:
+netstat -ano | findstr :3000
+taskkill /PID <process_id> /F
+
+# On WSL:
+lsof -ti:3000 | xargs kill -9
+
+# If npm start still fails:
+rm -rf node_modules
+npm install
+npm start
+```
+
+#### **Servers can't communicate (CORS errors)**
+**Symptoms:** Frontend can't reach backend API
+
+**Solutions:**
+1. **Check both servers are running:**
+   - Backend on `http://127.0.0.1:5000`
+   - Frontend on `http://localhost:3000`
+
+2. **Verify backend has CORS enabled:** Check `backend/app.py` has `CORS(app)`
+
+3. **Check firewall:** Windows Firewall might block connections
+
+---
+
+### 🌐 Git and GitHub Issues
+
+#### **`git push` rejected with "non-fast-forward"**
+**Symptoms:**
+```
+! [rejected] main -> main (non-fast-forward)
+```
+
+**Solutions:**
+```bash
+# Someone else made changes - get their changes first
+git pull origin main
+
+# If there are conflicts, Git will tell you which files
+# Edit the files to resolve conflicts, then:
+git add .
+git commit -m "Resolve merge conflicts"
+git push origin main
+```
+
+#### **Authentication failed with GitHub**
+**Symptoms:** Git push asks for username/password and fails
+
+**Solutions:**
+1. **Use personal access token instead of password:**
+   - Go to GitHub → Settings → Developer settings → Personal access tokens
+   - Generate new token with repo permissions
+   - Use token instead of password when prompted
+
+2. **Set up SSH keys:** [Follow GitHub's SSH guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+
+#### **Wrong branch or can't switch branches**
+**Symptoms:** Working on wrong branch or git checkout fails
+
+**Solutions:**
+```bash
+# Check which branch you're on
+git branch
+
+# Switch to main
+git checkout main
+
+# If you have uncommitted changes:
+git stash  # Save changes temporarily
+git checkout main
+git stash pop  # Restore changes
+```
+
+---
+
+### 🚀 Deployment and CI/CD Issues
+
+#### **GitHub Actions pipeline failing**
+**Symptoms:** Red X on commits, deployment not working
+
+**Solutions:**
+1. **Check the Actions tab** on GitHub to see detailed error messages
+2. **Common fixes:**
+   ```bash
+   # Update dependencies in your branch
+   npm audit fix  # in frontend/
+   pip check      # with venv active
+   ```
+3. **Verify all tests pass locally:**
+   ```bash
+   npm test       # in frontend/
+   npm run test:e2e  # in frontend/
+   ```
+
+#### **Azure deployment not updating**
+**Symptoms:** Changes pushed but website shows old version
+
+**Solutions:**
+1. **Check deployment status:** GitHub → Actions tab → Latest workflow
+2. **Clear browser cache:** Hard refresh with Ctrl+F5 (Windows) or Cmd+Shift+R (Mac)
+3. **Verify deployment:** Check `https://qss-ai-webapp.azurewebsites.net/api/health`
+
+---
+
+### 🆘 VS Code and IDE Issues
+
+#### **VS Code can't find Python or Node**
+**Symptoms:** Red underlines, import errors, or IntelliSense not working
+
+**Solutions:**
+1. **Select correct Python interpreter:**
+   - Press `Ctrl+Shift+P`
+   - Type "Python: Select Interpreter"
+   - Choose the one in your project's `.venv` folder
+
+2. **Reload VS Code:** Press `Ctrl+Shift+P` → "Developer: Reload Window"
+
+3. **Install extensions:**
+   - Python extension by Microsoft
+   - WSL extension (if using WSL)
+
+#### **WSL integration not working in VS Code**
+**Symptoms:** Can't connect to WSL or files don't sync
+
+**Solutions:**
+1. **Install WSL extension** in VS Code
+2. **Connect to WSL:** Press `Ctrl+Shift+P` → "Remote-WSL: New WSL Window"
+3. **Open project in WSL:** File → Open Folder → Navigate to `~/projects/InternalAI`
+
+---
+
+### 💡 Getting Help
+
+If you're still stuck after trying these solutions:
+
+1. **Check the error message carefully** - often it contains the exact solution
+2. **Search the error online** - add "InternalAI" or "React Flask" to your search
+3. **Ask team members** - someone likely faced the same issue
+4. **Check our project's Issues tab** on GitHub
+5. **Share the complete error message** when asking for help - screenshots are helpful!
+
+### 🔍 Diagnostic Commands
+
+When asking for help, run these commands and share the output:
+
+**Environment Check:**
+```bash
+# System info
+python --version
+node --version
+npm --version
+git --version
+
+# Project status
+git status
+git branch
+ls -la  # WSL
+dir     # Windows
+
+# Virtual environment
+which python  # WSL
+where python  # Windows
+```
+
+**Common Log Locations:**
+- **Flask errors:** Check the terminal where you ran `python app.py`
+- **React errors:** Check the terminal where you ran `npm start`
+- **Browser errors:** Press F12 → Console tab
+- **GitHub Actions:** Repository → Actions tab → Click on failed run
+
+---
 We're excited to have you contribute to InternalAI! If you get stuck at any point, don't hesitate to ask for help. Good luck!
+
+
+Remember: **Don't give up!** These setup challenges are normal, especially when learning. Each error you solve makes you a better developer! 🚀

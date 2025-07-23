@@ -88,6 +88,27 @@ def home():
         logger.error(f"Error serving home page: {e}")
         return jsonify({'error': 'Application error', 'message': str(e)}), 500
 
+@app.route('/debug/static')
+def debug_static():
+    """Debug route to see static files"""
+    import os
+    try:
+        static_info = {
+            'static_directory_exists': os.path.exists('static'),
+            'current_directory': os.getcwd(),
+            'directory_contents': os.listdir('.') if os.path.exists('.') else [],
+        }
+        
+        if os.path.exists('static'):
+            static_info['static_files'] = os.listdir('static')
+            # Check for team photos specifically
+            if os.path.exists('static/img'):
+                static_info['img_files'] = os.listdir('static/img')
+        
+        return jsonify(static_info)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 @app.route('/favicon.ico')
 def favicon():
     """Explicit favicon route"""

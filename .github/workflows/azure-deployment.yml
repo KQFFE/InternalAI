@@ -103,6 +103,15 @@ jobs:
           echo "✅ Copied $(basename "$file") to static/"
         done
         
+        # Copy team photos from public/img to static/img
+        if [ -d "frontend/public/img" ]; then
+          mkdir -p static/img
+          cp -r frontend/public/img/* static/img/
+          echo "✅ Copied team photos to static/img/"
+        else
+          echo "⚠️ No team photos found in frontend/public/img/"
+        fi
+        
         echo "Final structure:"
         ls -la templates/
         ls -la static/

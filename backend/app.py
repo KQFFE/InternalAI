@@ -109,10 +109,7 @@ def debug_static():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-@app.route('/favicon.ico')
-def favicon():
-    """Explicit favicon route"""
-   
+  
 @app.route('/<path:path>')
 def serve_react_routes(path):
     """
@@ -121,6 +118,13 @@ def serve_react_routes(path):
     """
     logger.info(f"Handling path: {path}")
     
+    # Handle static files with extensions (favicon, images, etc.)
+    if '.' in path and not path.startswith('api/') and not path.startswith('static/'):
+        try:
+            return send_from_directory('static', path)
+        except:
+            logger.error(f"Static file not found: {path}")
+
     # Handle static files directly
     if path.startswith('static/'):
         static_path = path[7:]  # Remove 'static/' prefix

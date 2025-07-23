@@ -88,6 +88,10 @@ def home():
         logger.error(f"Error serving home page: {e}")
         return jsonify({'error': 'Application error', 'message': str(e)}), 500
 
+@app.route('/favicon.ico')
+def favicon():
+    """Explicit favicon route"""
+   
 @app.route('/<path:path>')
 def serve_react_routes(path):
     """

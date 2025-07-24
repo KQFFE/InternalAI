@@ -197,9 +197,11 @@ test('renders more news link with proper accessibility', () => {
 
 test('renders gradient box items with proper IDs', () => {
     render(<App />);
-    const customerExperienceHighlight = screen.getByText(/We create unique customer experiences/i).closest('div');
-    const innovationHighlight = screen.getByText(/Innovation through collaboration/i).closest('div');
+    // Find the heading, then check its parent container has the right ID
+    const customerHeading = screen.getByRole('heading', { name: /We create unique customer experiences/i });
+    const innovationHeading = screen.getByRole('heading', { name: /Innovation through collaboration/i });
 
-    expect(customerExperienceHighlight).toHaveAttribute('id', 'customer-experience-highlight');
-    expect(innovationHighlight).toHaveAttribute('id', 'innovation-highlight');
+    // Use container queries to find parent elements
+    expect(customerHeading.parentElement).toHaveAttribute('id', 'customer-experience-highlight');
+    expect(innovationHeading.parentElement).toHaveAttribute('id', 'innovation-highlight');
 });

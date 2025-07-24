@@ -273,6 +273,37 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
     * This command runs Playwright tests that simulate real user interactions with your application.
     * These tests run in headless browsers and test the full application flow.
 
+#### **Code Quality Checks (ESLint):**
+5.  **Run ESLint for code quality analysis:**
+    
+    **Navigate to the frontend directory:**
+    ```bash
+    cd ~/projects/InternalAI/frontend
+    ```
+    
+    **Run ESLint (same as pipeline):**
+    ```bash
+    npx eslint src/ --format=compact --max-warnings=0
+    ```
+    
+    **Alternative ESLint commands:**
+    ```bash
+    # More detailed output showing what files were checked
+    npx eslint src/ --format=stylish
+    
+    # Check specific file only
+    npx eslint src/App.test.js --format=compact --max-warnings=0
+    
+    # Check specific file with detailed output
+    npx eslint src/App.test.js --format=stylish
+    ```
+    
+    **Expected Results:**
+    - **No output** = No errors found ✅
+    - **Error output** = Code quality issues found ❌
+    
+    **Note:** ESLint checks for code quality, best practices, and Testing Library usage patterns. The pipeline uses the same commands, so running locally helps catch issues before pushing code.
+
 ### 2.2 Where to Add New Tests
 
 #### **Unit Tests (Jest):**
@@ -312,6 +343,7 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
 |-----------|---------|---------|----------|-----------|
 | **Unit Tests** | `npm test` | Component testing | `frontend/src/` | `.test.js` |
 | **E2E Tests** | `npm run test:e2e` | Full app testing | `frontend/e2e/` | `.spec.js` |
+| **Code Quality** | `npx eslint src/` | Code analysis & linting | `frontend/src/` | `.js` files |
 
 **Note:** Currently, the project primarily uses E2E tests. Unit tests can be added following the structure described above.
 

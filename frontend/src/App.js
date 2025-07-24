@@ -96,7 +96,7 @@ function HomePageContent() {
                 <section className="gradient-box mx-4 md:mx-8 mb-8" aria-label="Company highlights" id="company-highlights">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 w-full">
                         {/* Box 1 */}
-                        <div className="gradient-box-item" id="customer-experience-highlight">
+                        <div className="gradient-box-item" id="customer-experience-highlight" data-testid="customer-experience-highlight">
                             <h2 className="gradient-box-title text-xl md:text-2xl font-semibold mb-4 text-white">
                                 We create unique customer experiences
                             </h2>
@@ -106,7 +106,7 @@ function HomePageContent() {
                         </div>
 
                         {/* Box 2 */}
-                        <div className="gradient-box-item" id="innovation-highlight">
+                        <div className="gradient-box-item" id="innovation-highlight" data-testid="innovation-highlight">
                             <h2 className="gradient-box-title text-xl md:text-2xl font-semibold mb-4 text-white">
                                 Innovation through collaboration
                             </h2>

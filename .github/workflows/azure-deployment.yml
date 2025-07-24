@@ -52,7 +52,7 @@ jobs:
     - name: 🔍 Run ESLint (JavaScript)
       working-directory: ./frontend
       run: |
-        npx eslint src/ --format=github --max-warnings=0
+        npx eslint src/ --format=compact --max-warnings=0
       continue-on-error: false
 
     # ================================
@@ -122,27 +122,28 @@ jobs:
     - name: 🛡️ Run Bandit (Python Security)
       run: |
         pip install bandit
-        bandit -r backend/ -f github
-        bandit -r backend/ -f sarif -o bandit-report.sarif
+        bandit -r backend/ -f sarif -o bandit-report.sarif || true
+        bandit -r backend/ -f json
       continue-on-error: false
 
     # ================================
-    # STEP 11: UPLOAD ANALYSIS RESULTS (OPTIONAL)
+    # STEP 11: GENERATE SARIF REPORTS
     # ================================
-    - name: 📊 Upload security results to GitHub  
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: bandit-report.sarif
-
     - name: 🔍 Generate ESLint SARIF
       working-directory: ./frontend
       run: |
-        npx eslint src/ --format @microsoft/eslint-formatter-sarif --output-file eslint-report.sarif
+        npm install @microsoft/eslint-formatter-sarif --save-dev
+        npx eslint src/ --format @microsoft/eslint-formatter-sarif --output-file eslint-report.sarif || true
       continue-on-error: true
 
+    - name: 📊 Upload Bandit Results  
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: bandit-report.sarif
+    
     - name: 📤 Upload ESLint results  
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: frontend/eslint-report.sarif

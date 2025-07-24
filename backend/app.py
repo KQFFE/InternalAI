@@ -10,6 +10,19 @@ from pathlib import Path
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from flask_cors import CORS
 
+def get_flask_version():
+    """Get Flask version using the recommended method"""
+    try:
+        import importlib.metadata
+        return importlib.metadata.version("flask")
+    except Exception:
+        # Fallback for older Python versions
+        try:
+            import flask
+            return getattr(flask, '__version__', 'unknown')
+        except Exception:
+            return 'unknown'
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -193,7 +206,7 @@ def app_info():
         'architecture': 'SPA with REST API',
         'environment': os.environ.get('FLASK_ENV', 'development'),
         'python_version': os.sys.version,
-        'flask_version': getattr(__import__('flask'), '__version__', 'unknown'),
+        'flask_version': get_flask_version(),
         'features': [
             'React frontend with routing',
             'Flask REST API',

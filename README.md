@@ -19,6 +19,7 @@ InternalAI/
 │       └── azure-deployment.yml     # CI/CD pipeline configuration
 ├── 📁 backend/                      # Flask API server
 │   ├── app.py                       # Main Flask application
+│   ├── test_app.py                  # Tests for Flask routes and API endpoints
 │   └── requirements.txt             # Python dependencies
 ├── 📁 frontend/                     # React web application
 │   ├── 📁 public/
@@ -273,8 +274,53 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
     * This command runs Playwright tests that simulate real user interactions with your application.
     * These tests run in headless browsers and test the full application flow.
 
+#### **Backend Tests (pytest):**
+5.  **Run backend tests:**
+    
+    **For WSL:**
+    ```bash
+    # Navigate to project root and activate virtual environment
+    cd ~/projects/InternalAI
+    source .venv/bin/activate
+    
+    # Install testing dependencies (first time only)
+    pip install pytest pytest-cov pytest-flask
+    
+    # Navigate to backend directory  
+    cd backend
+    
+    # Run tests
+    pytest
+    
+    # OR run with verbose output:
+    pytest -v
+    
+    # OR run with coverage (like CI/CD):
+    pytest --cov=. --cov-report=xml --cov-report=term-missing
+    ```
+    
+    **For Windows:**
+    ```powershell
+    # Navigate to project root and activate virtual environment
+    cd C:\Path\To\Your\InternalAI\Project
+    .\venv\Scripts\Activate.ps1
+    
+    # Install testing dependencies (first time only)
+    pip install pytest pytest-cov pytest-flask
+    
+    # Navigate to backend directory
+    cd backend
+    
+    # Run tests
+    pytest
+    ```
+    
+    * These tests verify the Flask API endpoints and backend functionality
+    * Tests are located in `backend/test_*.py` files
+    * Use `-v` flag for detailed output showing each test that runs
+
 #### **Code Quality Checks (ESLint):**
-5.  **Run ESLint for code quality analysis:**
+6.  **Run ESLint for code quality analysis:**
     
     **Navigate to the frontend directory:**
     ```bash
@@ -337,15 +383,31 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         ```
     * Playwright (which `npm run test:e2e` uses) automatically finds `.spec.js` files within the `e2e` directory.
 
+#### **Backend Tests (pytest):**
+* **Backend (Flask) Unit Tests:**
+    * Backend tests should be located in the `backend/` directory.
+    * Test files must start with `test_` prefix (e.g., `test_app.py`, `test_api.py`)
+    * Current backend test structure:
+        ```
+        backend/
+        ├── app.py              # Main Flask application
+        ├── test_app.py         # Tests for Flask routes and API endpoints
+        └── requirements.txt    # Python dependencies
+        ```
+    * `pytest` automatically finds files with `test_*.py` pattern within the `backend` directory.
+
 ### 2.3 Test Types Summary
 
 | Test Type | Command | Purpose | Location | Extension |
 |-----------|---------|---------|----------|-----------|
 | **Unit Tests** | `npm test` | Component testing | `frontend/src/` | `.test.js` |
 | **E2E Tests** | `npm run test:e2e` | Full app testing | `frontend/e2e/` | `.spec.js` |
+| **Backend Unit Tests** | `pytest` | API/backend testing | `backend/` | `test_*.py` |
 | **Code Quality** | `npx eslint src/` | Code analysis & linting | `frontend/src/` | `.js` files |
 
-**Note:** Currently, the project primarily uses E2E tests. Unit tests can be added following the structure described above.
+**Testing Dependencies Installation:**
+- **Frontend**: Dependencies installed automatically with `npm install`
+- **Backend**: Install with `pip install pytest pytest-cov pytest-flask` (one-time setup)
 
 ---
 

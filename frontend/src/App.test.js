@@ -1,4 +1,4 @@
-﻿import { render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import App from './App';
 
 test('renders the main heading', () => {
@@ -89,8 +89,9 @@ test('renders footer with proper semantic structure', () => {
 
 test('renders contact information in address element', () => {
     render(<App />);
-    const footerContact = document.getElementById('footer-contact');
-    const address = footerContact.querySelector('address');
+    // Use Testing Library methods instead of direct DOM access
+    const footer = screen.getByRole('contentinfo');
+    const address = within(footer).getByRole('group'); // or use getByTestId if you add data-testid="address"
     expect(address).toBeInTheDocument();
 });
 
@@ -204,9 +205,10 @@ test('renders hero section with proper semantic structure', () => {
 
 test('renders copyright text with proper ID', () => {
     render(<App />);
-    const copyright = document.getElementById('footer-copyright');
+    // Use Testing Library methods instead of direct DOM access
+    const copyright = screen.getByText('© 2023 Knowit AB');
     expect(copyright).toBeInTheDocument();
-    expect(copyright).toHaveTextContent('© 2023 Knowit AB');
+    expect(copyright).toHaveAttribute('id', 'footer-copyright');
 });
 
 test('renders more news link with proper accessibility', () => {

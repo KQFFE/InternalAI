@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import App from './App';
 
 test('renders the main heading', () => {
@@ -17,7 +17,7 @@ test('renders the main heading with proper ID', () => {
 
 test('renders the "Home" navigation link', () => {
     render(<App />);
-    const homeLink = screen.getByRole('link', { name: /Home/i });
+    const homeLink = screen.getByRole('link', { name: /Home/i, current: 'page' });
     expect(homeLink).toBeInTheDocument();
     expect(homeLink).toHaveAttribute('id', 'nav-home');
 });
@@ -89,7 +89,9 @@ test('renders footer with proper semantic structure', () => {
 
 test('renders contact information in address element', () => {
     render(<App />);
-    const address = screen.getByRole('group'); // address elements have group role
+    // Use Testing Library methods instead of direct DOM access
+    const footer = screen.getByRole('contentinfo');
+    const address = within(footer).getByRole('group'); // or use getByTestId if you add data-testid="address"
     expect(address).toBeInTheDocument();
 });
 
@@ -118,12 +120,26 @@ test('renders proper heading hierarchy', () => {
 
 test('renders all navigation links with proper IDs', () => {
     render(<App />);
-    expect(screen.getByRole('link', { name: /Home/i })).toHaveAttribute('id', 'nav-home');
-    expect(screen.getByRole('link', { name: /Services/i })).toHaveAttribute('id', 'nav-services');
-    expect(screen.getByRole('link', { name: /About/i })).toHaveAttribute('id', 'nav-about');
-    expect(screen.getByRole('link', { name: /Team/i })).toHaveAttribute('id', 'nav-team');
-    expect(screen.getByRole('link', { name: /License/i })).toHaveAttribute('id', 'nav-license');
-    expect(screen.getByRole('link', { name: /Contact/i })).toHaveAttribute('id', 'nav-contact');
+
+    // Get the main navigation container first
+    const mainNav = screen.getByRole('navigation', { name: /Main navigation/i });
+
+    // Links (actual navigation)
+    const homeLink = within(mainNav).getByRole('link', { name: /Home/i });
+    const teamLink = within(mainNav).getByRole('link', { name: /Team/i });
+    const licenseLink = within(mainNav).getByRole('link', { name: /License/i }); // ← This should be link, not button
+
+    // Buttons (functionality)
+    const servicesButton = within(mainNav).getByRole('button', { name: /Services/i });
+    const aboutButton = within(mainNav).getByRole('button', { name: /About/i });
+    const contactButton = within(mainNav).getByRole('button', { name: /Contact/i });
+
+    expect(homeLink).toHaveAttribute('id', 'nav-home');
+    expect(servicesButton).toHaveAttribute('id', 'nav-services');
+    expect(aboutButton).toHaveAttribute('id', 'nav-about');
+    expect(teamLink).toHaveAttribute('id', 'nav-team');
+    expect(licenseLink).toHaveAttribute('id', 'nav-license'); // ← Changed from button to link
+    expect(contactButton).toHaveAttribute('id', 'nav-contact');
 });
 
 test('renders footer links with proper IDs', () => {
@@ -166,9 +182,13 @@ test('renders proper ARIA landmarks', () => {
 
     // Check for proper landmark roles
     expect(screen.getByRole('banner')).toBeInTheDocument(); // header
-    expect(screen.getByRole('navigation')).toBeInTheDocument(); // nav
     expect(screen.getByRole('main')).toBeInTheDocument(); // main
     expect(screen.getByRole('contentinfo')).toBeInTheDocument(); // footer
+
+    // Check specific navigation elements
+    expect(screen.getByRole('navigation', { name: /Main navigation/i })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /About Knowit links/i })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /Business areas links/i })).toBeInTheDocument();
 });
 
 test('renders hero section with proper semantic structure', () => {
@@ -185,21 +205,27 @@ test('renders hero section with proper semantic structure', () => {
 
 test('renders copyright text with proper ID', () => {
     render(<App />);
-    const copyright = screen.getByText(/� 2023 Knowit AB/i);
+    // Use Testing Library methods instead of direct DOM access
+    const copyright = screen.getByText('© 2023 Knowit AB');
+    expect(copyright).toBeInTheDocument();
     expect(copyright).toHaveAttribute('id', 'footer-copyright');
 });
 
 test('renders more news link with proper accessibility', () => {
     render(<App />);
-    const moreNewsLink = screen.getByRole('link', { name: /View all news articles/i });
-    expect(moreNewsLink).toHaveAttribute('id', 'more-news-link');
+    const moreNewsButton = screen.getByRole('button', { name: /View all news articles/i }); // ← Changed to button
+    expect(moreNewsButton).toHaveAttribute('id', 'more-news-link');
+    expect(moreNewsButton).toHaveAttribute('type', 'button');
+    expect(moreNewsButton).toHaveAttribute('aria-label', 'View all news articles');
 });
 
 test('renders gradient box items with proper IDs', () => {
     render(<App />);
-    const customerExperienceHighlight = screen.getByText(/We create unique customer experiences/i).closest('div');
-    const innovationHighlight = screen.getByText(/Innovation through collaboration/i).closest('div');
+    const customerExperienceHighlight = screen.getByTestId('customer-experience-highlight');
+    const innovationHighlight = screen.getByTestId('innovation-highlight');
 
+    expect(customerExperienceHighlight).toBeInTheDocument();
     expect(customerExperienceHighlight).toHaveAttribute('id', 'customer-experience-highlight');
+    expect(innovationHighlight).toBeInTheDocument();
     expect(innovationHighlight).toHaveAttribute('id', 'innovation-highlight');
 });

@@ -47,7 +47,31 @@ jobs:
         echo "✅ Frontend dependencies installed"
     
     # ================================
-    # STEP 4: BUILD REACT APPLICATION
+    # NEW STEP 4: FRONTEND CODE ANALYSIS  
+    # ================================
+    - name: 🔍 Run ESLint (JavaScript)
+      working-directory: ./frontend
+      run: |
+        npx eslint src/ --format=compact --max-warnings=0
+      continue-on-error: false
+
+    # ================================
+    # NEW STEP 5: FRONTEND CODE COVERAGE
+    # ================================
+    - name: 📊 Run Frontend Tests with Coverage
+      working-directory: ./frontend
+      run: |
+        npm test -- --coverage --watchAll=false
+      continue-on-error: false
+
+    - name: 📤 Upload Frontend Coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./frontend/coverage/lcov.info
+        flags: frontend
+
+    # ================================
+    # STEP 6: BUILD REACT APPLICATION
     # ================================
     - name: 🏗️ Build React application
       working-directory: ./frontend
@@ -58,7 +82,7 @@ jobs:
         ls -la build/
     
     # ================================
-    # STEP 5: SETUP PYTHON FOR FLASK
+    # STEP 7: SETUP PYTHON FOR FLASK
     # ================================
     - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
@@ -67,7 +91,7 @@ jobs:
         cache: 'pip'
     
     # ================================
-    # STEP 6: INSTALL PYTHON DEPS
+    # STEP 8: INSTALL PYTHON DEPS
     # ================================
     - name: 📦 Install Python dependencies
       run: |
@@ -76,9 +100,57 @@ jobs:
         echo "Installing Python dependencies..."
         pip install -r backend/requirements.txt
         echo "✅ Python dependencies installed"
+
+    # ================================
+    # NEW STEP 9: BACKEND CODE COVERAGE  
+    # ================================
+    - name: 📊 Run Backend Tests with Coverage
+      run: |
+        pip install pytest pytest-cov
+        pytest backend/ --cov=backend --cov-report=xml
+      continue-on-error: false
+
+    - name: 📤 Upload Backend Coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: backend
     
     # ================================
-    # STEP 7: INTEGRATE REACT WITH FLASK
+    # NEW STEP 10: BACKEND SECURITY ANALYSIS
+    # ================================
+    - name: 🛡️ Run Bandit (Python Security)
+      run: |
+        pip install bandit
+        bandit -r backend/ -f json -o bandit-report.json || true
+        echo "✅ Security scan completed"
+
+    # ================================
+    # STEP 11: GENERATE SARIF REPORTS
+    # ================================
+    - name: 🔍 Generate ESLint SARIF
+      working-directory: ./frontend
+      run: |
+        npm install @microsoft/eslint-formatter-sarif --save-dev
+        npx eslint src/ --format @microsoft/eslint-formatter-sarif --output-file eslint-report.sarif || true
+      continue-on-error: true
+
+    - name: 📤 Upload ESLint results  
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: eslint-security-report
+        path: frontend/eslint-report.sarif
+
+    - name: 📊 Upload Bandit Security Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
+
+    # ================================
+    # STEP 12: INTEGRATE REACT WITH FLASK
     # ================================
     - name: 🔧 Integrate React build with Flask
       run: |
@@ -117,7 +189,7 @@ jobs:
         ls -la static/
     
     # ================================
-    # STEP 8: PREPARE DEPLOYMENT PACKAGE
+    # STEP 13: PREPARE DEPLOYMENT PACKAGE
     # ================================
     - name: 📦 Create deployment package
       run: |
@@ -164,8 +236,8 @@ jobs:
         find deployment -type f | head -20
         echo "✅ Deployment package ready"
     
-# ================================
-    # STEP 9: DEPLOY TO AZURE (MAIN BRANCH ONLY)
+    # ================================
+    # STEP 14: DEPLOY TO AZURE (MAIN BRANCH ONLY)
     # ================================
     - name: 🔐 Azure Login
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -181,7 +253,7 @@ jobs:
         package: './deployment'
 
     # ================================
-    # STEP 10: DEPLOYMENT SUMMARY
+    # STEP 15: DEPLOYMENT SUMMARY
     # ================================
     - name: 📊 Deployment Summary
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'

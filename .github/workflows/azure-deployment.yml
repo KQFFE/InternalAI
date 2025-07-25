@@ -135,17 +135,18 @@ jobs:
         npx eslint src/ --format @microsoft/eslint-formatter-sarif --output-file eslint-report.sarif || true
       continue-on-error: true
 
-    - name: 📊 Upload Bandit Results  
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: bandit-report.sarif
-    
     - name: 📤 Upload ESLint results  
       uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: frontend/eslint-report.sarif
+
+    - name: 📊 Upload Bandit Security Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
 
     # ================================
     # STEP 12: INTEGRATE REACT WITH FLASK

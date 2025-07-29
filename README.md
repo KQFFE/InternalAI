@@ -1,6 +1,6 @@
 # InternalAI Project
 
-Welcome to the InternalAI project!
+Welcome to the fabulous InternalAI project!
 
 Don't worry if you've never coded before or used GitHub – this guide is made for you! We'll walk you through everything you need to get started, step-by-step.
 

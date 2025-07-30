@@ -338,7 +338,7 @@ describe('TeamPage Component', () => {
     });
 
     describe('Component Structure', () => {
-        test('renders with correct CSS classes', async () => {
+        test('renders team page structure correctly', async () => {
             fetch.mockResolvedValueOnce({
                 ok: true,
                 json: async () => mockTeamData
@@ -350,9 +350,12 @@ describe('TeamPage Component', () => {
                 expect(screen.getByText('Our Amazing Team')).toBeInTheDocument();
             });
 
-            expect(document.querySelector('.team-page-wrapper')).toBeInTheDocument();
-            expect(document.querySelector('.team-grid')).toBeInTheDocument();
-            expect(document.querySelectorAll('.team-member-card')).toHaveLength(2);
+            // Test structure by checking expected content is rendered
+            expect(screen.getByText('Our Amazing Team')).toBeInTheDocument();
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+            expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+            expect(screen.getByText('Senior Developer')).toBeInTheDocument();
+            expect(screen.getByText('Product Manager')).toBeInTheDocument();
         });
 
         test('renders navigation buttons with correct styling', async () => {

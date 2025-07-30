@@ -265,7 +265,10 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         ```bash
         npm run test:all
         ```
-
+    * To run tests and then show a coverage map, you can use:
+        ```bash
+        npm test -- --coverage --watchAll=false
+        ```
 #### **End-to-End Tests (Playwright):**
 4.  **Run E2E tests:**
     ```bash

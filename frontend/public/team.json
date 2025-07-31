@@ -123,7 +123,7 @@
     "role": "Tester",
     "profilePicture": "/img/magnus-walter.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/magnus-walter-85627132/",
-    "active": true
+    "active": false
   },
   {
     "name": "Mia Nilsson",
@@ -221,7 +221,7 @@
     "role": "Manager",
     "profilePicture": "/img/johnny-hildenborg.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/johnnyhildenborg-example",
-    "active": true
+    "active": false
   },
   {
     "name": "Patrik Blomqvist",

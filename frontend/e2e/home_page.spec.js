@@ -13,7 +13,6 @@ test.describe('Home Page (Landing Page) tests', () => {
     await page.reload();
 
     // 4. Explicitly wait for the cookie banner to be visible and accept all cookies.
-    // This is the most reliable way to ensure the banner is handled before other interactions.
     const acceptAllCookiesButton = page.locator('.coi-banner__accept', { hasText: 'Godkänn alla' });
     await expect(acceptAllCookiesButton).toBeVisible({ timeout: 15000 }); // Increased timeout for banner visibility
     await acceptAllCookiesButton.click();

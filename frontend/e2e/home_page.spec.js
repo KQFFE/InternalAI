@@ -40,14 +40,6 @@ test.describe('Home Page (Landing Page) tests', () => {
     await expect(page.locator('nav.main-nav-list a[href="/"]')).toHaveText('Home');
     await expect(page.locator('nav.main-nav-list a[href="/team"]')).toHaveText('Team');
     await expect(page.locator('nav.main-nav-list a[href="/license"]')).toHaveText('License');
-
-    // Re-added the active class check. If your App.js doesn't dynamically add 'active' to the Home link,
-    // you might need to adjust this or remove it if it's not a requirement.
-    // Based on App.js, the `isHomePage` class is applied to the logo, not the link itself.
-    // If you want to check for an "active" link, you'd need to add that logic in App.js.
-    // For now, I'll assume the link itself doesn't get an 'active' class unless you add it.
-    // If it does, you can uncomment this:
-    // await expect(page.locator('nav.main-nav-list a[href="/"]')).toHaveClass(/active/);
   });
 
   test('should navigate to /team page when team button is clicked', async ({ page }) => {

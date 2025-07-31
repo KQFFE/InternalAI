@@ -1,12 +1,156 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import License from './License';
 import './App.css';
 import './style.css';
+import './cookie-banner.css';
 import TeamPage from './TeamPage';
+
+// --- Cookie Banner Component ---
+function CookieBanner({
+    show,
+    onAcceptAll,
+    onDeclineAll,
+    onSavePreferences,
+    functionalityCookies,
+    setFunctionalityCookies,
+    statisticsCookies,
+    setStatisticsCookies,
+    marketingCookies,
+    setMarketingCookies,
+}) {
+    const [showDetails, setShowDetails] = useState(false);
+    const [showPolicy, setShowPolicy] = useState(false);
+
+    if (!show) return null;
+
+    return (
+        <div id="coiOverlay" role="banner" aria-hidden="false" className="coi-overlay">
+            <div role="dialog" tabIndex="-1" aria-modal="true" id="coi-banner-wrapper" className="coi-banner__wrapper"
+                aria-describedby="coiBannerHeadline" aria-labelledby="coi-banner-wrapper_label" lang="sv" dir="ltr" aria-hidden="false">
+                {!showPolicy ? (
+                    <div id="coiPage-1" className="coi-banner__page">
+                        <div className="coi-banner__summary">
+                            <div className="coi-banner__header">
+                                <img src="/knowit-logo.png" alt="logo" className="coi-banner__logo" />
+                                <span className="coi-banner__branding">
+                                    powered by: <a className="coi-external-link" href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer">Cookie Information</a>
+                                </span>
+                            </div>
+                            <div className="coi-banner__text">
+                                <h2 className="coi-banner__headline" id="coiBannerHeadline">Vi använder cookies</h2>
+                                <div className="coi-banner__maintext" id="coi-banner-wrapper_label">
+                                    Knowit.se använder cookies för att analysera trafiken på vår webbplats. Informationen delas även med tredjepart för att vi ska kunna erbjuda dig ett anpassat innehåll. Önskar du inte detta kan du välja att klicka i ”Neka alla”. <br />
+                                    Genom att klicka ”Godkänn alla” ger du ditt samtycke till samtliga syften.<br />
+                                    Du kan när som helst ta tillbaka ditt samtycke genom att klicka på ikonen i det nedre vänstra hörnet på sidan.
+                                    <br />
+                                    <button type="button" className="coi-banner__policy" onClick={() => setShowPolicy(true)}>
+                                        Läs mer om cookies
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="coi-banner-consent-group">
+                            <div className="coi-banner-consent-field">
+                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_necessary">
+                                    <label htmlFor="cookie_cat_necessary" className="coi-checkboxes" title="Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.">
+                                        <input className="coi__checkbox" tabIndex="-1" data-index="-1" name="cookie_cat_necessary" id="cookie_cat_necessary" type="checkbox" disabled checked />
+                                        <span className="checkbox-toggle"></span>
+                                        Nödvändiga
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="coi-banner-consent-field">
+                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_functional">
+                                    <label htmlFor="cookie_cat_functional" className="coi-checkboxes" title="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.">
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => setFunctionalityCookies(!functionalityCookies)} />
+                                        <span className="checkbox-toggle"></span>
+                                        Funktionella
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="coi-banner-consent-field">
+                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_statistic">
+                                    <label htmlFor="cookie_cat_statistic" className="coi-checkboxes" title="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.">
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => setStatisticsCookies(!statisticsCookies)} />
+                                        <span className="checkbox-toggle"></span>
+                                        Statistiska
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="coi-banner-consent-field">
+                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_marketing">
+                                    <label htmlFor="cookie_cat_marketing" className="coi-checkboxes" title="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.">
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => setMarketingCookies(!marketingCookies)} />
+                                        <span className="checkbox-toggle"></span>
+                                        Marketing
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
+                            <div className="coi-button-group">
+                                <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
+                                <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                <button tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                            </div>
+                            <div className="coi-toggle-group">
+                                {!showDetails ? (
+                                    <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
+                                ) : (
+                                    <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
+                                )}
+                            </div>
+                        </div>
+                        {showDetails && (
+                            <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
+                                <div>Detaljerad cookie-information...</div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div id="coiPage-3" className="coi-banner__page">
+                        <div className="coi-banner__cookiedeclaration">
+                            <div className="coi-banner__header">
+                                <img src="/knowit-logo.png" alt="logo" className="coi-banner__logo" />
+                                <span className="coi-banner__branding">
+                                    powered by: <a className="coi-external-link" href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer">Cookie Information</a>
+                                </span>
+                            </div>
+                            <div className="coi-banner__text">
+                                <h2 className="coi-banner__headline">Policy för kakor</h2>
+                                <div className="coi-banner__maintext">
+                                    <strong className="top-column__bold-text">Ditt samtycke gäller för följande domäner:</strong>
+                                    <span className="top-column__website-domains">knowit.se, blogg.knowit.se, info.knowit.se</span>
+                                    <strong className="top-column__bold-text">Policyn för kakor senast uppdaterad 29.07.2025</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="coi-banner__page-footer" role="navigation" aria-label="third-menu">
+                            <button tabIndex="0" aria-label="Inställningar" className="coi-banner__lastpage" onClick={() => setShowPolicy(false)}>Inställningar</button>
+                            <button tabIndex="0" aria-label="Godkänn alla button" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                        </div>
+                        <div className="cookiedeclaration_wrapper">
+                            <div className="bottom-column__why-cookies">
+                                <h2>Var är en kaka (cookie)?</h2>
+                                <p>En kaka eller cookie är en liten datafil som lagras i din dator, surfplatta eller smartmobil. En kaka är inte ett program som kan innehålla skadlig programvara eller virus.</p>
+                                {/* ...rest of the policy text... */}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+// --- End Cookie Banner Component ---
 
 function HomePageContent() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const isHomePage = location.pathname === '/';
 
     const handleReadMoreClick = () => {
         navigate('/team');
@@ -41,13 +185,17 @@ function HomePageContent() {
             {/* Hero Section */}
             <section className="hero-gradient-bg font-inter" aria-label="Hero section">
                 {/* Header Section */}
-                <header className="flex justify-between items-center p-6 md:p-10 container mx-auto" role="banner">
+                <header
+                    className="flex justify-between items-center p-6 md:p-10 container mx-auto"
+                    role="banner"
+                    aria-label="Main navigation header"
+                >
                     <div className="text-2xl font-bold text-white">
                         <Link to="/" aria-label="Go to homepage">
                             <img
                                 src="/knowit-logo.png"
                                 alt="Knowit company logo"
-                                className="app-logo-image h-8 w-auto"
+                                className={`app-logo-image h-8 w-auto ${isHomePage ? 'logo-white' : ''}`}
                                 id="main-logo"
                             />
                         </Link>
@@ -266,188 +414,58 @@ function App() {
     const [marketingCookies, setMarketingCookies] = useState(false);
 
     useEffect(() => {
-        const checkCookieConsent = () => {
-            const hasConsent = localStorage.getItem('cookieConsent');
-            console.log('Checking cookie consent:', hasConsent);
-
-            if (!hasConsent) {
-                setShowCookieModal(true);
-            } else {
-                setShowCookieModal(false);
-                setFunctionalityCookies(localStorage.getItem('functionalityCookies') === 'true');
-                setStatisticsCookies(localStorage.getItem('statisticsCookies') === 'true');
-                setMarketingCookies(localStorage.getItem('marketingCookies') === 'true');
-            }
-        };
-
-        checkCookieConsent();
-        const interval = setInterval(checkCookieConsent, 100);
-
-        return () => {
-            clearInterval(interval);
-        };
+        const hasConsent = localStorage.getItem('cookieConsent');
+        if (!hasConsent) {
+            setShowCookieModal(true);
+        } else {
+            setFunctionalityCookies(localStorage.getItem('functionalityCookies') === 'true');
+            setStatisticsCookies(localStorage.getItem('statisticsCookies') === 'true');
+            setMarketingCookies(localStorage.getItem('marketingCookies') === 'true');
+            setShowCookieModal(false);
+        }
     }, []);
 
     const acceptAllCookies = () => {
-        console.log('Accepting all cookies');
-        try {
-            localStorage.setItem('cookieConsent', 'accepted');
-            localStorage.setItem('functionalityCookies', 'true');
-            localStorage.setItem('statisticsCookies', 'true');
-            localStorage.setItem('marketingCookies', 'true');
-            setShowCookieModal(false);
-            console.log('Cookies accepted, modal should be hidden');
-        } catch (error) {
-            console.error('Error setting localStorage:', error);
-        }
+        localStorage.setItem('cookieConsent', 'accepted');
+        localStorage.setItem('functionalityCookies', 'true');
+        localStorage.setItem('statisticsCookies', 'true');
+        localStorage.setItem('marketingCookies', 'true');
+        setShowCookieModal(false);
     };
 
     const denyAllCookies = () => {
-        console.log('Denying all cookies');
-        try {
-            localStorage.setItem('cookieConsent', 'denied');
-            localStorage.setItem('functionalityCookies', 'false');
-            localStorage.setItem('statisticsCookies', 'false');
-            localStorage.setItem('marketingCookies', 'false');
-            setShowCookieModal(false);
-            console.log('Cookies denied, modal should be hidden');
-        } catch (error) {
-            console.error('Error setting localStorage:', error);
-        }
+        localStorage.setItem('cookieConsent', 'denied');
+        localStorage.setItem('functionalityCookies', 'false');
+        localStorage.setItem('statisticsCookies', 'false');
+        localStorage.setItem('marketingCookies', 'false');
+        setShowCookieModal(false);
     };
 
     const savePreferences = () => {
-        console.log('Saving cookie preferences');
-        try {
-            localStorage.setItem('cookieConsent', 'custom');
-            localStorage.setItem('functionalityCookies', functionalityCookies.toString());
-            localStorage.setItem('statisticsCookies', statisticsCookies.toString());
-            localStorage.setItem('marketingCookies', marketingCookies.toString());
-            setShowCookieModal(false);
-            console.log('Preferences saved, modal should be hidden');
-        } catch (error) {
-            console.error('Error setting localStorage:', error);
-        }
+        localStorage.setItem('cookieConsent', 'custom');
+        localStorage.setItem('functionalityCookies', functionalityCookies.toString());
+        localStorage.setItem('statisticsCookies', statisticsCookies.toString());
+        localStorage.setItem('marketingCookies', marketingCookies.toString());
+        setShowCookieModal(false);
     };
 
     return (
         <Router>
             <div className="App font-inter">
-                {/* Cookie Consent Modal */}
-                {showCookieModal && (
-                    <div className="cookie-modal fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" role="dialog" aria-labelledby="cookie-modal-title" aria-describedby="cookie-modal-description">
-                        <div className="bg-gray-800 text-white p-8 rounded-xl max-w-md mx-4 shadow-2xl">
-                            <h2 className="cookie-modal-title text-xl font-semibold mb-4" id="cookie-modal-title">We use cookies</h2>
-                            <div id="cookie-modal-description">
-                                <p className="text-gray-300 text-sm mb-4">
-                                    InternalAI uses cookies for analytical purposes to improve your user experience.
-                                    Information about you will not be stored, for that we use a tool that is adapted to only collect anonymous information.
-                                    You decide for yourself if you want to allow "All cookies".
-                                </p>
-                                <p className="text-gray-300 text-sm mb-4">
-                                    By clicking "Accept all" you agree to our use of all cookies.
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => console.log('Cookie info clicked')}
-                                className="text-blue-400 text-sm hover:underline block mb-4 bg-transparent border-none cursor-pointer"
-                                id="cookie-info-link"
-                                aria-label="Read more about our cookie policy"
-                            >
-                                Read more about our cookies
-                            </button>
-
-                            <fieldset className="cookie-preferences mb-4 bg-gray-700 p-4 rounded-lg">
-                                <legend className="sr-only">Cookie preferences</legend>
-                                <label className="flex items-center mb-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={true}
-                                        disabled
-                                        className="mr-2"
-                                        id="necessary-cookies"
-                                        aria-describedby="necessary-cookies-desc"
-                                    />
-                                    <span className="text-sm" id="necessary-cookies-desc">Necessary (Always on)</span>
-                                </label>
-                                <label className="flex items-center mb-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={functionalityCookies}
-                                        onChange={() => setFunctionalityCookies(!functionalityCookies)}
-                                        className="mr-2"
-                                        id="functionality-cookies"
-                                        aria-describedby="functionality-cookies-desc"
-                                    />
-                                    <span className="text-sm" id="functionality-cookies-desc">Functionality</span>
-                                </label>
-                                <label className="flex items-center mb-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={statisticsCookies}
-                                        onChange={() => setStatisticsCookies(!statisticsCookies)}
-                                        className="mr-2"
-                                        id="statistics-cookies"
-                                        aria-describedby="statistics-cookies-desc"
-                                    />
-                                    <span className="text-sm" id="statistics-cookies-desc">Statistics</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={marketingCookies}
-                                        onChange={() => setMarketingCookies(!marketingCookies)}
-                                        className="mr-2"
-                                        id="marketing-cookies"
-                                        aria-describedby="marketing-cookies-desc"
-                                    />
-                                    <span className="text-sm" id="marketing-cookies-desc">Marketing</span>
-                                </label>
-                            </fieldset>
-
-                            <div className="flex space-x-4">
-                                <button
-                                    className="flex-1 bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition-colors"
-                                    onClick={denyAllCookies}
-                                    type="button"
-                                    id="deny-all-cookies"
-                                    aria-label="Deny all cookies"
-                                >
-                                    DENY ALL
-                                </button>
-                                <button
-                                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500 transition-colors"
-                                    onClick={acceptAllCookies}
-                                    type="button"
-                                    id="accept-all-cookies"
-                                    aria-label="Accept all cookies"
-                                >
-                                    ACCEPT ALL
-                                </button>
-                            </div>
-                            <button
-                                className="w-full mt-2 bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
-                                onClick={savePreferences}
-                                type="button"
-                                id="save-cookie-preferences"
-                                aria-label="Save cookie preferences"
-                            >
-                                Save preferences
-                            </button>
-                            <button
-                                className="w-full mt-2 bg-transparent text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
-                                onClick={() => console.log("Toggle details")}
-                                type="button"
-                                id="show-cookie-details"
-                                aria-label="Show cookie details"
-                            >
-                                Show details
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Define your routes here */}
+                {/* Cookie Consent Banner */}
+                <CookieBanner
+                    show={showCookieModal}
+                    onAcceptAll={acceptAllCookies}
+                    onDeclineAll={denyAllCookies}
+                    onSavePreferences={savePreferences}
+                    functionalityCookies={functionalityCookies}
+                    setFunctionalityCookies={setFunctionalityCookies}
+                    statisticsCookies={statisticsCookies}
+                    setStatisticsCookies={setStatisticsCookies}
+                    marketingCookies={marketingCookies}
+                    setMarketingCookies={setMarketingCookies}
+                />
+                {/* Everything else remains as before */}
                 <Routes>
                     <Route path="/" element={<HomePageContent />} />
                     <Route path="/team" element={<TeamPage />} />

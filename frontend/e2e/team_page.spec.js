@@ -1,12 +1,11 @@
-// frontend/e2e/team_page.spec.js
 import { test, expect } from '@playwright/test';
 
 test.describe('Team Page Tests', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/team', { waitUntil: 'load', timeout: 30000 });
+        await page.evaluate(() => localStorage.clear());
 
-        // Handle cookie consent if present
         const cookieModal = page.locator('.cookie-modal');
         if (await cookieModal.isVisible()) {
             await page.locator('#accept-all-cookies').click();
@@ -25,12 +24,10 @@ test.describe('Team Page Tests', () => {
     test('should display team grid and member cards', async ({ page }) => {
         await expect(page.locator('.team-grid')).toBeVisible();
 
-        // Check if team member cards are present
         const memberCards = page.locator('.team-member-card');
         const cardCount = await memberCards.count();
 
         if (cardCount > 0) {
-            // If there are team members, check their structure
             await expect(memberCards.first()).toBeVisible();
             await expect(memberCards.first().locator('.member-name')).toBeVisible();
             await expect(memberCards.first().locator('.member-role')).toBeVisible();
@@ -39,21 +36,17 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should display navigation with proper accessibility', async ({ page }) => {
-        // Check main navigation exists and has proper attributes
         await expect(page.locator('nav')).toBeVisible();
 
-        // Check logo is accessible
         const logo = page.locator('.app-logo-image');
         await expect(logo).toBeVisible();
         await expect(logo).toHaveAttribute('alt', 'Knowit-logo');
     });
 
     test('should have proper heading hierarchy', async ({ page }) => {
-        // Check main heading is h1
         const mainHeading = page.locator('h1.team-page-title');
         await expect(mainHeading).toBeVisible();
 
-        // Check team member names are h2
         const memberNames = page.locator('h2.member-name');
         if (await memberNames.count() > 0) {
             await expect(memberNames.first()).toBeVisible();
@@ -61,16 +54,11 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should handle loading state appropriately', async ({ page }) => {
-        // Loading state is too brief to test reliably in this implementation
-        // The test should focus on the end state rather than transient loading
-
-        // Instead, verify the page loads successfully
         await expect(page.locator('.team-page-title')).toBeVisible();
         await expect(page.locator('.team-grid')).toBeVisible();
     });
 
     test('should handle error state appropriately', async ({ page }) => {
-        // If error state is shown, it should be accessible
         const errorText = page.locator('.error');
         if (await errorText.isVisible()) {
             await expect(errorText).toContainText('Error:');
@@ -99,7 +87,6 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should use placeholder image on error', async ({ page }) => {
-        // This test checks that images have proper fallback behavior
         const profilePics = page.locator('.member-profile-pic');
         const picCount = await profilePics.count();
 
@@ -111,13 +98,11 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should be responsive and accessible on mobile', async ({ page }) => {
-        // Test mobile viewport
         await page.setViewportSize({ width: 375, height: 667 });
 
         await expect(page.locator('.team-page-title')).toBeVisible();
         await expect(page.locator('.team-grid')).toBeVisible();
 
-        // Check that cards are properly sized on mobile
         const memberCards = page.locator('.team-member-card');
         if (await memberCards.count() > 0) {
             await expect(memberCards.first()).toBeVisible();
@@ -125,14 +110,11 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should have proper keyboard navigation', async ({ page }) => {
-        // Test keyboard navigation for interactive elements
         await page.keyboard.press('Tab');
 
-        // Check that focus moves to interactive elements
         const focusedElement = page.locator(':focus');
         await expect(focusedElement).toBeVisible();
 
-        // Test navigation links are keyboard accessible
         const navLinks = page.locator('.main-nav-link');
         if (await navLinks.count() > 0) {
             await navLinks.first().focus();
@@ -141,17 +123,14 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should maintain focus indicators', async ({ page }) => {
-        // Test that focus indicators are visible
         const firstNavLink = page.locator('.main-nav-link').first();
         if (await firstNavLink.isVisible()) {
             await firstNavLink.focus();
 
-            // Check that focused element has proper styling
             const focusedStyles = await firstNavLink.evaluate((el) => {
                 return window.getComputedStyle(el).outline;
             });
 
-            // Should have some form of focus indicator
             expect(focusedStyles).not.toBe('none');
         }
     });
@@ -163,11 +142,9 @@ test.describe('Team Page Tests', () => {
         if (cardCount > 0) {
             const firstCard = memberCards.first();
 
-            // Check that profile pictures have proper alt text
             const profilePic = firstCard.locator('.member-profile-pic');
             await expect(profilePic).toHaveAttribute('alt');
 
-            // Check that LinkedIn links have proper attributes
             const linkedinLink = firstCard.locator('.member-linkedin-link');
             if (await linkedinLink.isVisible()) {
                 await expect(linkedinLink).toHaveAttribute('target', '_blank');
@@ -177,16 +154,13 @@ test.describe('Team Page Tests', () => {
     });
 
     test('should have proper semantic structure', async ({ page }) => {
-        // Check that the page has proper landmark roles
         await expect(page.locator('header')).toBeVisible();
         await expect(page.locator('nav')).toBeVisible();
 
-        // Check that team content is properly structured
         await expect(page.locator('.team-page-content')).toBeVisible();
     });
 
     test('should have accessible navigation links', async ({ page }) => {
-        // Check that navigation links have proper attributes
         const homeNavLink = page.getByRole('link', { name: 'Home' });
         if (await homeNavLink.isVisible()) {
             await expect(homeNavLink).toHaveAttribute('href', '/');
@@ -210,16 +184,13 @@ test.describe('Team Page Tests', () => {
         if (cardCount > 0) {
             const firstCard = memberCards.first();
 
-            // Check that member information is displayed
             await expect(firstCard.locator('.member-name')).toBeVisible();
             await expect(firstCard.locator('.member-role')).toBeVisible();
             await expect(firstCard.locator('.member-profile-pic')).toBeVisible();
 
-            // Check that member name is not empty
             const memberName = await firstCard.locator('.member-name').textContent();
             expect(memberName).not.toBe('');
 
-            // Check that member role is not empty
             const memberRole = await firstCard.locator('.member-role').textContent();
             expect(memberRole).not.toBe('');
         }
@@ -230,25 +201,20 @@ test.describe('Team Page Tests', () => {
         const picCount = await profilePics.count();
 
         if (picCount > 0) {
-            // Check that images have proper error handling
             const firstPic = profilePics.first();
 
-            // Verify that image has proper attributes
             await expect(firstPic).toHaveAttribute('alt');
             await expect(firstPic).toHaveAttribute('src');
 
-            // Check that image has error handling (onerror attribute or similar)
             const hasErrorHandling = await firstPic.evaluate((img) => {
                 return img.onerror !== null || img.hasAttribute('onerror');
             });
 
-            // This is expected if error handling is implemented
             expect(typeof hasErrorHandling).toBe('boolean');
         }
     });
 
     test('should have proper color contrast and readability', async ({ page }) => {
-        // Test color contrast by checking computed styles
         const title = page.locator('.team-page-title');
         if (await title.isVisible()) {
             const titleStyles = await title.evaluate((el) => {
@@ -259,30 +225,25 @@ test.describe('Team Page Tests', () => {
                 };
             });
 
-            // Ensure title has proper color styling
             expect(titleStyles.color).toBeDefined();
             expect(titleStyles.backgroundColor).toBeDefined();
         }
     });
 
     test('should maintain accessibility on different screen sizes', async ({ page }) => {
-        // Test different viewport sizes
         const viewports = [
-            { width: 375, height: 667 },  // Mobile
-            { width: 768, height: 1024 }, // Tablet
-            { width: 1920, height: 1080 } // Desktop
+            { width: 375, height: 667 },
+            { width: 768, height: 1024 },
+            { width: 1920, height: 1080 }
         ];
 
         for (const viewport of viewports) {
             await page.setViewportSize(viewport);
 
-            // Check that essential elements are still visible and accessible
             await expect(page.locator('.team-page-title')).toBeVisible();
             await expect(page.locator('.team-grid')).toBeVisible();
 
-            // Check that navigation is still accessible
             await expect(page.locator('nav')).toBeVisible();
         }
     });
-
 });

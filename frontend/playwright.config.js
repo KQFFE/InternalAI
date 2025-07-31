@@ -7,7 +7,7 @@ module.exports = defineConfig({
 
   /* Maximum time one test can run for. */
   // ADDED: This timeout covers the entire test, including page navigation.
-  timeout: 60 * 1000, // Increased to 60 seconds (1 minute)
+  timeout: 10 * 1000, // Increased to 60 seconds (1 minute)
 
   /* Run tests in files in parallel */
   fullyParallel: true,

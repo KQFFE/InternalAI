@@ -59,6 +59,24 @@ function CookieBanner({
                             </div>
                         </div>
 
+                        <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
+                            <div className="coi-button-group">
+                                {showSaveButton ? (
+                                    <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                ) : (
+                                    <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
+                                )}
+                                <button tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                            </div>
+                            <div className="coi-toggle-group">
+                                {!showDetails ? (
+                                    <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
+                                ) : (
+                                    <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="coi-banner-consent-group">
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_necessary">
@@ -98,23 +116,6 @@ function CookieBanner({
                             </div>
                         </div>
 
-                        <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
-                            <div className="coi-button-group">
-                                {showSaveButton ? (
-                                    <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
-                                ) : (
-                                    <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
-                                )}
-                                <button tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
-                            </div>
-                            <div className="coi-toggle-group">
-                                {!showDetails ? (
-                                    <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
-                                ) : (
-                                    <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
-                                )}
-                            </div>
-                        </div>
                         {showDetails && (
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
                                 <div>Detaljerad cookie-information...</div>

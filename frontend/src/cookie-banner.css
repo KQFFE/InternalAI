@@ -549,8 +549,15 @@
     max-width: 960px; /* Increased size of the modal */
     width: 100%;
     margin: auto;
-    padding: 32px 24px;
     font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Summary section styling */
+.coi-banner__summary {
+    background: #f1f0ed;
+    padding: 40px;
+    width: 100;
+    border-radius: 8px;
 }
 
 /* Banner header */
@@ -690,6 +697,7 @@
     flex-direction: column;
     align-items: center; /* Center footer content */
     gap: 16px;
+    margin-top: 24px;
 }
 
 .coi-banner__page-footer[aria-label="third-menu"] {

@@ -21,8 +21,16 @@ function CookieBanner({
 }) {
     const [showDetails, setShowDetails] = useState(false);
     const [showPolicy, setShowPolicy] = useState(false);
+    const [preferencesChanged, setPreferencesChanged] = useState(false);
 
     if (!show) return null;
+
+    const handlePreferenceChange = (setter, value) => {
+        setter(!value);
+        setPreferencesChanged(true);
+    };
+
+    const showSaveButton = preferencesChanged && (functionalityCookies || statisticsCookies || marketingCookies);
 
     return (
         <div id="coiOverlay" role="banner" aria-hidden="false" className="coi-overlay">
@@ -64,7 +72,7 @@ function CookieBanner({
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_functional">
                                     <label htmlFor="cookie_cat_functional" className="coi-checkboxes" title="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => setFunctionalityCookies(!functionalityCookies)} />
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => handlePreferenceChange(setFunctionalityCookies, functionalityCookies)} />
                                         <span className="checkbox-toggle"></span>
                                         Funktionella
                                     </label>
@@ -73,7 +81,7 @@ function CookieBanner({
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_statistic">
                                     <label htmlFor="cookie_cat_statistic" className="coi-checkboxes" title="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => setStatisticsCookies(!statisticsCookies)} />
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => handlePreferenceChange(setStatisticsCookies, statisticsCookies)} />
                                         <span className="checkbox-toggle"></span>
                                         Statistiska
                                     </label>
@@ -82,7 +90,7 @@ function CookieBanner({
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_marketing">
                                     <label htmlFor="cookie_cat_marketing" className="coi-checkboxes" title="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => setMarketingCookies(!marketingCookies)} />
+                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => handlePreferenceChange(setMarketingCookies, marketingCookies)} />
                                         <span className="checkbox-toggle"></span>
                                         Marketing
                                     </label>
@@ -92,8 +100,11 @@ function CookieBanner({
 
                         <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
                             <div className="coi-button-group">
-                                <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
-                                <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                {showSaveButton ? (
+                                    <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                ) : (
+                                    <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
+                                )}
                                 <button tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
                             </div>
                             <div className="coi-toggle-group">

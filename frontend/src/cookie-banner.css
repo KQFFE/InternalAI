@@ -556,8 +556,7 @@
 .coi-banner__summary {
     background: #f1f0ed;
     padding: 40px;
-    width: 100;
-    border-radius: 8px;
+    width: 100%;
 }
 
 /* Banner header */
@@ -617,7 +616,10 @@
 
 /* Consent group */
 .coi-banner-consent-group {
-    margin: 24px 0;
+    background: #f1f0ed; /* Same as summary */
+    padding: 40px;       /* Match summary padding */
+    border-radius: 8px;  /* Match summary border-radius */
+    margin-top: 24px;    /* Adjust margin for consistent spacing */
 }
 
 /* Consent field */
@@ -698,31 +700,64 @@
     align-items: center; /* Center footer content */
     gap: 16px;
     margin-top: 24px;
+    padding: 0 40px; /* Add horizontal padding to align with other sections */
 }
 
 .coi-banner__page-footer[aria-label="third-menu"] {
+    background: #FFFFFF;
+    width: 100%;
+    padding: 30px 40px;
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    z-index: 5000;
+    /* Overrides for policy page footer */
     flex-direction: row;
-    gap: 12px;
-    margin-top: 24px;
+    justify-content: space-between;
+    margin-top: 0;
+    box-sizing: border-box;
 }
 
 /* Button group */
 .coi-button-group {
     display: flex;
+    justify-content: space-between;
+    width: 100%;
     gap: 12px;
     margin-bottom: 8px;
 }
 
 .coi-banner__accept {
-    background: #333;
+    /* Styles provided for accept button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+    text-decoration: none;
+
+    background: #333333;
     color: #fff;
-    border: none;
-    padding: 12px;
-    border-radius: 4px;
+    border: 0;
+    padding: 15px;
+    border-radius: 3px;
+
+    font-family: inherit;
+    font-size: 14px;
     font-weight: bold;
+    text-transform: uppercase;
+    line-height: normal;
+
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 300ms ease;
     flex: 1;
+    max-width: 50%;
+    margin: 10px;
+    margin-right: 0px;
 }
 
 .coi-banner__accept:hover {
@@ -731,20 +766,40 @@
 
 .coi-banner__decline,
 .coi-banner__lastpage {
-    background: #e0e0e0;
+    /* Styles provided for declineButton */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+
+    background: #f6f6f6;
     color: #222;
-    border: none;
-    padding: 12px;
-    border-radius: 4px;
+    border: solid 1px #888888;
+    padding: 15px;
+    border-radius: 3px;
+    
+    font-family: inherit;
+    font-size: 14px;
     font-weight: bold;
+    text-transform: uppercase;
+    line-height: normal;
+
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 300ms ease;
     flex: 1;
+    max-width: 50%;
+    margin: 10px;
+    margin-left: 0px;
 }
 
 .coi-banner__decline:hover,
 .coi-banner__lastpage:hover {
-    background: #ccc;
+    background: #ddd; /* Darken background on hover */
 }
 
 /* Details toggle */

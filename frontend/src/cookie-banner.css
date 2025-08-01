@@ -524,6 +524,11 @@
     --chakra-colors-chakra-placeholder-color: var(--chakra-colors-gray-500);
 }
 
+/* Class to prevent body scroll when modal is open */
+.modal-open {
+    overflow: hidden;
+}
+
 /* Cookie Overlay */
 .coi-overlay {
     display: flex;
@@ -616,27 +621,65 @@
 
 /* Consent group */
 .coi-banner-consent-group {
-    background: #f1f0ed; /* Same as summary */
-    padding: 40px;       /* Match summary padding */
+    background: #f1f0ed;
     border-radius: 8px;  /* Match summary border-radius */
     margin-top: 24px;    /* Adjust margin for consistent spacing */
+    /* Styles from provided example */
+    padding: 24px 40px; /* Use horizontal padding and add vertical for spacing */
+    display: flex;
+    flex-flow: row nowrap;
 }
 
 /* Consent field */
 .coi-banner-consent-field {
-    margin-bottom: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: solid 1px #ccc;
+    padding: 0 20px; /* Add horizontal padding for spacing */
+}
+
+.coi-banner-consent-field:first-child {
+    padding-left: 0;
+}
+
+.coi-banner-consent-field:last-child {
+    border-right: none;
+    padding-right: 0;
 }
 
 /* Switch style for checkboxes */
 .coi-checkboxes {
     display: flex;
+    flex-direction: column; /* Stack text and switch vertically */
     align-items: center;
+    justify-content: center; /* Center content vertically */
+    gap: 16px; /* Add space between text and switch */
     cursor: pointer;
     position: relative;
-    padding-left: 50px; /* Space for the switch */
     user-select: none;
-    height: 24px;
     font-size: 1rem;
+    width: 100%; /* Ensure the label takes full width */
+    height: 100%; /* Allow label to fill the column height */
+}
+
+.coi-checkboxes-text {
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Container for the switch elements */
+.coi-checkboxes-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0; /* Prevent the switch from shrinking */
+}
+
+.coi-consent-banner__switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Hide original checkbox */

@@ -23,6 +23,19 @@ function CookieBanner({
     const [showPolicy, setShowPolicy] = useState(false);
     const [preferencesChanged, setPreferencesChanged] = useState(false);
 
+    useEffect(() => {
+        if (show) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+
+        // Cleanup function to ensure the class is removed when the component unmounts
+        return () => {
+            document.body.classList.remove('modal-open');
+        };
+    }, [show]); // This effect runs whenever the `show` prop changes
+
     if (!show) return null;
 
     const handlePreferenceChange = (setter, value) => {
@@ -81,36 +94,44 @@ function CookieBanner({
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_necessary">
                                     <label htmlFor="cookie_cat_necessary" className="coi-checkboxes" title="Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.">
-                                        <input className="coi__checkbox" tabIndex="-1" data-index="-1" name="cookie_cat_necessary" id="cookie_cat_necessary" type="checkbox" disabled checked />
-                                        <span className="checkbox-toggle"></span>
-                                        Nödvändiga
+                                        <span className="coi-checkboxes-text">Nödvändiga</span>
+                                        <div className="coi-checkboxes-switch">
+                                            <input className="coi__checkbox" tabIndex="-1" data-index="-1" name="cookie_cat_necessary" id="cookie_cat_necessary" type="checkbox" disabled checked />
+                                            <span className="checkbox-toggle"></span>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_functional">
                                     <label htmlFor="cookie_cat_functional" className="coi-checkboxes" title="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => handlePreferenceChange(setFunctionalityCookies, functionalityCookies)} />
-                                        <span className="checkbox-toggle"></span>
-                                        Funktionella
+                                        <span className="coi-checkboxes-text">Funktionella</span>
+                                        <div className="coi-checkboxes-switch">
+                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => handlePreferenceChange(setFunctionalityCookies, functionalityCookies)} />
+                                            <span className="checkbox-toggle"></span>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_statistic">
                                     <label htmlFor="cookie_cat_statistic" className="coi-checkboxes" title="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => handlePreferenceChange(setStatisticsCookies, statisticsCookies)} />
-                                        <span className="checkbox-toggle"></span>
-                                        Statistiska
+                                        <span className="coi-checkboxes-text">Statistiska</span>
+                                        <div className="coi-checkboxes-switch">
+                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => handlePreferenceChange(setStatisticsCookies, statisticsCookies)} />
+                                            <span className="checkbox-toggle"></span>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_marketing">
                                     <label htmlFor="cookie_cat_marketing" className="coi-checkboxes" title="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.">
-                                        <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => handlePreferenceChange(setMarketingCookies, marketingCookies)} />
-                                        <span className="checkbox-toggle"></span>
-                                        Marketing
+                                        <span className="coi-checkboxes-text">Marketing</span>
+                                        <div className="coi-checkboxes-switch">
+                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => handlePreferenceChange(setMarketingCookies, marketingCookies)} />
+                                            <span className="checkbox-toggle"></span>
+                                        </div>
                                     </label>
                                 </div>
                             </div>

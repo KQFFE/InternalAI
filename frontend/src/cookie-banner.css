@@ -557,7 +557,7 @@
 .coi-banner__header {
     display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: space-between; /* Align items to the ends */
     margin-bottom: 16px;
 }
 
@@ -583,6 +583,11 @@
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 12px;
+}
+
+/* Main text container */
+.coi-banner__text {
+    text-align: left; /* Ensure all content within is left-aligned */
 }
 
 /* Main text */
@@ -683,6 +688,7 @@
 .coi-banner__page-footer {
     display: flex;
     flex-direction: column;
+    align-items: center; /* Center footer content */
     gap: 16px;
 }
 

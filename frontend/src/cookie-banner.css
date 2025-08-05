@@ -555,6 +555,7 @@
     width: 100%;
     margin: auto;
     font-family: 'Inter', Arial, sans-serif;
+    line-height: normal;
 }
 
 /* Summary section styling */
@@ -622,10 +623,8 @@
 /* Consent group */
 .coi-banner-consent-group {
     background: #f1f0ed;
-    border-radius: 8px;  /* Match summary border-radius */
-    margin-top: 24px;    /* Adjust margin for consistent spacing */
-    /* Styles from provided example */
-    padding: 24px 40px; /* Use horizontal padding and add vertical for spacing */
+    border-radius: 8px;
+    margin-top: 24px;
     display: flex;
     flex-flow: row nowrap;
 }
@@ -636,7 +635,7 @@
     display: flex;
     flex-direction: column;
     border-right: solid 1px #ccc;
-    padding: 0 20px; /* Add horizontal padding for spacing */
+    /* Padding is moved to the inner .coi-checkboxes element */
 }
 
 .coi-banner-consent-field:first-child {
@@ -661,6 +660,8 @@
     font-size: 1rem;
     width: 100%; /* Ensure the label takes full width */
     height: 100%; /* Allow label to fill the column height */
+    /* Add padding here so the border on the parent goes full height */
+    padding: 20px 0;
 }
 
 .coi-checkboxes-text {
@@ -698,7 +699,7 @@
     top: 0;
     height: 24px;
     width: 44px;
-    background-color: #eee;
+    background-color: #B8B8B8;
     border-radius: 12px;
     transition: background-color 0.2s;
 }

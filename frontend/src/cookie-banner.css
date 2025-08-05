@@ -547,15 +547,48 @@
 
 /* Banner wrapper */
 .coi-banner__wrapper {
+    width: 600px;
+    max-width: 100%;
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    color: #222;
-    max-width: 960px; /* Increased size of the modal */
-    width: 100%;
-    margin: auto;
-    font-family: 'Inter', Arial, sans-serif;
+    overflow: hidden; /* Hide overflow from the wrapper itself */
+    border-radius: 5px;
     line-height: normal;
+    /* Make the wrapper a flex container and constrain its height for scrolling */
+    display: flex;
+    flex-direction: column;
+    /* The overlay has 20px padding top/bottom, so we subtract 40px from the viewport height.
+       This ensures the modal doesn't extend off-screen. */
+    max-height: calc(100vh - 40px);
+}
+
+.coi-banner__page {
+    overflow-y: auto; /* When content overflows, a scrollbar will appear here */
+    /* Add basic scrollbar styling for Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fff;
+}
+
+/* Custom Scrollbar Styling for Webkit browsers (Chrome, Safari, Edge) */
+.coi-banner__page::-webkit-scrollbar {
+    width: 12px; /* Width of the entire scrollbar */
+}
+
+.coi-banner__page::-webkit-scrollbar-track {
+    background: #fff; /* Match the banner background */
+}
+
+.coi-banner__page::-webkit-scrollbar-thumb {
+    background-color: #ccc;    /* Color of the scroll thumb */
+    border-radius: 6px;        /* Roundness of the scroll thumb */
+    border: 3px solid #fff;    /* Creates padding around thumb */
+}
+
+.coi-banner__page::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa; /* Darken thumb on hover */
+}
+
+.coi-banner__page::-webkit-scrollbar-button {
+    display: none; /* Hide the scrollbar's up and down arrows */
 }
 
 /* Summary section styling */
@@ -581,12 +614,22 @@
 
 /* Branding */
 .coi-banner__branding {
-    font-size: 12px;
-    color: #666;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern";
+    font-family: var(--chakra-fonts-body);
+    word-wrap: break-word;
+    font-size: 10px !important;
+    color: #444444;
+    white-space: normal;
+    text-align: left;
+    line-height: normal;
 }
 
 .coi-banner__branding a.coi-external-link {
-    color: #222; /* Darker link color */
+    color: var(--chakra-colors-black); /* Use a darker, brand-compliant color */
+    font-weight: 700; /* Use 'bold' (700) to ensure it stands out */
+    display: block;
     text-decoration: underline;
 }
 
@@ -604,9 +647,13 @@
 
 /* Main text */
 .coi-banner__maintext {
-    font-size: 1rem;
-    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.4 !important; /* Increased for better readability */
     color: #222;
+}
+
+.coi-banner__maintext p {
+    margin: 0 0 1em; /* Add space after each paragraph */
 }
 
 /* Policy link */
@@ -616,14 +663,14 @@
     border: none;
     text-decoration: underline;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 15px;
+    font-weight: 600;
     margin-top: 8px;
 }
 
 /* Consent group */
 .coi-banner-consent-group {
     background: #f1f0ed;
-    border-radius: 8px;
     margin-top: 24px;
     display: flex;
     flex-flow: row nowrap;
@@ -657,7 +704,7 @@
     cursor: pointer;
     position: relative;
     user-select: none;
-    font-size: 1rem;
+    font-size: 15px;
     width: 100%; /* Ensure the label takes full width */
     height: 100%; /* Allow label to fill the column height */
     /* Add padding here so the border on the parent goes full height */
@@ -665,16 +712,15 @@
 }
 
 .coi-checkboxes-text {
-    font-weight: bold;
     text-align: center;
 }
 
 /* Container for the switch elements */
 .coi-checkboxes-switch {
     position: relative;
-    width: 44px;
-    height: 24px;
-    flex-shrink: 0; /* Prevent the switch from shrinking */
+    width: 52px;
+    height: 32px;
+    flex-shrink: 0;
 }
 
 .coi-consent-banner__switch-container {
@@ -686,10 +732,15 @@
 /* Hide original checkbox */
 .coi__checkbox {
     position: absolute;
-    opacity: 0;
+    opacity: 0; /* Make it invisible */
     cursor: pointer;
-    height: 0;
-    width: 0;
+    /* Make the checkbox cover the entire switch area to ensure it's clickable */
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 1; /* Ensure it's on top of the visual toggle */
 }
 
 /* The track of the switch */
@@ -697,10 +748,10 @@
     position: absolute;
     left: 0;
     top: 0;
-    height: 24px;
-    width: 44px;
-    background-color: #B8B8B8;
-    border-radius: 12px;
+    height: 32px;
+    width: 52px;
+    background-color: #BDBDBD;
+    border-radius: 16px;
     transition: background-color 0.2s;
 }
 
@@ -710,8 +761,8 @@
     position: absolute;
     left: 2px;
     top: 2px;
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     background-color: white;
     border-radius: 50%;
     transition: transform 0.2s;
@@ -719,7 +770,7 @@
 
 /* When the checkbox is checked, change the track color and move the knob */
 .coi__checkbox:checked + .checkbox-toggle {
-    background-color: #333; /* Darker color when selected */
+    background-color: #333;
 }
 
 .coi__checkbox:checked + .checkbox-toggle::after {
@@ -728,13 +779,20 @@
 
 /* Disabled state */
 .coi__checkbox:disabled + .checkbox-toggle {
-    background-color: #e0e0e0;
-    border-color: #ccc;
+    background-color: #E0EBE4;
     cursor: not-allowed;
+}
+
+.coi__checkbox:disabled + .checkbox-toggle::after {
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 .coi__checkbox:disabled:checked + .checkbox-toggle {
     background-color: #888;
+}
+
+.coi__checkbox:disabled:checked + .checkbox-toggle::after {
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 /* Page footer */
@@ -858,7 +916,7 @@
     color: #222;
     text-decoration: underline;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 15px;
 }
 
 /* Details box */
@@ -867,14 +925,14 @@
     border-radius: 8px;
     padding: 16px;
     margin-top: 24px;
-    font-size: 0.95rem;
+    font-size: 15px;
     color: #222;
 }
 
 /* Cookie declaration */
 .cookiedeclaration_wrapper {
     margin-top: 24px;
-    font-size: 14px;
+    font-size: 15px;
     color: #222;
 }
 

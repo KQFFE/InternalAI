@@ -61,10 +61,15 @@ function CookieBanner({
                             <div className="coi-banner__text">
                                 <h2 className="coi-banner__headline" id="coiBannerHeadline">Vi använder cookies</h2>
                                 <div className="coi-banner__maintext" id="coi-banner-wrapper_label">
-                                    Knowit.se använder cookies för att analysera trafiken på vår webbplats. Informationen delas även med tredjepart för att vi ska kunna erbjuda dig ett anpassat innehåll. Önskar du inte detta kan du välja att klicka i ”Neka alla”. <br />
-                                    Genom att klicka ”Godkänn alla” ger du ditt samtycke till samtliga syften.<br />
-                                    Du kan när som helst ta tillbaka ditt samtycke genom att klicka på ikonen i det nedre vänstra hörnet på sidan.
-                                    <br />
+                                    <p>
+                                        Knowit.se använder cookies för att analysera trafiken på vår webbplats. Informationen delas även med tredjepart för att vi ska kunna erbjuda dig ett anpassat innehåll. Önskar du inte detta kan du välja att klicka i ”Neka alla”.
+                                    </p>
+                                    <p>
+                                        Genom att klicka ”Godkänn alla” ger du ditt samtycke till samtliga syften.
+                                    </p>
+                                    <p>
+                                        Du kan när som helst ta tillbaka ditt samtycke genom att klicka på ikonen i det nedre vänstra hörnet på sidan.
+                                    </p>
                                     <button type="button" className="coi-banner__policy" onClick={() => setShowPolicy(true)}>
                                         Läs mer om cookies
                                     </button>

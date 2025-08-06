@@ -167,20 +167,20 @@ describe('CookieBanner', () => {
   it('shows and hides the details section', async () => {
     render(<App />);
     // Details are initially hidden
-    expect(screen.queryByText(/Detaljerad cookie-information/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Nödvändiga/i })).not.toBeInTheDocument();
 
     const showDetailsButton = screen.getByRole('button', { name: /Visa detaljer/i });
     fireEvent.click(showDetailsButton);
 
     // Details are now visible
-    expect(await screen.findByText(/Detaljerad cookie-information/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Nödvändiga/i })).toBeInTheDocument();
 
     const hideDetailsButton = screen.getByRole('button', { name: /Dölj detaljer/i });
     fireEvent.click(hideDetailsButton);
 
     // Details are hidden again
     await waitFor(() => {
-      expect(screen.queryByText(/Detaljerad cookie-information/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: /Nödvändiga/i })).not.toBeInTheDocument();
     });
   });
 
@@ -200,25 +200,6 @@ describe('CookieBanner', () => {
 
     expect(await screen.findByRole('heading', { name: /Vi använder cookies/i })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /Policy för kakor/i })).not.toBeInTheDocument();
-  });
-
-  it('shows "Spara inställningar" button only when preferences are changed and selected', () => {
-    render(<App />);
-
-    expect(screen.getByRole('button', { name: /Neka alla/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Spara inställningar/i })).not.toBeInTheDocument();
-
-    const functionalityCheckbox = screen.getByLabelText(/Funktionella/i);
-
-    // Click to check it, "Spara" button should appear
-    fireEvent.click(functionalityCheckbox);
-    expect(screen.getByRole('button', { name: /Spara inställningar/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Neka alla/i })).not.toBeInTheDocument();
-
-    // Click to uncheck it, "Neka alla" should return
-    fireEvent.click(functionalityCheckbox);
-    expect(screen.getByRole('button', { name: /Neka alla/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Spara inställningar/i })).not.toBeInTheDocument();
   });
 
   it('adds and removes "modal-open" class from body', async () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
 import License from './License';
 import './App.css';
 import './style.css';
@@ -11,7 +11,7 @@ function CookieBanner({
     show,
     onAcceptAll,
     onDeclineAll,
-    onSavePreferences,
+    onSavePreferences, // This prop is no longer used directly by a button, but kept for completeness if other logic depends on it.
     functionalityCookies,
     setFunctionalityCookies,
     statisticsCookies,
@@ -22,6 +22,7 @@ function CookieBanner({
     const [showDetails, setShowDetails] = useState(false);
     const [showPolicy, setShowPolicy] = useState(false);
     const [preferencesChanged, setPreferencesChanged] = useState(false);
+    const [openCategory, setOpenCategory] = useState(null);
 
     useEffect(() => {
         if (show) {
@@ -43,6 +44,11 @@ function CookieBanner({
         setPreferencesChanged(true);
     };
 
+    const toggleCategory = (category) => {
+        setOpenCategory(openCategory === category ? null : category);
+    }
+
+    // Show the "Save" button if preferences have been changed and at least one optional category is selected.
     const showSaveButton = preferencesChanged && (functionalityCookies || statisticsCookies || marketingCookies);
 
     return (
@@ -80,7 +86,7 @@ function CookieBanner({
                         <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
                             <div className="coi-button-group">
                                 {showSaveButton ? (
-                                    <button tabIndex="0" aria-label="Spara inställningar" id="updateButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                    <button tabIndex="0" aria-label="Spara inställningar" id="savePreferencesButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
                                 ) : (
                                     <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
                                 )}
@@ -144,7 +150,102 @@ function CookieBanner({
 
                         {showDetails && (
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
-                                <div>Detaljerad cookie-information...</div>
+                                <div role="tablist" className="coi-consent-banner__category-container">
+                                    <div className="coi-consent-banner__category-controls">
+                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_necessary" aria-expanded={openCategory === 'necessary'} onClick={() => toggleCategory('necessary')} className="coi-consent-banner__category-name">
+                                            <div aria-hidden="true" className={`ci-arrow ${openCategory === 'necessary' ? 'open' : ''}`}></div>
+                                            <h3 aria-label="Nödvändiga">Nödvändiga</h3>
+                                        </button>
+                                        <div className="coi-consent-banner__category-description">Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.</div>
+                                    </div>
+                                    <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_necessary" aria-hidden={openCategory !== 'necessary'} style={{ display: openCategory === 'necessary' ? 'block' : 'none' }}>
+                                        <div role="table" aria-label="Nödvändiga Cookies" className="coi-consent-banner__found-cookies">
+                                            <div role="rowgroup" className="coi-consent-banner__cookie-details">
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Tjänst:</span><span role="cell" className="cookie-details__detail-content">Microsoft Azure</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Syfte:</span><span role="cell" className="cookie-details__detail-content">Krävs för att webbplatsen ska fungera.</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span><span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="-1" target="_blank" href="https://www.microsoft.com/en-us/privacy/privacystatement">Microsoft Azure - Integritetspolicy</a></span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Utgångstid:</span><span role="cell" className="cookie-details__detail-content">Session</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Namn:</span><span role="cell" className="cookie-details__detail-content">ARRAffinitySameSite</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Leverantör:</span><span role="cell" className="cookie-details__detail-content">.www.knowit.se</span></div>
+                                            </div>
+                                            <div role="rowgroup" className="coi-consent-banner__cookie-details">
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Tjänst:</span><span role="cell" className="cookie-details__detail-content">Cookie Information</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Syfte:</span><span role="cell" className="cookie-details__detail-content">Used to share consent across domains.</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span><span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="-1" target="_blank" href="https://cookieinformation.com/cookie-and-privacy-policy/">Cookie Information - Integritetspolicy</a></span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Utgångstid:</span><span role="cell" className="cookie-details__detail-content">ett år</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Namn:</span><span role="cell" className="cookie-details__detail-content">CookieInformationConsent_xxx</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Leverantör:</span><span role="cell" className="cookie-details__detail-content">policy.app.cookieinformation.com</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tablist" className="coi-consent-banner__category-container">
+                                    <div className="coi-consent-banner__category-controls">
+                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_functional" aria-expanded={openCategory === 'functional'} onClick={() => toggleCategory('functional')} className="coi-consent-banner__category-name">
+                                            <div aria-hidden="true" className={`ci-arrow ${openCategory === 'functional' ? 'open' : ''}`}></div>
+                                            <h3 aria-label="Funktionella">Funktionella</h3>
+                                        </button>
+                                        <div className="coi-consent-banner__category-description">Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.</div>
+                                    </div>
+                                    <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_functional" aria-hidden={openCategory !== 'functional'} style={{ display: openCategory === 'functional' ? 'block' : 'none' }}>
+                                        <div role="table" aria-label="Funktionella Cookies" className="coi-consent-banner__found-cookies">
+                                            <div role="rowgroup" className="coi-consent-banner__cookie-details">
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Tjänst:</span><span role="cell" className="cookie-details__detail-content">Cloudflare</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Syfte:</span><span role="cell" className="cookie-details__detail-content">Stödjer webbplatsens tekniska funktioner.</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span><span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="-1" target="_blank" href="https://www.cloudflare.com/privacypolicy/">Cloudflare - Integritetspolicy</a></span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Utgångstid:</span><span role="cell" className="cookie-details__detail-content">29 minuter</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Namn:</span><span role="cell" className="cookie-details__detail-content">__cf_bm</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Leverantör:</span><span role="cell" className="cookie-details__detail-content">.hubspot.com</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tablist" className="coi-consent-banner__category-container">
+                                    <div className="coi-consent-banner__category-controls">
+                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_statistic" aria-expanded={openCategory === 'statistic'} onClick={() => toggleCategory('statistic')} className="coi-consent-banner__category-name">
+                                            <div aria-hidden="true" className={`ci-arrow ${openCategory === 'statistic' ? 'open' : ''}`}></div>
+                                            <h3 aria-label="Statistiska">Statistiska</h3>
+                                        </button>
+                                        <div className="coi-consent-banner__category-description">Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.</div>
+                                    </div>
+                                    <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_statistic" aria-hidden={openCategory !== 'statistic'} style={{ display: openCategory === 'statistic' ? 'block' : 'none' }}>
+                                        <div role="table" aria-label="Statistiska Cookies" className="coi-consent-banner__found-cookies">
+                                            <div role="rowgroup" className="coi-consent-banner__cookie-details">
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Tjänst:</span><span role="cell" className="cookie-details__detail-content">Google Analytics</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Syfte:</span><span role="cell" className="cookie-details__detail-content">Samlar in information om användarna och deras verksamhet på webbplatsen för analys och rapportering.</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span><span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="-1" target="_blank" href="https://policies.google.com/technologies/partner-sites?hl=en">Google Analytics - Integritetspolicy</a></span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Utgångstid:</span><span role="cell" className="cookie-details__detail-content">ett år</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Namn:</span><span role="cell" className="cookie-details__detail-content">_ga</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Leverantör:</span><span role="cell" className="cookie-details__detail-content">.knowit.se</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tablist" className="coi-consent-banner__category-container">
+                                    <div className="coi-consent-banner__category-controls">
+                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_marketing" aria-expanded={openCategory === 'marketing'} onClick={() => toggleCategory('marketing')} className="coi-consent-banner__category-name">
+                                            <div aria-hidden="true" className={`ci-arrow ${openCategory === 'marketing' ? 'open' : ''}`}></div>
+                                            <h3 aria-label="Marketing">Marketing</h3>
+                                        </button>
+                                        <div className="coi-consent-banner__category-description">Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.</div>
+                                    </div>
+                                    <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_marketing" aria-hidden={openCategory !== 'marketing'} style={{ display: openCategory === 'marketing' ? 'block' : 'none' }}>
+                                        <div role="table" aria-label="Marketing Cookies" className="coi-consent-banner__found-cookies">
+                                            <div role="rowgroup" className="coi-consent-banner__cookie-details">
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Tjänst:</span><span role="cell" className="cookie-details__detail-content">Youtube, Google</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Syfte:</span><span role="cell" className="cookie-details__detail-content">Samlar in information om användarna och deras verksamhet på webbplatsen genom inbyggda videospelare med syfte att leverera riktade annonser.</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span><span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="-1" target="_blank" href="https://policies.google.com/technologies/partner-sites?hl=en">Youtube, Google - Integritetspolicy</a></span></div>
+                                                {/* Corrected the incomplete span tag below */}
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Utgångstid:</span><span role="cell" className="cookie-details__detail-content">Session</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Namn:</span><span role="cell" className="cookie-details__detail-content">VISITOR_INFO1_LIVE</span></div>
+                                                <div role="row" className="cookie-details__detail-container"><span role="cell" className="cookie-details__detail-title">Leverantör:</span><span role="cell" className="cookie-details__detail-content">youtube.com</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

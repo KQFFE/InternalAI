@@ -7,13 +7,6 @@
     "active": true
   },
   {
-    "name": "Barry Al-Jawary",
-    "role": "Tester",
-    "profilePicture": "/img/barry-al-jawari.jpg",
-    "linkedinUrl": "https://www.linkedin.com/in/barry-al-jawari/",
-    "active": true
-  },
-  {
     "name": "Bharti Ahuja",
     "role": "Tester",
     "profilePicture": "/img/bharti-ahuja.jpg",
@@ -184,7 +177,7 @@
   {
     "name": "Sasan Fallahi",
     "role": "Tester",
-    "profilePicture": "/img/sasan-fallahi.jpg",
+    "profilePicture": "/img/fallback-knowit.png",
     "linkedinUrl": "https://www.linkedin.com/in/sasan-fallahi/",
     "active": true
   },

@@ -212,7 +212,6 @@ function HomePageContent() {
 
     const handleAboutClick = () => {
         // Add about functionality here
-        console.log('About clicked');
     };
 
     return (
@@ -310,7 +309,7 @@ function HomePageContent() {
                     <div className="grid grid-cols-1 gap-8 mb-16" role="list" aria-label="News articles">
                         <article className="news-item-link flex justify-between items-center border-b border-gray-400 pb-4 group" role="listitem">
                             <button
-                                onClick={() => console.log('News item 1 clicked')}
+                                onClick={() => {}}
                                 className="flex-grow text-left bg-transparent border-none cursor-pointer"
                                 id="news-item-1"
                                 aria-label="Read article about Summer Project 2025 from June 26"

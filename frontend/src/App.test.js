@@ -163,4 +163,75 @@ describe('CookieBanner', () => {
     const cookieBanner = screen.queryByRole('dialog', { name: /Vi använder cookies/i });
     expect(cookieBanner).not.toBeInTheDocument();
   });
+
+  it('shows and hides the details section', async () => {
+    render(<App />);
+    // Details are initially hidden
+    expect(screen.queryByText(/Detaljerad cookie-information/i)).not.toBeInTheDocument();
+
+    const showDetailsButton = screen.getByRole('button', { name: /Visa detaljer/i });
+    fireEvent.click(showDetailsButton);
+
+    // Details are now visible
+    expect(await screen.findByText(/Detaljerad cookie-information/i)).toBeInTheDocument();
+
+    const hideDetailsButton = screen.getByRole('button', { name: /Dölj detaljer/i });
+    fireEvent.click(hideDetailsButton);
+
+    // Details are hidden again
+    await waitFor(() => {
+      expect(screen.queryByText(/Detaljerad cookie-information/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('navigates to the policy page and back', async () => {
+    render(<App />);
+
+    // Go to policy page
+    const policyButton = screen.getByRole('button', { name: /Läs mer om cookies/i });
+    fireEvent.click(policyButton);
+
+    expect(await screen.findByRole('heading', { name: /Policy för kakor/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Vi använder cookies/i })).not.toBeInTheDocument();
+
+    // Go back to settings
+    const settingsButton = screen.getByRole('button', { name: /Inställningar/i });
+    fireEvent.click(settingsButton);
+
+    expect(await screen.findByRole('heading', { name: /Vi använder cookies/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Policy för kakor/i })).not.toBeInTheDocument();
+  });
+
+  it('shows "Spara inställningar" button only when preferences are changed and selected', () => {
+    render(<App />);
+
+    expect(screen.getByRole('button', { name: /Neka alla/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Spara inställningar/i })).not.toBeInTheDocument();
+
+    const functionalityCheckbox = screen.getByLabelText(/Funktionella/i);
+
+    // Click to check it, "Spara" button should appear
+    fireEvent.click(functionalityCheckbox);
+    expect(screen.getByRole('button', { name: /Spara inställningar/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Neka alla/i })).not.toBeInTheDocument();
+
+    // Click to uncheck it, "Neka alla" should return
+    fireEvent.click(functionalityCheckbox);
+    expect(screen.getByRole('button', { name: /Neka alla/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Spara inställningar/i })).not.toBeInTheDocument();
+  });
+
+  it('adds and removes "modal-open" class from body', async () => {
+    render(<App />);
+    expect(document.body).toHaveClass('modal-open');
+
+    const acceptAllButton = screen.getAllByRole('button', { name: /Godkänn alla/i })[0];
+    fireEvent.click(acceptAllButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /Vi använder cookies/i })).not.toBeInTheDocument();
+    });
+
+    expect(document.body).not.toHaveClass('modal-open');
+  });
 });

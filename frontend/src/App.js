@@ -200,17 +200,14 @@ function HomePageContent() {
 
     const handleContactClick = () => {
         // Add contact functionality here
-        console.log('Contact clicked');
     };
 
     const handleCareerClick = () => {
         // Add career functionality here
-        console.log('Career clicked');
     };
 
     const handleServicesClick = () => {
         // Add services functionality here
-        console.log('Services clicked');
     };
 
     const handleAboutClick = () => {

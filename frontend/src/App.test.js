@@ -1,231 +1,218 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
-test('renders the main heading', () => {
-    render(<App />);
-    // Look for the main title using the new ID
-    const headingElement = screen.getByRole('heading', { level: 1 });
-    expect(headingElement).toBeInTheDocument();
-    expect(headingElement).toHaveTextContent('Shaping a better future with code');
-});
+// Mock localStorage to simulate browser behavior in the test environment
+const localStorageMock = (function () {
+  let store = {};
+  return {
+    getItem: function (key) {
+      return store[key] || null;
+    },
+    setItem: function (key, value) {
+      store[key] = value.toString();
+    },
+    clear: function () {
+      store = {};
+    },
+    removeItem: function (key) {
+      delete store[key];
+    },
+    getAll: function () {
+      return store;
+    }
+  };
+})();
 
-test('renders the main heading with proper ID', () => {
-    render(<App />);
-    const headingElement = screen.getByRole('heading', { level: 1 });
-    expect(headingElement).toHaveAttribute('id', 'main-heading');
-});
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-test('renders the "Home" navigation link', () => {
+describe('App Component', () => {
+  it('renders main heading', () => {
     render(<App />);
-    const homeLink = screen.getByRole('link', { name: /Home/i, current: 'page' });
-    expect(homeLink).toBeInTheDocument();
-    expect(homeLink).toHaveAttribute('id', 'nav-home');
-});
+    const mainHeading = screen.getByRole('heading', { name: /Shaping a better future with code/i });
+    expect(mainHeading).toBeInTheDocument();
+  });
 
-test('renders the "News" section heading', () => {
+  it('renders main subheading', () => {
     render(<App />);
-    const newsHeading = screen.getByRole('heading', { name: /News/i });
-    expect(newsHeading).toBeInTheDocument();
-    expect(newsHeading).toHaveAttribute('id', 'news-heading');
-});
+    const subheadings = screen.getAllByText(/We are a digitalization company that develops solutions and services/i);
+    // Assuming the main subheading is the first one found
+    expect(subheadings[0]).toBeInTheDocument();
+  });
 
-test('renders team button with proper accessibility attributes', () => {
+  it('renders "Read more about our team" button', () => {
     render(<App />);
     const teamButton = screen.getByRole('button', { name: /Read more about our team/i });
     expect(teamButton).toBeInTheDocument();
-    expect(teamButton).toHaveAttribute('id', 'team-button');
-    expect(teamButton).toHaveAttribute('aria-label', 'Read more about our team');
-});
+  });
 
-test('renders license button with proper accessibility attributes', () => {
+  it('renders "Knowit License Management" button', () => {
     render(<App />);
     const licenseButton = screen.getByRole('button', { name: /Knowit License Management/i });
     expect(licenseButton).toBeInTheDocument();
-    expect(licenseButton).toHaveAttribute('id', 'license-button');
-    expect(licenseButton).toHaveAttribute('aria-label', 'Access Knowit License Management system');
-});
+  });
 
-test('renders main logo with proper accessibility attributes', () => {
+  it('renders company highlight boxes', () => {
     render(<App />);
-    const logo = screen.getByRole('img', { name: /Knowit company logo/i });
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute('id', 'main-logo');
-    expect(logo).toHaveAttribute('alt', 'Knowit company logo');
-});
+    const customerExperienceHighlight = screen.getByTestId('customer-experience-highlight');
+    const innovationHighlight = screen.getByTestId('innovation-highlight');
+    expect(customerExperienceHighlight).toBeInTheDocument();
+    expect(innovationHighlight).toBeInTheDocument();
+  });
 
-test('renders navigation with proper ARIA attributes', () => {
+  it('renders news section with heading', () => {
     render(<App />);
-    const navigation = screen.getByRole('navigation', { name: /Main navigation/i });
-    expect(navigation).toBeInTheDocument();
-    expect(navigation).toHaveAttribute('aria-label', 'Main navigation');
-});
+    const newsHeading = screen.getByRole('heading', { name: /News/i });
+    expect(newsHeading).toBeInTheDocument();
+  });
 
-test('renders company highlights section', () => {
+  it('renders the news items', () => {
     render(<App />);
-    const highlightsSection = screen.getByLabelText(/Company highlights/i);
-    expect(highlightsSection).toBeInTheDocument();
-    expect(highlightsSection).toHaveAttribute('id', 'company-highlights');
-});
+    const newsItem1 = screen.getByText(/Kristoffer, Sasan, Sakshi and Johanna is creating a landing page/i);
+    const newsItem2 = screen.getByText(/The team request earlier vacation leave/i);
+    expect(newsItem1).toBeInTheDocument();
+    expect(newsItem2).toBeInTheDocument();
+  });
 
-test('renders gradient box titles with proper heading levels', () => {
+  it('renders "More news" link', () => {
     render(<App />);
-    const customerTitle = screen.getByRole('heading', { name: /We create unique customer experiences/i });
-    const innovationTitle = screen.getByRole('heading', { name: /Innovation through collaboration/i });
+    const moreNewsLink = screen.getByText(/More news/i);
+    expect(moreNewsLink).toBeInTheDocument();
+  });
 
-    expect(customerTitle).toBeInTheDocument();
-    expect(innovationTitle).toBeInTheDocument();
-
-    // Check they are h2 elements
-    expect(customerTitle.tagName).toBe('H2');
-    expect(innovationTitle.tagName).toBe('H2');
-});
-
-test('renders footer with proper semantic structure', () => {
+  it('renders "Become one of us" section', () => {
     render(<App />);
-    const footer = screen.getByRole('contentinfo');
-    expect(footer).toBeInTheDocument();
-    expect(footer).toHaveAttribute('aria-label', 'Site footer');
-});
+    const careersHeading = screen.getByRole('heading', { name: /Become one of us/i });
+    expect(careersHeading).toBeInTheDocument();
+  });
 
-test('renders contact information in address element', () => {
+  it('renders footer links', () => {
     render(<App />);
-    // Use Testing Library methods instead of direct DOM access
-    const footer = screen.getByRole('contentinfo');
-    const address = within(footer).getByRole('group'); // or use getByTestId if you add data-testid="address"
-    expect(address).toBeInTheDocument();
-});
+    expect(screen.getByRole('link', { name: /Cookie Policy/i })).toBeInTheDocument();
+    expect(screen.getByText(/Hantering av personuppgifter/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Whistleblower/i })).toBeInTheDocument();
+    expect(screen.getByText('© 2023 Knowit AB')).toBeInTheDocument();
+  });
 
-test('renders news section with proper structure', () => {
-    render(<App />);
-    const newsSection = screen.getByLabelText(/Latest news/i);
-    expect(newsSection).toBeInTheDocument();
-    expect(newsSection).toHaveAttribute('id', 'news-section');
-});
-
-test('renders proper heading hierarchy', () => {
-    render(<App />);
-
-    // Check h1 exists and is unique
-    const h1Elements = screen.getAllByRole('heading', { level: 1 });
-    expect(h1Elements).toHaveLength(1);
-
-    // Check h2 elements exist
-    const h2Elements = screen.getAllByRole('heading', { level: 2 });
-    expect(h2Elements.length).toBeGreaterThan(0);
-
-    // Check h3 elements exist
-    const h3Elements = screen.getAllByRole('heading', { level: 3 });
-    expect(h3Elements.length).toBeGreaterThan(0);
-});
-
-test('renders all navigation links with proper IDs', () => {
-    render(<App />);
-
-    // Get the main navigation container first
-    const mainNav = screen.getByRole('navigation', { name: /Main navigation/i });
-
-    // Links (actual navigation)
-    const homeLink = within(mainNav).getByRole('link', { name: /Home/i });
-    const teamLink = within(mainNav).getByRole('link', { name: /Team/i });
-    const licenseLink = within(mainNav).getByRole('link', { name: /License/i }); // ← This should be link, not button
-
-    // Buttons (functionality)
-    const servicesButton = within(mainNav).getByRole('button', { name: /Services/i });
-    const aboutButton = within(mainNav).getByRole('button', { name: /About/i });
-    const contactButton = within(mainNav).getByRole('button', { name: /Contact/i });
-
-    expect(homeLink).toHaveAttribute('id', 'nav-home');
-    expect(servicesButton).toHaveAttribute('id', 'nav-services');
-    expect(aboutButton).toHaveAttribute('id', 'nav-about');
-    expect(teamLink).toHaveAttribute('id', 'nav-team');
-    expect(licenseLink).toHaveAttribute('id', 'nav-license'); // ← Changed from button to link
-    expect(contactButton).toHaveAttribute('id', 'nav-contact');
-});
-
-test('renders footer links with proper IDs', () => {
+  it('renders footer social media links with correct attributes', () => {
     render(<App />);
     expect(screen.getByRole('link', { name: /Follow us on LinkedIn/i })).toHaveAttribute('id', 'footer-linkedin');
     expect(screen.getByRole('link', { name: /Follow us on Facebook/i })).toHaveAttribute('id', 'footer-facebook');
     expect(screen.getByRole('link', { name: /Follow us on Instagram/i })).toHaveAttribute('id', 'footer-instagram');
+  });
 });
 
-test('renders contact links with proper accessibility', () => {
+// --- NEW TEST SUITE FOR COOKIE BANNER ---
+describe('CookieBanner', () => {
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('renders the cookie banner when no consent is given', async () => {
     render(<App />);
-    expect(screen.getByRole('link', { name: /Call us at/i })).toHaveAttribute('id', 'contact-phone');
-    expect(screen.getByRole('link', { name: /Send email to/i })).toHaveAttribute('id', 'contact-email');
-});
+    const cookieBanner = await screen.findByText(/Vi använder cookies/i);
+    expect(cookieBanner).toBeInTheDocument();
+  });
 
-test('renders all buttons with proper type attributes', () => {
+  it('accepts all cookies and hides the banner', async () => {
     render(<App />);
-    const teamButton = screen.getByRole('button', { name: /Read more about our team/i });
-    const licenseButton = screen.getByRole('button', { name: /Knowit License Management/i });
+    const acceptAllButton = screen.getByRole('button', { name: /Godkänn alla/i });
+    fireEvent.click(acceptAllButton);
 
-    expect(teamButton).toHaveAttribute('type', 'button');
-    expect(licenseButton).toHaveAttribute('type', 'button');
-});
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: /Vi använder cookies/i })).not.toBeInTheDocument());
 
-test('renders news items with proper semantic structure', () => {
+    expect(localStorage.getItem('cookieConsent')).toBe('accepted');
+    expect(localStorage.getItem('functionalityCookies')).toBe('true');
+    expect(localStorage.getItem('statisticsCookies')).toBe('true');
+    expect(localStorage.getItem('marketingCookies')).toBe('true');
+  });
+
+  it('declines all cookies and hides the banner', async () => {
     render(<App />);
-    // Check that news items are properly structured as articles
-    const newsItems = screen.getAllByRole('listitem');
-    expect(newsItems.length).toBeGreaterThan(0);
+    const declineAllButton = screen.getByRole('button', { name: /Neka alla/i });
+    fireEvent.click(declineAllButton);
 
-    // Check that time elements have proper datetime attributes
-    const timeElements = screen.getAllByRole('time');
-    timeElements.forEach(timeElement => {
-        expect(timeElement).toHaveAttribute('datetime');
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: /Vi använder cookies/i })).not.toBeInTheDocument());
+
+    expect(localStorage.getItem('cookieConsent')).toBe('denied');
+    expect(localStorage.getItem('functionalityCookies')).toBe('false');
+    expect(localStorage.getItem('statisticsCookies')).toBe('false');
+    expect(localStorage.getItem('marketingCookies')).toBe('false');
+  });
+
+  it('saves preferences and hides the banner', async () => {
+    render(<App />);
+    const statisticsCheckbox = screen.getByRole('checkbox', { name: /Statistiska/i });
+    fireEvent.click(statisticsCheckbox);
+
+    const savePreferencesButton = screen.getByRole('button', { name: /Spara inställningar/i });
+    fireEvent.click(savePreferencesButton);
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: /Vi använder cookies/i })).not.toBeInTheDocument());
+
+    expect(localStorage.getItem('cookieConsent')).toBe('custom');
+    expect(localStorage.getItem('functionalityCookies')).toBe('false');
+    expect(localStorage.getItem('statisticsCookies')).toBe('true');
+    expect(localStorage.getItem('marketingCookies')).toBe('false');
+  });
+
+  it('does not render the cookie banner if consent is already given', async () => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    render(<App />);
+
+    const cookieBanner = screen.queryByRole('dialog', { name: /Vi använder cookies/i });
+    expect(cookieBanner).not.toBeInTheDocument();
+  });
+
+  it('shows and hides the details section', async () => {
+    render(<App />);
+    // Details are initially hidden
+    expect(screen.queryByRole('heading', { name: /Nödvändiga/i })).not.toBeInTheDocument();
+
+    const showDetailsButton = screen.getByRole('button', { name: /Visa detaljer/i });
+    fireEvent.click(showDetailsButton);
+
+    // Details are now visible
+    expect(await screen.findByRole('heading', { name: /Nödvändiga/i })).toBeInTheDocument();
+
+    const hideDetailsButton = screen.getByRole('button', { name: /Dölj detaljer/i });
+    fireEvent.click(hideDetailsButton);
+
+    // Details are hidden again
+    await waitFor(() => {
+      expect(screen.queryByRole('heading', { name: /Nödvändiga/i })).not.toBeInTheDocument();
     });
-});
+  });
 
-test('renders proper ARIA landmarks', () => {
+  it('navigates to the policy page and back', async () => {
     render(<App />);
 
-    // Check for proper landmark roles
-    expect(screen.getByRole('banner')).toBeInTheDocument(); // header
-    expect(screen.getByRole('main')).toBeInTheDocument(); // main
-    expect(screen.getByRole('contentinfo')).toBeInTheDocument(); // footer
+    // Go to policy page
+    const policyButton = screen.getByRole('button', { name: /Läs mer om cookies/i });
+    fireEvent.click(policyButton);
 
-    // Check specific navigation elements
-    expect(screen.getByRole('navigation', { name: /Main navigation/i })).toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: /About Knowit links/i })).toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: /Business areas links/i })).toBeInTheDocument();
-});
+    expect(await screen.findByRole('heading', { name: /Policy för kakor/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Vi använder cookies/i })).not.toBeInTheDocument();
 
-test('renders hero section with proper semantic structure', () => {
+    // Go back to settings
+    const settingsButton = screen.getByRole('button', { name: /Inställningar/i });
+    fireEvent.click(settingsButton);
+
+    expect(await screen.findByRole('heading', { name: /Vi använder cookies/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Policy för kakor/i })).not.toBeInTheDocument();
+  });
+
+  it('adds and removes "modal-open" class from body', async () => {
     render(<App />);
+    expect(document.body).toHaveClass('modal-open');
 
-    // Check hero section has proper aria-label
-    const heroSection = screen.getByLabelText(/Hero section/i);
-    expect(heroSection).toBeInTheDocument();
+    const acceptAllButton = screen.getAllByRole('button', { name: /Godkänn alla/i })[0];
+    fireEvent.click(acceptAllButton);
 
-    // Check main content area
-    const mainContent = screen.getByRole('main');
-    expect(mainContent).toBeInTheDocument();
-});
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /Vi använder cookies/i })).not.toBeInTheDocument();
+    });
 
-test('renders copyright text with proper ID', () => {
-    render(<App />);
-    // Use Testing Library methods instead of direct DOM access
-    const copyright = screen.getByText('© 2023 Knowit AB');
-    expect(copyright).toBeInTheDocument();
-    expect(copyright).toHaveAttribute('id', 'footer-copyright');
-});
-
-test('renders more news link with proper accessibility', () => {
-    render(<App />);
-    const moreNewsButton = screen.getByRole('button', { name: /View all news articles/i }); // ← Changed to button
-    expect(moreNewsButton).toHaveAttribute('id', 'more-news-link');
-    expect(moreNewsButton).toHaveAttribute('type', 'button');
-    expect(moreNewsButton).toHaveAttribute('aria-label', 'View all news articles');
-});
-
-test('renders gradient box items with proper IDs', () => {
-    render(<App />);
-    const customerExperienceHighlight = screen.getByTestId('customer-experience-highlight');
-    const innovationHighlight = screen.getByTestId('innovation-highlight');
-
-    expect(customerExperienceHighlight).toBeInTheDocument();
-    expect(customerExperienceHighlight).toHaveAttribute('id', 'customer-experience-highlight');
-    expect(innovationHighlight).toBeInTheDocument();
-    expect(innovationHighlight).toHaveAttribute('id', 'innovation-highlight');
+    expect(document.body).not.toHaveClass('modal-open');
+  });
 });

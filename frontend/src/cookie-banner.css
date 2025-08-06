@@ -1,0 +1,430 @@
+:root {
+    /* Browser-specific text adjustments */
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    color-scheme: light;
+    font-feature-settings: "kern";
+    border-width: 0;
+    border-style: solid;
+    word-wrap: break-word;
+    box-sizing: border-box; /* Added from the provided styles */
+}
+
+/* Class to prevent body scroll when modal is open */
+.modal-open {
+    overflow: hidden;
+}
+
+/* Cookie Overlay */
+.coi-overlay {
+    display: flex;
+    /* Updated z-index to match the higher value from provided styles */
+    z-index: 99999999999; 
+    position: fixed;
+    inset: 0; /* Shorthand for top, right, bottom, left: 0 */
+    background: rgba(0,0,0,0.7);
+    justify-content: center; /* Added from the provided styles */
+    align-items: center;     /* Added from the provided styles */
+    padding: 20px;           /* Added from the provided styles */
+    box-sizing: border-box;  /* Added from the provided styles, important for padding */
+    width: 100%;             /* Explicitly set width and height for clarity with inset */
+    height: 100%;            /* Explicitly set width and height for clarity with inset */
+}
+
+/* Banner wrapper */
+.coi-banner__wrapper {
+    width: 600px;
+    max-width: 100%;
+    background: #fff;
+    overflow: hidden; /* Hide overflow from the wrapper itself */
+    border-radius: 5px;
+    line-height: normal;
+    /* Make the wrapper a flex container and constrain its height for scrolling */
+    display: flex;
+    flex-direction: column;
+    /* The overlay has 20px padding top/bottom, so we subtract 40px from the viewport height.
+       This ensures the modal doesn't extend off-screen. */
+    max-height: calc(100vh - 40px);
+}
+
+.coi-banner__page {
+    overflow-y: auto; /* When content overflows, a scrollbar will appear here */
+    /* Add basic scrollbar styling for Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fff;
+}
+
+/* Custom Scrollbar Styling for Webkit browsers (Chrome, Safari, Edge) */
+.coi-banner__page::-webkit-scrollbar {
+    width: 12px; /* Width of the entire scrollbar */
+}
+
+.coi-banner__page::-webkit-scrollbar-track {
+    background: #fff; /* Match the banner background */
+}
+
+.coi-banner__page::-webkit-scrollbar-thumb {
+    background-color: #ccc;    /* Color of the scroll thumb */
+    border-radius: 6px;        /* Roundness of the scroll thumb */
+    border: 3px solid #fff;    /* Creates padding around thumb */
+}
+
+.coi-banner__page::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa; /* Darken thumb on hover */
+}
+
+.coi-banner__page::-webkit-scrollbar-button {
+    display: none; /* Hide the scrollbar's up and down arrows */
+}
+
+/* Summary section styling */
+.coi-banner__summary {
+    background: #f1f0ed;
+    padding: 40px;
+    width: 100%;
+}
+
+/* Banner header */
+.coi-banner__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Align items to the ends */
+    margin-bottom: 16px;
+}
+
+/* Logo in cookie banner */
+.coi-banner__logo {
+    width: 140px;
+    filter: invert(100%);
+}
+
+/* Branding */
+.coi-banner__branding {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern";
+    word-wrap: break-word;
+    font-size: 10px !important;
+    color: #444444;
+    white-space: normal;
+    text-align: left;
+    line-height: normal;
+}
+
+.coi-banner__branding a.coi-external-link {
+    font-weight: 700; /* Use 'bold' (700) to ensure it stands out */
+    display: block;
+    text-decoration: underline;
+}
+
+/* Headline */
+.coi-banner__headline {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+/* Main text container */
+.coi-banner__text {
+    text-align: left; /* Ensure all content within is left-aligned */
+}
+
+/* Main text */
+.coi-banner__maintext {
+    font-size: 15px;
+    line-height: 1.4 !important; /* Increased for better readability */
+    color: #222;
+}
+
+.coi-banner__maintext p {
+    margin: 0 0 1em; /* Add space after each paragraph */
+}
+
+/* Policy link */
+.coi-banner__policy {
+    color: #222; /* Darker link color */
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+/* Consent group */
+.coi-banner-consent-group {
+    background: #f1f0ed;
+    margin-top: 24px;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+/* Consent field */
+.coi-banner-consent-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: solid 1px #ccc;
+    /* Padding is moved to the inner .coi-checkboxes element */
+}
+
+.coi-banner-consent-field:first-child {
+    padding-left: 0;
+}
+
+.coi-banner-consent-field:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+/* Switch style for checkboxes */
+.coi-checkboxes {
+    display: flex;
+    flex-direction: column; /* Stack text and switch vertically */
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    gap: 16px; /* Add space between text and switch */
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    font-size: 15px;
+    width: 100%; /* Ensure the label takes full width */
+    height: 100%; /* Allow label to fill the column height */
+    /* Add padding here so the border on the parent goes full height */
+    padding: 20px 0;
+}
+
+.coi-checkboxes-text {
+    text-align: center;
+}
+
+/* Container for the switch elements */
+.coi-checkboxes-switch {
+    position: relative;
+    width: 52px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.coi-consent-banner__switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Hide original checkbox */
+.coi__checkbox {
+    position: absolute;
+    opacity: 0; /* Make it invisible */
+    cursor: pointer;
+    /* Make the checkbox cover the entire switch area to ensure it's clickable */
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 1; /* Ensure it's on top of the visual toggle */
+}
+
+/* The track of the switch */
+.checkbox-toggle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 32px;
+    width: 52px;
+    background-color: #BDBDBD;
+    border-radius: 16px;
+    transition: background-color 0.2s;
+}
+
+/* The knob of the switch */
+.checkbox-toggle::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+/* When the checkbox is checked, change the track color and move the knob */
+.coi__checkbox:checked + .checkbox-toggle {
+    background-color: #333;
+}
+
+.coi__checkbox:checked + .checkbox-toggle::after {
+    transform: translateX(20px);
+}
+
+/* Disabled state */
+.coi__checkbox:disabled + .checkbox-toggle {
+    background-color: #E0EBE4;
+    cursor: not-allowed;
+}
+
+.coi__checkbox:disabled + .checkbox-toggle::after {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.coi__checkbox:disabled:checked + .checkbox-toggle {
+    background-color: #888;
+}
+
+.coi__checkbox:disabled:checked + .checkbox-toggle::after {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Page footer */
+.coi-banner__page-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center footer content */
+    gap: 16px;
+    margin-top: 24px;
+    padding: 0 40px; /* Add horizontal padding to align with other sections */
+}
+
+.coi-banner__page-footer[aria-label="third-menu"] {
+    background: #FFFFFF;
+    width: 100%;
+    padding: 30px 40px;
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    z-index: 5000;
+    /* Overrides for policy page footer */
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0;
+    box-sizing: border-box;
+}
+
+/* Button group */
+.coi-button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.coi-banner__accept {
+    /* Styles provided for accept button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+    text-decoration: none;
+
+    background: #333333;
+    color: #fff;
+    border: 0;
+    padding: 15px;
+    border-radius: 3px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: normal;
+
+    cursor: pointer;
+    transition: all 300ms ease;
+    flex: 1;
+    max-width: 50%;
+    margin: 10px;
+    margin-right: 0px;
+}
+
+.coi-banner__accept:hover {
+    background: #555;
+}
+
+.coi-banner__decline,
+.coi-banner__lastpage {
+    /* Styles provided for declineButton */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+
+    background: #f6f6f6;
+    color: #222;
+    border: solid 1px #888888;
+    padding: 15px;
+    border-radius: 3px;
+    
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: normal;
+
+    cursor: pointer;
+    transition: all 300ms ease;
+    flex: 1;
+    max-width: 50%;
+    margin: 10px;
+    margin-left: 0px;
+}
+
+.coi-banner__decline:hover,
+.coi-banner__lastpage:hover {
+    background: #ddd; /* Darken background on hover */
+}
+
+/* Details toggle */
+.coi-toggle-group {
+    display: flex;
+    gap: 12px;
+}
+
+.coi-toggle-group button {
+    background: none;
+    border: none;
+    color: #222;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+/* Details box */
+.coi-consent-banner__categories-wrapper {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+    font-size: 15px;
+    color: #222;
+}
+
+/* Cookie declaration */
+.cookiedeclaration_wrapper {
+    margin-top: 24px;
+    font-size: 15px;
+    color: #222;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .coi-banner__wrapper {
+        padding: 16px 8px;
+        max-width: 98vw;
+    }
+}

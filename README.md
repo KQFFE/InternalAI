@@ -237,7 +237,8 @@ The InternalAI frontend uses two types of tests for comprehensive coverage:
 
 ### 2.1 Quick Test Run (All Tests)
 
-For WSL users, a convenient script runs all tests at once:
+For WSL users, a convenient script runs all tests at once. To run on Windows, use Git Bash
+which provides a Unix-like shell environment that understands chmod and ./
 
 ```bash
 # Make script executable (first time only)

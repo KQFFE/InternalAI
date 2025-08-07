@@ -106,52 +106,60 @@ echo "======================="
 
 cd backend
 
+# Determine the correct path for the virtual environment executables
+# Check if running in a Windows environment (like Git Bash)
+if [[ "${MSYSTEM}" == "MINGW64" ]]; then
+    # Use the Windows-style Scripts directory
+    VENV_BIN_PATH="../.venv/Scripts"
+else
+    # Use the Unix-style bin directory
+    VENV_BIN_PATH="../.venv/bin"
+fi
+
 # Check if virtual environment exists
-if [ ! -d "../.venv" ]; then
+if [ ! -d "$VENV_BIN_PATH" ]; then
     echo -e "${YELLOW}⚠️ Virtual environment not found. Creating one...${NC}"
     cd ..
     python -m venv .venv
     cd backend
 fi
 
-# Activate virtual environment
-echo "🔧 Activating virtual environment..."
-
-# Check if running in a Windows environment (like Git Bash)
-if [ "${MSYSTEM}" == "MINGW64" ]; then
-    echo "Detected Windows environment (Git Bash)."
-    source ../.venv/Scripts/activate
+# Activate virtual environment (this is still a good practice for other environment variables)
+# We now use the variable `VENV_BIN_PATH` to find the correct activation script
+if [ -f "$VENV_BIN_PATH/activate" ]; then
+    echo "🔧 Activating virtual environment..."
+    source "$VENV_BIN_PATH/activate"
 else
-    echo "Detected Unix-like environment (WSL, Linux, macOS)."
-    source ../.venv/bin/activate
-fi
-
-# Install/update dependencies
-echo "📦 Installing/updating backend dependencies..."
-pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt > /dev/null 2>&1
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Failed to install backend dependencies${NC}"
+    echo -e "${RED}❌ Could not find virtual environment activation script at: $VENV_BIN_PATH/activate${NC}"
+    cd ..
     exit 1
 fi
 
-# 4. Backend Tests
-echo ""
-echo "🧪 Step 4/4: Running Backend Tests"
-echo "Command: pytest"
-echo "-----------------"
-pytest
+# Install/update dependencies using the specific pip from the venv
+echo "📦 Installing/updating backend dependencies..."
+"$VENV_BIN_PATH/pip" install --upgrade pip > /dev/null 2>&1
+"$VENV_BIN_PATH/pip" install -r requirements.txt > /dev/null 2>&1
+echo -e "${GREEN}✅ Backend dependencies installed.${NC}"
 
-BACKEND_TEST_EXIT=$?
+# Run tests using the specific pytest from the venv
+echo "🧪 Running pytest..."
+"$VENV_BIN_PATH/pytest"
 
-if [ $BACKEND_TEST_EXIT -eq 0 ]; then
-    echo -e "✅ ${GREEN}Backend tests passed${NC}"
+TEST_RESULT=$?
+
+# Deactivate virtual environment
+deactivate 2>/dev/null || true
+
+# Check test result
+if [ $TEST_RESULT -eq 0 ]; then
+    echo -e "${GREEN}✅ Backend tests passed.${NC}"
 else
-    echo -e "❌ ${RED}Backend tests failed${NC}"
+    echo -e "${RED}❌ Backend tests failed.${NC}"
 fi
 
 cd ..
+
+return $TEST_RESULT
 
 # ================================
 # SUMMARY REPORT

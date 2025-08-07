@@ -116,7 +116,15 @@ fi
 
 # Activate virtual environment
 echo "🔧 Activating virtual environment..."
-source ../.venv/bin/activate
+
+# Check if running in a Windows environment (like Git Bash)
+if [ "${MSYSTEM}" == "MINGW64" ]; then
+    echo "Detected Windows environment (Git Bash)."
+    source ../.venv/Scripts/activate
+else
+    echo "Detected Unix-like environment (WSL, Linux, macOS)."
+    source ../.venv/bin/activate
+fi
 
 # Install/update dependencies
 echo "📦 Installing/updating backend dependencies..."

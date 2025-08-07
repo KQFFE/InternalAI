@@ -7,8 +7,10 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, render_template, jsonify, send_from_directory, request
+from flask import Flask, render_template, jsonify, send_from_directory, request, session
 from flask_cors import CORS
+from functools import wraps
+from werkzeug.utils import secure_filename
 
 def get_flask_version():
     """Get Flask version using the recommended method"""
@@ -36,12 +38,22 @@ app = Flask(__name__,
             template_folder='templates',
             static_url_path='/static')
 
+# ================================
+# Configuration
+# ================================
 # Configure CORS for full-stack development
 CORS(app, origins=['*'])
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['DEBUG'] = os.environ.get('FLASK_ENV') != 'production'
+# Admin authentication configuration
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+UPLOAD_FOLDER = 'static/img'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ================================
 # STARTUP LOGGING (Flask 3.x compatible)
@@ -86,6 +98,74 @@ def get_team_data():
     except Exception as e:
         logger.error(f"Error loading team data: {e}")
         return []
+
+def allowed_file(filename):
+    """Check if uploaded file has allowed extension"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def generate_safe_filename(name):
+    """Generate safe filename from person's name"""
+    # Convert to lowercase, replace spaces with hyphens, handle Swedish characters
+    safe_name = name.lower().replace(' ', '-')
+    safe_name = safe_name.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
+    safe_name = safe_name.replace('é', 'e').replace('ü', 'u')
+    # Remove any other non-alphanumeric characters except hyphens
+    safe_name = ''.join(c for c in safe_name if c.isalnum() or c == '-')
+    return f"{safe_name}.jpg"
+
+def save_team_data(team_data):
+    """Save team data to JSON file - integrates with your existing get_team_data paths"""
+    try:
+        # Use the same path logic as your existing get_team_data function
+        possible_paths = [
+            'static/team.json',                    # Deployed location
+            '../frontend/public/team.json',        # Development location  
+            'frontend/public/team.json',           # Alternative dev location
+            'team.json'                           # Root location
+        ]
+        
+        # Use the first path that exists, or default to team.json
+        save_path = 'team.json'
+        for path in possible_paths:
+            if os.path.exists(path):
+                save_path = path
+                break
+        
+        with open(save_path, 'w', encoding='utf-8') as f:
+            json.dump(team_data, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Team data saved to {save_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save team data: {e}")
+        return False
+
+def sort_team_data(team_data):
+    """Sort team data by role priority then by first name"""
+    role_order = {
+        "Tester": 1,
+        "Business Analyst": 2,
+        "Business Analyst & Product Owner": 2,
+        "Manager": 3
+    }
+    
+    return sorted(team_data, key=lambda x: (
+        role_order.get(x['role'], 99),
+        x['name'].split()[0]  # Sort by first name
+    ))
+
+# ================================
+# AUTHENTICATION DECORATOR
+# ================================
+
+def require_admin(f):
+    """Decorator to require admin authentication for routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_authenticated'):
+            return jsonify({'error': 'Authentication required'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
 
 # ================================
 # MAIN ROUTES - SERVE REACT APP
@@ -394,6 +474,282 @@ def handle_exception(e):
             'message': 'Critical application error',
             'timestamp': datetime.now().isoformat()
         }), 500
+
+    # ================================
+# AUTHENTICATION ROUTES
+# ================================
+
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    """Admin login endpoint"""
+    try:
+        data = request.get_json()
+        if not data or 'password' not in data:
+            return jsonify({'error': 'Password required'}), 400
+        
+        password = data.get('password')
+        
+        if password == ADMIN_PASSWORD:
+            session['admin_authenticated'] = True
+            logger.info("Admin login successful")
+            return jsonify({
+                'success': True, 
+                'message': 'Logged in successfully'
+            })
+        else:
+            logger.warning("Failed admin login attempt")
+            return jsonify({'error': 'Invalid password'}), 401
+            
+    except Exception as e:
+        logger.error(f"Error in admin login: {e}")
+        return jsonify({'error': 'Login failed'}), 500
+
+@app.route('/api/admin/logout', methods=['POST'])
+def admin_logout():
+    """Admin logout endpoint"""
+    session.pop('admin_authenticated', None)
+    logger.info("Admin logged out")
+    return jsonify({'success': True, 'message': 'Logged out successfully'})
+
+@app.route('/api/admin/check', methods=['GET'])
+def check_admin():
+    """Check admin authentication status"""
+    authenticated = session.get('admin_authenticated', False)
+    return jsonify({'authenticated': authenticated})
+
+# ================================
+# TEAM MANAGEMENT ROUTES
+# ================================
+
+@app.route('/api/admin/team', methods=['GET'])
+@require_admin
+def get_admin_team():
+    """Get all team members for admin (including inactive)"""
+    try:
+        team_data = get_team_data()
+        return jsonify({
+            'success': True,
+            'members': team_data,
+            'count': len(team_data),
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting admin team data: {e}")
+        return jsonify({'error': 'Failed to load team data'}), 500
+
+@app.route('/api/admin/team/add', methods=['POST'])
+@require_admin
+def add_team_member():
+    """Add new team member with optional image upload"""
+    try:
+        # Get form data
+        name = request.form.get('name', '').strip()
+        role = request.form.get('role', '').strip()
+        linkedin_url = request.form.get('linkedinUrl', '').strip()
+        active = request.form.get('active', 'true').lower() == 'true'
+        
+        # Validate required fields
+        if not name or not role or not linkedin_url:
+            return jsonify({'error': 'Name, role, and LinkedIn URL are required'}), 400
+        
+        # Handle file upload
+        image_filename = '/img/fallback-knowit.png'  # Default fallback image
+        
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    # Generate safe filename based on person's name
+                    filename = generate_safe_filename(name)
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    
+                    # Save the file directly (no processing)
+                    file.save(filepath)
+                    image_filename = f'/img/{filename}'
+                    logger.info(f"Image saved: {filepath}")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to save image: {e}")
+                    # Continue with default image if upload fails
+        
+        # Create new member object
+        new_member = {
+            'name': name,
+            'role': role,
+            'profilePicture': image_filename,
+            'linkedinUrl': linkedin_url,
+            'active': active
+        }
+        
+        # Load existing team data using your existing function
+        team_data = get_team_data()
+        
+        # Check for duplicate names
+        if any(member['name'].lower() == name.lower() for member in team_data):
+            return jsonify({'error': 'A team member with this name already exists'}), 400
+        
+        # Add new member
+        team_data.append(new_member)
+        
+        # Sort team data
+        team_data = sort_team_data(team_data)
+        
+        # Save to file
+        if save_team_data(team_data):
+            logger.info(f"Added new team member: {name}")
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully added {name} to the team',
+                'member': new_member
+            })
+        else:
+            return jsonify({'error': 'Failed to save team data'}), 500
+            
+    except Exception as e:
+        logger.error(f"Failed to add team member: {e}")
+        return jsonify({'error': f'Failed to add team member: {str(e)}'}), 500
+
+@app.route('/api/admin/team/<int:index>/update', methods=['POST'])
+@require_admin
+def update_team_member(index):
+    """Update existing team member"""
+    try:
+        team_data = get_team_data()
+        
+        if index < 0 or index >= len(team_data):
+            return jsonify({'error': 'Team member not found'}), 404
+        
+        # Get current member
+        member = team_data[index]
+        original_name = member['name']
+        
+        # Update fields from form data
+        member['name'] = request.form.get('name', member['name']).strip()
+        member['role'] = request.form.get('role', member['role']).strip()
+        member['linkedinUrl'] = request.form.get('linkedinUrl', member['linkedinUrl']).strip()
+        member['active'] = request.form.get('active', str(member['active'])).lower() == 'true'
+        
+        # Validate required fields
+        if not member['name'] or not member['role'] or not member['linkedinUrl']:
+            return jsonify({'error': 'Name, role, and LinkedIn URL are required'}), 400
+        
+        # Handle image update
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    # Generate safe filename based on (possibly updated) name
+                    filename = generate_safe_filename(member['name'])
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    
+                    # Save new image
+                    file.save(filepath)
+                    member['profilePicture'] = f'/img/{filename}'
+                    logger.info(f"Updated image for {member['name']}: {filepath}")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to save updated image: {e}")
+                    # Continue without updating image if upload fails
+        
+        # Re-sort team data in case role or name changed
+        team_data = sort_team_data(team_data)
+        
+        # Save changes
+        if save_team_data(team_data):
+            logger.info(f"Updated team member: {original_name} -> {member['name']}")
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully updated {member["name"]}',
+                'member': member
+            })
+        else:
+            return jsonify({'error': 'Failed to save changes'}), 500
+            
+    except Exception as e:
+        logger.error(f"Failed to update team member: {e}")
+        return jsonify({'error': f'Failed to update team member: {str(e)}'}), 500
+
+@app.route('/api/admin/team/<int:index>/toggle', methods=['POST'])
+@require_admin
+def toggle_team_member(index):
+    """Toggle team member active status"""
+    try:
+        team_data = get_team_data()
+        
+        if index < 0 or index >= len(team_data):
+            return jsonify({'error': 'Team member not found'}), 404
+        
+        member = team_data[index]
+        member['active'] = not member['active']
+        status = 'activated' if member['active'] else 'deactivated'
+        
+        if save_team_data(team_data):
+            logger.info(f"Toggled team member status: {member['name']} -> {status}")
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully {status} {member["name"]}',
+                'member': member
+            })
+        else:
+            return jsonify({'error': 'Failed to save changes'}), 500
+            
+    except Exception as e:
+        logger.error(f"Failed to toggle team member: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/team/<int:index>', methods=['DELETE'])
+@require_admin
+def delete_team_member(index):
+    """Delete team member permanently"""
+    try:
+        team_data = get_team_data()
+        
+        if index < 0 or index >= len(team_data):
+            return jsonify({'error': 'Team member not found'}), 404
+        
+        deleted_member = team_data.pop(index)
+        
+        if save_team_data(team_data):
+            logger.info(f"Deleted team member: {deleted_member['name']}")
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully deleted {deleted_member["name"]}',
+                'deleted_member': deleted_member
+            })
+        else:
+            return jsonify({'error': 'Failed to save changes'}), 500
+            
+    except Exception as e:
+        logger.error(f"Failed to delete team member: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ================================
+# UTILITY/DEBUG ROUTES
+# ================================
+
+@app.route('/api/admin/debug/upload-test', methods=['GET'])
+@require_admin
+def debug_upload():
+    """Debug endpoint to check upload directory status"""
+    try:
+        upload_info = {
+            'upload_folder': UPLOAD_FOLDER,
+            'upload_folder_exists': os.path.exists(UPLOAD_FOLDER),
+            'upload_folder_writable': os.access(UPLOAD_FOLDER, os.W_OK),
+            'allowed_extensions': list(ALLOWED_EXTENSIONS),
+            'current_images': []
+        }
+        
+        if os.path.exists(UPLOAD_FOLDER):
+            upload_info['current_images'] = [
+                f for f in os.listdir(UPLOAD_FOLDER) 
+                if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+            ]
+        
+        return jsonify(upload_info)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ================================
 # MAIN APPLICATION ENTRY POINT

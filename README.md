@@ -235,7 +235,21 @@ The InternalAI frontend uses two types of tests for comprehensive coverage:
 - **Jest Unit Tests** for component testing (using React Testing Library)
 - **Playwright E2E Tests** for end-to-end testing
 
-### 2.1 How to Run Tests
+### 2.1 Quick Test Run (All Tests)
+
+For WSL users, a convenient script runs all tests at once:
+
+```bash
+# Make script executable (first time only)
+chmod +x run_all_tests.sh
+
+# Run all tests
+./run_all_tests.sh
+```
+
+This script runs frontend unit tests, E2E tests, backend tests, and code quality checks in sequence.
+
+### 2.2 Individual Test Commands
 
 Whether you are using Windows PowerShell or a WSL terminal, the commands to run frontend tests are similar.
 
@@ -269,6 +283,7 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         ```bash
         npm test -- --coverage --watchAll=false
         ```
+
 #### **End-to-End Tests (Playwright):**
 4.  **Run E2E tests:**
     ```bash
@@ -353,7 +368,7 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
     
     **Note:** ESLint checks for code quality, best practices, and Testing Library usage patterns. The pipeline uses the same commands, so running locally helps catch issues before pushing code.
 
-### 2.2 Where to Add New Tests
+### 2.3 Where to Add New Tests
 
 #### **Unit Tests (Jest):**
 * **Frontend (React) Unit Tests:**
@@ -399,7 +414,7 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
         ```
     * `pytest` automatically finds files with `test_*.py` pattern within the `backend` directory.
 
-### 2.3 Test Types Summary
+### 2.4 Test Types Summary
 
 | Test Type | Command | Purpose | Location | Extension |
 |-----------|---------|---------|----------|-----------|

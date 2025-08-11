@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import './TeamPage.css'; // Create this CSS file for specific team page styles
-import './App.css'; // Import App.css to inherit styles like the logo positioning
-import './style.css'; // Import style.css as it contains general styles including nav
 
 function TeamPage() {
     const [teamMembers, setTeamMembers] = useState([]);

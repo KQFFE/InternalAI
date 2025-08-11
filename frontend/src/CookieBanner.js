@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './cookie-banner.css';
 
-// --- Cookie Banner Component ---
+
 function CookieBanner({
     show,
     onAcceptAll,
@@ -180,6 +180,6 @@ function CookieBanner({
         </div>
     );
 }
-// --- End Cookie Banner Component ---
+
 
 export default CookieBanner;

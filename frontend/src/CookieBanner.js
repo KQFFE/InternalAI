@@ -147,24 +147,14 @@ function CookieBanner({
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
                                 <div className="coi-consent-banner__category-container">
                                     <div className="coi-consent-banner__category-controls">
-                                        <button
-                                            tabIndex="0"
-                                            aria-controls="description-container-cookie_cat_necessary"
-                                            aria-expanded={openCategory === 'necessary'}
-                                            onClick={() => toggleCategory('necessary')}
-                                            className="coi-consent-banner__category-name"
-                                            id="coi-category-necessary"
-                                        >
+                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_necessary" aria-expanded={openCategory === 'necessary'} onClick={() => toggleCategory('necessary')} className="coi-consent-banner__category-name">
                                             <div aria-hidden="true" className={`ci-arrow ${openCategory === 'necessary' ? 'open' : ''}`}></div>
-                                            <span className="coi-category-title" id="coi-category-title-necessary">Nödvändiga</span>
+                                            <h3 aria-label="Nödvändiga">Nödvändiga</h3>
                                         </button>
-                                        <h3 aria-labelledby="coi-category-title-necessary" aria-label="Nödvändiga">Nödvändiga</h3>
-                                        <div className="coi-consent-banner__category-description">
-                                            Dessa cookies är nödvändiga för att webbplatsen ska fungera och kan inte stängas av i våra system.
-                                        </div>
+                                        <div className="coi-consent-banner__category-description">Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.</div>
                                     </div>
                                     <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_necessary" aria-hidden={openCategory !== 'necessary'} style={{ display: openCategory === 'necessary' ? 'block' : 'none' }}>
-                                        {/* Här kan du lägga till information om nödvändiga cookies som används på din webbplats */}
+                                        {/* Details for Necessary cookies */}
                                     </div>
                                 </div>
                                 {/* Repeat for other categories: Functional, Statistic, Marketing */}
@@ -174,6 +164,7 @@ function CookieBanner({
                 ) : (
                     <div id="coiPage-3" className="coi-banner__page">
                         <div className="coi-banner__cookiedeclaration">
+                            <h2 className="coi-banner__headline" id="coiPolicyHeadline">Policy för kakor</h2>
                             {/* Header and policy text */}
                         </div>
                         <div className="coi-banner__page-footer" role="navigation" aria-label="third-menu">
@@ -189,6 +180,6 @@ function CookieBanner({
         </div>
     );
 }
-
+// --- End Cookie Banner Component ---
 
 export default CookieBanner;

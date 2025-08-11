@@ -56,3 +56,37 @@ code {
         opacity: 1;
     }
 }
+
+/* --- Global Accessibility & UX Styles (from style.css) --- */
+
+/*
+  Focus indicators for better accessibility.
+  While Tailwind's `focus:` variants are preferred for new components,
+  these global styles can provide a consistent baseline.
+*/
+.main-nav-link:focus,
+.hero-button:focus,
+#team-button:focus,
+#license-button:focus,
+.more-news-link:focus,
+.footer-link:focus,
+.news-item-link a:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Dark background focus indicators */
+.cookie-modal button:focus,
+.cookie-modal input:focus,
+.cookie-modal a:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Improved button accessibility */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

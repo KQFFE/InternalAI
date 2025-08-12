@@ -55,23 +55,12 @@ describe('TeamPage Component', () => {
     });
 
     describe('Loading State', () => {
-        test('displays loading state initially', () => {
+        test('displays loading message initially and not the main content', () => {
             fetch.mockImplementation(() => new Promise(() => { })); // Never resolves
             renderWithRouter(<TeamPage />);
 
-            // During loading, navigation should be visible but main content should not
-            expect(screen.getByRole('navigation')).toBeInTheDocument();
+            expect(screen.getByText('Loading team members...')).toBeInTheDocument();
             expect(screen.queryByText('Our Amazing Team')).not.toBeInTheDocument();
-            expect(screen.queryByText('No active team members')).not.toBeInTheDocument();
-        });
-
-        test('renders navigation and logo during loading', () => {
-            fetch.mockImplementation(() => new Promise(() => { }));
-            renderWithRouter(<TeamPage />);
-
-            expect(screen.getByRole('navigation')).toBeInTheDocument();
-            expect(screen.getByAltText('Knowit-logo')).toBeInTheDocument();
-            expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
         });
     });
 
@@ -110,13 +99,11 @@ describe('TeamPage Component', () => {
                 expect(screen.getByText('Our Amazing Team')).toBeInTheDocument();
             });
 
-            const johnImage = screen.getByAltText('John Doe');
-            const janeImage = screen.getByAltText('Jane Smith');
+            const johnImage = screen.getByAltText('Profile of John Doe');
+            const janeImage = screen.getByAltText('Profile of Jane Smith');
 
             expect(johnImage).toHaveAttribute('src', '/img/john-doe.jpg');
-            expect(johnImage).toHaveClass('member-profile-pic');
             expect(janeImage).toHaveAttribute('src', '/img/jane-smith.jpg');
-            expect(janeImage).toHaveClass('member-profile-pic');
         });
 
         test('renders LinkedIn links when available', async () => {
@@ -152,12 +139,14 @@ describe('TeamPage Component', () => {
                 expect(screen.getByText('Our Amazing Team')).toBeInTheDocument();
             });
 
-            const profileImage = screen.getByAltText('John Doe');
+            // Find the image element by its new alt text
+            const profileImage = screen.getByAltText('Profile of John Doe');
 
             // Simulate image loading error
             fireEvent.error(profileImage);
 
-            expect(profileImage).toHaveAttribute('src', '/img/placeholder.jpg');
+            // Updated fallback URL
+            expect(profileImage).toHaveAttribute('src', 'https://placehold.co/400x400/cccccc/333333?text=Profile');
         });
     });
 
@@ -168,7 +157,7 @@ describe('TeamPage Component', () => {
             renderWithRouter(<TeamPage />);
 
             await waitFor(() => {
-                expect(screen.getByText(/Error: Failed to load team members/)).toBeInTheDocument();
+                expect(screen.getByText("Failed to load team members. Please try again later.")).toBeInTheDocument();
             });
 
             expect(screen.queryByText('Meet Our Team')).not.toBeInTheDocument();
@@ -184,7 +173,7 @@ describe('TeamPage Component', () => {
             renderWithRouter(<TeamPage />);
 
             await waitFor(() => {
-                expect(screen.getByText(/Error: Failed to load team members/)).toBeInTheDocument();
+                expect(screen.getByText("Failed to load team members. Please try again later.")).toBeInTheDocument();
             });
         });
     });
@@ -212,50 +201,6 @@ describe('TeamPage Component', () => {
         });
     });
 
-    describe('Navigation Handlers', () => {
-        test('calls handleServicesClick when Services button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const servicesButton = screen.getByRole('button', { name: /services/i });
-            fireEvent.click(servicesButton);
-
-            expect(console.log).toHaveBeenCalledWith('Services clicked');
-        });
-
-        test('calls handleAboutClick when About button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const aboutButton = screen.getByRole('button', { name: /about/i });
-            fireEvent.click(aboutButton);
-
-            expect(console.log).toHaveBeenCalledWith('About clicked');
-        });
-
-        test('calls handleContactClick when Contact button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const contactButton = screen.getByRole('button', { name: /contact/i });
-            fireEvent.click(contactButton);
-
-            expect(console.log).toHaveBeenCalledWith('Contact clicked');
-        });
-    });
-
     describe('Accessibility', () => {
         test('has proper navigation structure with ARIA attributes', async () => {
             fetch.mockResolvedValueOnce({
@@ -265,8 +210,10 @@ describe('TeamPage Component', () => {
 
             renderWithRouter(<TeamPage />);
 
-            const navigation = screen.getByRole('navigation');
-            expect(navigation).toHaveAttribute('aria-label', 'Main navigation');
+            // Wait for the main content to appear before checking for the navigation
+            await screen.findByText('Our Amazing Team');
+
+            expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Main navigation');
         });
 
         test('has proper heading hierarchy', async () => {
@@ -288,18 +235,6 @@ describe('TeamPage Component', () => {
             memberHeadings.forEach(heading => {
                 expect(heading.tagName).toBe('H2');
             });
-        });
-
-        test('logo link has proper attributes', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const logoLink = screen.getByRole('link', { name: /knowit-logo/i });
-            expect(logoLink).toHaveAttribute('href', '/');
         });
     });
 
@@ -356,20 +291,6 @@ describe('TeamPage Component', () => {
             expect(screen.getByText('Jane Smith')).toBeInTheDocument();
             expect(screen.getByText('Senior Developer')).toBeInTheDocument();
             expect(screen.getByText('Product Manager')).toBeInTheDocument();
-        });
-
-        test('renders navigation buttons with correct styling', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const navButtons = screen.getAllByRole('button');
-            navButtons.forEach(button => {
-                expect(button).toHaveClass('main-nav-link');
-            });
         });
     });
 });

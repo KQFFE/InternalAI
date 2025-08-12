@@ -1,166 +1,24 @@
 /* frontend/src/TeamPage.css */
 
-:root {
-  --dark-background: #0B0B26;
-  --mellow-blue: #044d90;
-  --color-white: #ffffff;
-  --color-darkblue: #3C3C3C;
-  --color-light-blue-link: var(--mellow-blue);
-}
-
-.team-page-wrapper {
-  background-color: var(--dark-background); /* This will now be the background for the entire width */
-  color: var(--color-white);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* This class will now stretch full width. Its padding will be removed. */
-.team-page-content {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    /* REMOVED: padding-left and padding-right from here */
-    /* REMOVED: max-width and margin: auto from here */
-    width: 100%; /* Ensure it takes full width */
-    text-align: center;
-    background-color: var(--dark-background); /* Keep this for consistency */
-    color: var(--color-white);
-}
-
-.team-page-title {
-    font-size: 3em;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: var(--color-white);
-}
-
-.team-page-subtitle {
-    font-size: 1.2em;
-    margin-bottom: 40px;
-}
-
-.team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Keep minmax for column count */
-    gap: 30px;
-    justify-content: center;
-
-    /* ADDED: Padding to the grid itself to create space from the screen edges.
-       This is now where your "room to the edge" will come from. */
-    padding-left: 20px;
-    padding-right: 20px;
-
-    /* OPTIONAL: Max-width on the grid to prevent cards from becoming too wide on very large screens.
-       This will center the grid content within the full-width team-page-content background. */
-    max-width: 1200px; /* Adjust this value as needed, e.g., 1400px or more */
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .team-member-card {
-    background-color: #1e1e3a;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: transform 0.2s ease-in-out;
-    height: 400px;
-    justify-content: flex-start;
-}
-
-.team-member-card:hover {
-    transform: translateY(-5px);
-}
-
-.member-profile-pic {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border: 3px solid var(--color-light-blue-link);
+  /* A fixed height ensures all cards in a row are uniform. */
+  height: 400px;
 }
 
 .member-name {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--color-white);
-    min-height: 1.5em;
+  /* A min-height prevents layout shifts if a name wraps to a second line. */
+  min-height: 1.5em;
 }
 
 .member-role {
-    font-size: 1em;
-    margin-bottom: 15px;
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    width: 100%;
+  /* Allows this element to grow and push the LinkedIn link to the bottom. */
+  flex-grow: 1;
 }
 
-.member-linkedin-link {
-    background-color: var(--color-light-blue-link);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    margin-top: auto;
-}
-
-.member-linkedin-link:hover {
-    background-color: var(--color-darkblue);
-}
-
-.loading, .error, .no-members-found {
-    text-align: center;
-    font-size: 1.2em;
-    padding: 50px;
-    color: var(--color-white);
-}
-
-.error {
-    color: #ff6b6b;
-}
-
-/* Responsive adjustments for team page content */
 @media (max-width: 767px) {
-  .team-page-content {
-    padding-top: 30px;
-    padding-bottom: 30px;
-    /* REMOVED: padding-left and padding-right from here */
-  }
-
-  .team-page-title {
-    font-size: 2em;
-  }
-
-  .team-page-subtitle {
-    font-size: 1em;
-  }
-
-  .team-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    /* This padding will now be the main source of side space on mobile too */
-    padding-left: 15px;
-    padding-right: 15px;
-    max-width: none; /* Allow grid to expand on smaller screens */
-  }
-
   .team-member-card {
+    /* On smaller screens, allow the card height to adjust to its content. */
     height: auto;
     min-height: 300px;
-  }
-
-  .member-profile-pic {
-    width: 100px;
-    height: 100px;
   }
 }

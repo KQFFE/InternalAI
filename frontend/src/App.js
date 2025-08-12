@@ -17,22 +17,6 @@ function HomePageContent() {
         navigate('/license');
     };
 
-    const handleContactClick = () => {
-        // Add contact functionality here
-    };
-
-    const handleCareerClick = () => {
-        // Add career functionality here
-    };
-
-    const handleServicesClick = () => {
-        // Add services functionality here
-    };
-
-    const handleAboutClick = () => {
-        // Add about functionality here
-    };
-
     return (
         <>
             {/* Hero Section */}
@@ -54,12 +38,11 @@ function HomePageContent() {
                         </Link>
                     </div>
                     <nav className="main-nav-list flex items-center space-x-6" role="navigation" aria-label="Main navigation">
-                        <Link to="/" className="main-nav-link text-white text-lg hover:underline" id="nav-home" aria-current="page">Home</Link>
-                        <button onClick={handleServicesClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-services" aria-label="Services page">Services</button>
-                        <button onClick={handleAboutClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-about" aria-label="About us page">About</button>
+                        <Link to="/services" className="main-nav-link text-white text-lg hover:underline" id="nav-services" aria-label="Services page">Services</Link>
+                        <Link to="/about" className="main-nav-link text-white text-lg hover:underline" id="nav-about" aria-label="About us page">About</Link>
                         <Link to="/team" className="main-nav-link text-white text-lg hover:underline" id="nav-team" aria-label="Our team page">Team</Link>
                         <Link to="/license" className="main-nav-link text-white text-lg hover:underline" id="nav-license" aria-label="License information">License</Link>
-                        <button onClick={handleContactClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-contact" aria-label="Contact us">Contact</button>
+                        <Link to="/contact" className="main-nav-link text-white text-lg hover:underline" id="nav-contact" aria-label="Contact us">Contact</Link>
                     </nav>
                 </header>
 
@@ -189,8 +172,8 @@ function HomePageContent() {
                             <h3 className="become-one-of-us-heading text-4xl font-bold mb-8 transform -rotate-6 origin-bottom-left max-w-xs leading-none">
                                 Become one of us
                             </h3>
-                            <button
-                                onClick={handleCareerClick}
+                            <button // This remains a button as it likely triggers an action, not a route change.
+                                onClick={() => { /* Add career functionality here */ }}
                                 className="flex items-center space-x-2 text-gray-800 font-semibold text-lg group hover:underline bg-transparent border-none cursor-pointer"
                                 id="footer-careers-button"
                                 aria-label="Find your new job at Knowit"

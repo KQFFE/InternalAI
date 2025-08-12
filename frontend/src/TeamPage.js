@@ -111,7 +111,7 @@ function TeamPage() {
                             >
                                 <img
                                     src={member.profilePicture}
-                                    alt={`Profile picture of ${member.name}`}
+                                    alt={`Profile of ${member.name}`}
                                     className="member-profile-pic w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-500 shadow-md"
                                     onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400/cccccc/333333?text=Profile" }}
                                 />

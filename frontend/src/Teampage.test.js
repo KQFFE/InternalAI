@@ -99,8 +99,8 @@ describe('TeamPage Component', () => {
                 expect(screen.getByText('Our Amazing Team')).toBeInTheDocument();
             });
 
-            const johnImage = screen.getByAltText('Profile picture of John Doe');
-            const janeImage = screen.getByAltText('Profile picture of Jane Smith');
+            const johnImage = screen.getByAltText('Profile of John Doe');
+            const janeImage = screen.getByAltText('Profile of Jane Smith');
 
             expect(johnImage).toHaveAttribute('src', '/img/john-doe.jpg');
             expect(janeImage).toHaveAttribute('src', '/img/jane-smith.jpg');
@@ -140,7 +140,7 @@ describe('TeamPage Component', () => {
             });
 
             // Find the image element by its new alt text
-            const profileImage = screen.getByAltText('Profile picture of John Doe');
+            const profileImage = screen.getByAltText('Profile of John Doe');
 
             // Simulate image loading error
             fireEvent.error(profileImage);
@@ -157,7 +157,7 @@ describe('TeamPage Component', () => {
             renderWithRouter(<TeamPage />);
 
             await waitFor(() => {
-                expect(screen.getByText(/Error: Failed to load team members/)).toBeInTheDocument();
+                expect(screen.getByText("Failed to load team members. Please try again later.")).toBeInTheDocument();
             });
 
             expect(screen.queryByText('Meet Our Team')).not.toBeInTheDocument();
@@ -173,7 +173,7 @@ describe('TeamPage Component', () => {
             renderWithRouter(<TeamPage />);
 
             await waitFor(() => {
-                expect(screen.getByText(/Error: Failed to load team members/)).toBeInTheDocument();
+                expect(screen.getByText("Failed to load team members. Please try again later.")).toBeInTheDocument();
             });
         });
     });
@@ -210,8 +210,10 @@ describe('TeamPage Component', () => {
 
             renderWithRouter(<TeamPage />);
 
-            const navigation = screen.getByRole('navigation');
-            expect(navigation).toHaveAttribute('aria-label', 'Main navigation');
+            // Wait for the main content to appear before checking for the navigation
+            await screen.findByText('Our Amazing Team');
+
+            expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Main navigation');
         });
 
         test('has proper heading hierarchy', async () => {

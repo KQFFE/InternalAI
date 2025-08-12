@@ -231,7 +231,7 @@ test.describe('Team Page Tests', () => {
         await expect(profilePic).toHaveAttribute('alt');
         const memberNameText = (await memberName.textContent()).trim();
         // Check if the alt text is descriptive
-        await expect(profilePic).toHaveAttribute('alt', `Profile picture of ${memberNameText}`);
+        await expect(profilePic).toHaveAttribute('alt', `Profile of ${memberNameText}`);
         // Check for the accessible 'aria-label' on the LinkedIn link
         await expect(linkedinLink).toHaveAttribute('aria-label', `View ${memberNameText}'s LinkedIn profile`);
     });

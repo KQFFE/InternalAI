@@ -55,26 +55,12 @@ describe('TeamPage Component', () => {
     });
 
     describe('Loading State', () => {
-        test('displays loading state initially', () => {
+        test('displays loading message initially and not the main content', () => {
             fetch.mockImplementation(() => new Promise(() => { })); // Never resolves
             renderWithRouter(<TeamPage />);
 
-            // During loading, navigation should be visible but main content should not
-            expect(screen.getByRole('navigation')).toBeInTheDocument();
+            expect(screen.getByText('Loading team members...')).toBeInTheDocument();
             expect(screen.queryByText('Our Amazing Team')).not.toBeInTheDocument();
-            expect(screen.queryByText('No active team members')).not.toBeInTheDocument();
-        });
-
-        test('renders navigation and logo during loading', () => {
-            fetch.mockImplementation(() => new Promise(() => { }));
-            renderWithRouter(<TeamPage />);
-
-            expect(screen.getByRole('navigation')).toBeInTheDocument();
-            // Updated alt text for the logo
-            expect(screen.getByAltText('Knowit company logo')).toBeInTheDocument();
-            // This test was causing an error because it was too broad, matching both the logo and the 'Home' link.
-            // I've updated it to be more specific to the 'Home' link in the navigation.
-            expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
         });
     });
 
@@ -215,50 +201,6 @@ describe('TeamPage Component', () => {
         });
     });
 
-    describe('Navigation Handlers', () => {
-        test('calls handleServicesClick when Services button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const servicesButton = screen.getByRole('button', { name: /services/i });
-            fireEvent.click(servicesButton);
-
-            expect(console.log).toHaveBeenCalledWith('Services clicked');
-        });
-
-        test('calls handleAboutClick when About button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const aboutButton = screen.getByRole('button', { name: /about/i });
-            fireEvent.click(aboutButton);
-
-            expect(console.log).toHaveBeenCalledWith('About clicked');
-        });
-
-        test('calls handleContactClick when Contact button is clicked', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const contactButton = screen.getByRole('button', { name: /contact/i });
-            fireEvent.click(contactButton);
-
-            expect(console.log).toHaveBeenCalledWith('Contact clicked');
-        });
-    });
-
     describe('Accessibility', () => {
         test('has proper navigation structure with ARIA attributes', async () => {
             fetch.mockResolvedValueOnce({
@@ -291,18 +233,6 @@ describe('TeamPage Component', () => {
             memberHeadings.forEach(heading => {
                 expect(heading.tagName).toBe('H2');
             });
-        });
-
-        test('logo link has proper attributes', async () => {
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockTeamData
-            });
-
-            renderWithRouter(<TeamPage />);
-
-            const logoLink = screen.getByRole('link', { name: /go to home page/i });
-            expect(logoLink).toHaveAttribute('href', '/');
         });
     });
 

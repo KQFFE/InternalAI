@@ -1,142 +1,33 @@
 /* frontend/src/TeamPage.css */
 
-:root {
-  --dark-background: #0B0B26;
-  --mellow-blue: #044d90;
-  --color-white: #ffffff;
-  --color-darkblue: #3C3C3C;
-  --color-light-blue-link: var(--mellow-blue);
-}
-
-.team-page-wrapper {
-  background-color: var(--dark-background);
-  color: var(--color-white);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* This class will now stretch full width. Its padding will be removed. */
-.team-page-content {
-  padding-top: 40px;
-  padding-bottom: 40px;
-  /* REMOVED: padding-left and padding-right from here */
-  /* REMOVED: max-width and margin: auto from here */
-  width: 100%;
-  text-align: center;
-  background-color: var(--dark-background);
-  color: var(--color-white);
-}
-
-.team-page-title {
-  font-size: 3em;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: var(--color-white);
-}
-
-.team-page-subtitle {
-  font-size: 1.2em;
-  margin-bottom: 40px;
-}
+/*
+  This file contains custom styles for the TeamPage component that are either
+  not covered by Tailwind CSS utilities or are more cleanly managed here.
+  Most layout, color, and typography styles are handled by Tailwind classes in the JSX.
+*/
 
 .team-member-card {
-  background-color: #1e1e3a;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: transform 0.2s ease-in-out;
+  /*
+    The fixed height for the card is a custom requirement to ensure all cards
+    in a row have a uniform height, regardless of content length.
+    The responsive override for this is handled in the media query below.
+  */
   height: 400px;
-  justify-content: flex-start;
-}
-
-.team-member-card:hover {
-  transform: translateY(-5px);
-}
-
-.member-profile-pic {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 15px;
-  border: 3px solid var(--color-light-blue-link);
 }
 
 .member-name {
-  font-size: 1.5em;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: var(--color-white);
+  /*
+    A minimum height on the name container prevents the card layout from shifting
+    if a team member's name wraps to a second line while others do not.
+  */
   min-height: 1.5em;
-}
-
-.member-role {
-  font-size: 1em;
-  margin-bottom: 15px;
-  flex-grow: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  width: 100%;
-}
-
-.member-linkedin-link {
-  background-color: var(--color-light-blue-link);
-  color: white;
-  padding: 8px 15px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  margin-top: auto;
-}
-
-/* Added focus styles to meet accessibility requirements */
-.member-linkedin-link:hover,
-.member-linkedin-link:focus {
-  background-color: var(--color-darkblue);
-  outline: 2px solid var(--color-white);
-  outline-offset: 2px;
-}
-
-.loading, .error, .no-members-found {
-  text-align: center;
-  font-size: 1.2em;
-  padding: 50px;
-  color: var(--color-white);
-}
-
-.error {
-  color: #ff6b6b;
 }
 
 /* Responsive adjustments for team page content */
 @media (max-width: 767px) {
-  .team-page-content {
-    padding-top: 30px;
-    padding-bottom: 30px;
-  }
-
-  .team-page-title {
-    font-size: 2em;
-  }
-
-  .team-page-subtitle {
-    font-size: 1em;
-  }
-
   .team-member-card {
+    /* On smaller screens, allow the card height to adjust to its content. */
     height: auto;
     min-height: 300px;
-  }
-
-  .member-profile-pic {
-    width: 100px;
-    height: 100px;
   }
 }

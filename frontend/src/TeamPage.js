@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import './TeamPage.css';
-
 function TeamPage() {
     const [teamMembers, setTeamMembers] = useState([]);
     const [loading, setLoading] = useState(true);

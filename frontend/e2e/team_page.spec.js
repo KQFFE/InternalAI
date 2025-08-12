@@ -200,19 +200,18 @@ test.describe('Team Page Tests', () => {
     test('should have proper keyboard navigation', async ({ page, browserName }) => {
         // This test is flaky in WebKit, so we skip it for that browser.
         test.skip(browserName === 'webkit', 'Focus-related tests are flaky in WebKit');
-        // Pressing Tab on the first link should move focus to the second link.
-        // This is a more reliable way to test keyboard navigation across different browsers.
-        await page.getByRole('link', { name: 'InternalAI' }).press('Tab');
-        await expect(page.getByRole('link', { name: 'Home', exact: true })).toBeFocused();
+        // Pressing Tab on the logo link should move focus to the "Services" link.
+        await page.getByRole('link', { name: 'Go to homepage' }).press('Tab');
+        await expect(page.getByRole('link', { name: 'Services' })).toBeFocused();
     });
 
     // Test to verify that focus indicators are present, which is vital for accessibility.
     test('should maintain focus indicators', async ({ page, browserName }) => {
         // This test is flaky in WebKit, so we skip it for that browser.
         test.skip(browserName === 'webkit', 'Focus-related tests are flaky in WebKit');
-        // Pressing Tab on the first link should move focus to the second link.
-        await page.getByRole('link', { name: 'InternalAI' }).press('Tab');
-        await expect(page.getByRole('link', { name: 'Home', exact: true })).toHaveCSS('outline-width', '2px');
+        // Pressing Tab on the logo link should move focus to the "Services" link.
+        await page.getByRole('link', { name: 'Go to homepage' }).press('Tab');
+        await expect(page.getByRole('link', { name: 'Services' })).toHaveCSS('outline-width', '2px');
     });
 
     // Test for proper ARIA attributes on the team member cards for screen readers.
@@ -238,7 +237,6 @@ test.describe('Team Page Tests', () => {
 
     // Test to ensure all navigation links are present and have the correct href attributes.
     test('should have accessible navigation links', async ({ page }) => {
-        await expect(page.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('href', '/');
         await expect(page.getByRole('link', { name: 'Services' })).toHaveAttribute('href', '/services');
         await expect(page.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
         await expect(page.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/contact');

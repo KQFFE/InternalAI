@@ -51,51 +51,52 @@ function TeamPage() {
 
     // Render the main team page content
     return (
-        <div className="min-h-screen bg-gray-100 font-sans">
-            <header className="bg-white shadow-md">
-                <nav className="container mx-auto px-6 py-4 flex items-center justify-between" role="navigation" aria-label="Main navigation">
-                    {/* Main branding/logo link */}
-                    <div className="text-2xl font-bold text-gray-800">
-                        <Link to="/" className="text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                            InternalAI
-                        </Link>
-                    </div>
-                    {/* Navigation links */}
-                    <div className="flex space-x-6">
-                        <Link
-                            to="/"
-                            className="main-nav-link text-gray-600 hover:text-blue-500 font-semibold focus:outline focus:outline-2 focus:outline-blue-500 rounded-md p-2 transition-colors duration-200"
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            to="/services"
-                            className="main-nav-link text-gray-600 hover:text-blue-500 font-semibold focus:outline focus:outline-2 focus:outline-blue-500 rounded-md p-2 transition-colors duration-200"
-                        >
-                            Services
-                        </Link>
-                        <Link
-                            to="/about"
-                            className="main-nav-link text-gray-600 hover:text-blue-500 font-semibold focus:outline focus:outline-2 focus:outline-blue-500 rounded-md p-2 transition-colors duration-200"
-                        >
-                            About
-                        </Link>
-                        <Link
-                            to="/contact"
-                            className="main-nav-link text-gray-600 hover:text-blue-500 font-semibold focus:outline focus:outline-2 focus:outline-blue-500 rounded-md p-2 transition-colors duration-200"
-                        >
-                            Contact
-                        </Link>
-                    </div>
+        <div className="hero-gradient-bg font-sans text-gray-300">
+            <header
+                className="flex justify-between items-center p-6 md:p-10 container mx-auto"
+                role="banner"
+                aria-label="Main navigation header"
+            >
+                {/* Main branding/logo link */}
+                <div className="text-2xl font-bold">
+                    <Link to="/" aria-label="Go to homepage">
+                        <img
+                            src="/knowit-logo.png"
+                            alt="Knowit company logo"
+                            className="app-logo-image h-8 w-auto logo-white"
+                            id="main-logo"
+                        />
+                    </Link>
+                </div>
+                {/* Navigation links */}
+                <nav className="flex items-center space-x-6" role="navigation" aria-label="Main navigation">
+                    <Link
+                        to="/services"
+                        className="main-nav-link text-white text-lg hover:underline"
+                    >
+                        Services
+                    </Link>
+                    <Link
+                        to="/about"
+                        className="main-nav-link text-white text-lg hover:underline"
+                    >
+                        About
+                    </Link>
+                    <Link
+                        to="/contact"
+                        className="main-nav-link text-white text-lg hover:underline"
+                    >
+                        Contact
+                    </Link>
                 </nav>
             </header>
 
             <main className="container mx-auto px-6 py-12">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight team-page-title">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight team-page-title">
                         Our Amazing Team
                     </h1>
-                    <p className="mt-4 text-xl text-gray-600 team-page-subtitle">
+                    <p className="mt-4 text-xl text-gray-400 team-page-subtitle">
                         Meet the dedicated professionals at Knowit Quality Services Syd.
                     </p>
                 </div>
@@ -106,19 +107,19 @@ function TeamPage() {
                         teamMembers.map((member, index) => (
                             <article
                                 key={member.name}
-                                className="team-member-card bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1 flex flex-col items-center text-center"
+                                className="team-member-card bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1 flex flex-col items-center text-center"
                                 aria-labelledby={`member-name-${index}`}
                             >
                                 <img
                                     src={member.profilePicture}
                                     alt={`Profile of ${member.name}`}
-                                    className="member-profile-pic w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-500 shadow-md"
+                                    className="member-profile-pic w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-400 shadow-md"
                                     onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400/cccccc/333333?text=Profile" }}
                                 />
-                                <h2 id={`member-name-${index}`} className="member-name text-xl font-bold text-gray-800 mb-1">
+                                <h2 id={`member-name-${index}`} className="member-name text-xl font-bold text-white mb-1">
                                     {member.name}
                                 </h2>
-                                <p className="member-role text-md text-blue-600 font-medium">
+                                <p className="member-role text-md text-blue-400 font-medium">
                                     {member.role}
                                 </p>
                                 {member.linkedinUrl && (
@@ -126,7 +127,7 @@ function TeamPage() {
                                         href={member.linkedinUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="member-linkedin-link mt-4 text-blue-500 hover:text-blue-700 font-semibold"
+                                        className="member-linkedin-link inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
                                         aria-label={`View ${member.name}'s LinkedIn profile`}
                                     >
                                         View LinkedIn Profile
@@ -135,7 +136,7 @@ function TeamPage() {
                             </article>
                         ))
                     ) : (
-                        <p className="text-gray-500 italic text-center col-span-full" role="alert">
+                        <p className="text-gray-400 italic text-center col-span-full" role="alert">
                             No active team members to display at the moment.
                         </p>
                     )}

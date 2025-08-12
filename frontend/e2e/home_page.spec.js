@@ -34,9 +34,8 @@ test.describe('Home Page (Landing Page) tests', () => {
     // Target all main navigation links and buttons within the 'main-nav-list' class.
     // Both <Link> (rendering as <a>) and <button> elements have the 'main-nav-link' class.
     const mainNavLinks = page.locator('nav.main-nav-list .main-nav-link');
-    await expect(mainNavLinks).toHaveCount(6); // Now it should correctly find all 6 elements.
+    await expect(mainNavLinks).toHaveCount(5);
 
-    await expect(page.locator('nav.main-nav-list a[href="/"]')).toHaveText('Home');
     await expect(page.locator('nav.main-nav-list a[href="/team"]')).toHaveText('Team');
     await expect(page.locator('nav.main-nav-list a[href="/license"]')).toHaveText('License');
   });

@@ -54,7 +54,6 @@ function HomePageContent() {
                         </Link>
                     </div>
                     <nav className="main-nav-list flex items-center space-x-6" role="navigation" aria-label="Main navigation">
-                        <Link to="/" className="main-nav-link text-white text-lg hover:underline" id="nav-home" aria-current="page">Home</Link>
                         <button onClick={handleServicesClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-services" aria-label="Services page">Services</button>
                         <button onClick={handleAboutClick} className="main-nav-link text-white text-lg hover:underline bg-transparent border-none cursor-pointer" id="nav-about" aria-label="About us page">About</button>
                         <Link to="/team" className="main-nav-link text-white text-lg hover:underline" id="nav-team" aria-label="Our team page">Team</Link>

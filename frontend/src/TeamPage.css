@@ -1,29 +1,20 @@
 /* frontend/src/TeamPage.css */
 
-/*
-  This file contains custom styles for the TeamPage component that are either
-  not covered by Tailwind CSS utilities or are more cleanly managed here.
-  Most layout, color, and typography styles are handled by Tailwind classes in the JSX.
-*/
-
 .team-member-card {
-  /*
-    The fixed height for the card is a custom requirement to ensure all cards
-    in a row have a uniform height, regardless of content length.
-    The responsive override for this is handled in the media query below.
-  */
+  /* A fixed height ensures all cards in a row are uniform. */
   height: 400px;
 }
 
 .member-name {
-  /*
-    A minimum height on the name container prevents the card layout from shifting
-    if a team member's name wraps to a second line while others do not.
-  */
+  /* A min-height prevents layout shifts if a name wraps to a second line. */
   min-height: 1.5em;
 }
 
-/* Responsive adjustments for team page content */
+.member-role {
+  /* Allows this element to grow and push the LinkedIn link to the bottom. */
+  flex-grow: 1;
+}
+
 @media (max-width: 767px) {
   .team-member-card {
     /* On smaller screens, allow the card height to adjust to its content. */

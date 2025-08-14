@@ -352,6 +352,7 @@ function App() {
                                 Admin Mode
                             </span>
                             <button
+                                data-testid="admin-logout-button"
                                 onClick={handleAdminLogout}
                                 style={{
                                     padding: '6px 12px',
@@ -371,6 +372,7 @@ function App() {
                         </div>
                     ) : (
                         <button
+                            data-testid="admin-login-button"
                             onClick={handleShowAdminLogin}
                             style={{
                                 padding: '6px 12px',

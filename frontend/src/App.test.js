@@ -454,10 +454,13 @@ describe('Admin Authentication Integration', () => {
         const logoutButton = screen.getByRole('button', { name: /Logout/i });
         fireEvent.click(logoutButton);
 
-        await waitFor(() => {
-            expect(screen.getByRole('button', { name: /Admin/i })).toBeInTheDocument();
-            expect(screen.queryByText('Admin Mode')).not.toBeInTheDocument();
-        });
+        // FIX: Use a findBy* query for the element you expect to appear.
+        // This implicitly handles the waiting and assertion.
+        const adminButton = await screen.findByRole('button', { name: /Admin/i });
+        expect(adminButton).toBeInTheDocument();
+
+        // For the element that is expected to disappear, a queryBy* is still correct.
+        expect(screen.queryByText('Admin Mode')).not.toBeInTheDocument();
     });
 
     it('handles admin logout error gracefully', async () => {

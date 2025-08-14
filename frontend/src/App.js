@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
 import License from './License';
 import TeamPage from './TeamPage';
-import CookieBanner from './CookieBanner';
 import AdminLogin from './components/AdminLogin';
 
 

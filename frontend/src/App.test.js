@@ -361,3 +361,186 @@ describe('CookieBanner interactions for function coverage', () => {
     expect(localStorage.getItem('marketingCookies')).toBe('true');
   });
 });
+
+describe('Admin Authentication Integration', () => {
+    beforeEach(() => {
+        localStorage.clear();
+        // Mock fetch for admin API calls
+        global.fetch = jest.fn();
+    });
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
+    it('renders admin button when not authenticated', () => {
+        render(<App />);
+        const adminButton = screen.getByRole('button', { name: /Admin/i });
+        expect(adminButton).toBeInTheDocument();
+    });
+
+    it('shows admin login modal when admin button is clicked', async () => {
+        render(<App />);
+
+        const adminButton = screen.getByRole('button', { name: /Admin/i });
+        fireEvent.click(adminButton);
+
+        expect(await screen.findByText('Admin Login')).toBeInTheDocument();
+        expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    });
+
+    it('handles successful admin login', async () => {
+        global.fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true, message: 'Login successful' })
+        });
+
+        render(<App />);
+
+        // Open login modal
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+
+        // Fill password and submit
+        const passwordInput = screen.getByLabelText('Password');
+        const loginButton = screen.getByRole('button', { name: 'Login' });
+
+        fireEvent.change(passwordInput, { target: { value: 'admin123' } });
+        fireEvent.click(loginButton);
+
+        // Check that admin mode appears
+        expect(await screen.findByText('Admin Mode')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Logout/i })).toBeInTheDocument();
+        expect(screen.queryByText('Admin Login')).not.toBeInTheDocument();
+    });
+
+    it('handles admin login cancellation', async () => {
+        render(<App />);
+
+        // Open login modal
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        expect(screen.getByText('Admin Login')).toBeInTheDocument();
+
+        // Cancel login
+        const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+        fireEvent.click(cancelButton);
+
+        // Modal should close
+        expect(screen.queryByText('Admin Login')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Admin/i })).toBeInTheDocument();
+    });
+
+    it('handles successful admin logout', async () => {
+        global.fetch
+            .mockResolvedValueOnce({ // Login
+                ok: true,
+                json: async () => ({ success: true, message: 'Login successful' })
+            })
+            .mockResolvedValueOnce({ // Logout
+                ok: true,
+                json: async () => ({ success: true })
+            });
+
+        render(<App />);
+
+        // Login first
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        const passwordInput = screen.getByLabelText('Password');
+        fireEvent.change(passwordInput, { target: { value: 'admin123' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+        await screen.findByText('Admin Mode');
+
+        // Now logout
+        const logoutButton = screen.getByRole('button', { name: /Logout/i });
+        fireEvent.click(logoutButton);
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /Admin/i })).toBeInTheDocument();
+            expect(screen.queryByText('Admin Mode')).not.toBeInTheDocument();
+        });
+    });
+
+    it('handles admin logout error gracefully', async () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
+        global.fetch
+            .mockResolvedValueOnce({ // Login
+                ok: true,
+                json: async () => ({ success: true, message: 'Login successful' })
+            })
+            .mockRejectedValueOnce(new Error('Network error')); // Logout error
+
+        render(<App />);
+
+        // Login first
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        const passwordInput = screen.getByLabelText('Password');
+        fireEvent.change(passwordInput, { target: { value: 'admin123' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+        await screen.findByText('Admin Mode');
+
+        // Logout with error
+        const logoutButton = screen.getByRole('button', { name: /Logout/i });
+        fireEvent.click(logoutButton);
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    it('closes login modal when clicking X button', async () => {
+        render(<App />);
+
+        // Open login modal
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        expect(screen.getByText('Admin Login')).toBeInTheDocument();
+
+        // Close with X button
+        const closeButton = screen.getByRole('button', { name: /Close login modal/i });
+        fireEvent.click(closeButton);
+
+        expect(screen.queryByText('Admin Login')).not.toBeInTheDocument();
+    });
+
+    it('handles admin button hover effects', () => {
+        render(<App />);
+
+        const adminButton = screen.getByRole('button', { name: /Admin/i });
+
+        // Test mouse over
+        fireEvent.mouseOver(adminButton);
+        expect(adminButton.style.backgroundColor).toBe('rgb(79, 70, 229)'); // #4f46e5
+
+        // Test mouse out
+        fireEvent.mouseOut(adminButton);
+        expect(adminButton.style.backgroundColor).toBe('rgb(99, 102, 241)'); // #6366f1
+    });
+
+    it('handles logout button hover effects', async () => {
+        global.fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true, message: 'Login successful' })
+        });
+
+        render(<App />);
+
+        // Login first to show logout button
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        const passwordInput = screen.getByLabelText('Password');
+        fireEvent.change(passwordInput, { target: { value: 'admin123' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+        const logoutButton = await screen.findByRole('button', { name: /Logout/i });
+
+        // Test mouse over
+        fireEvent.mouseOver(logoutButton);
+        expect(logoutButton.style.backgroundColor).toBe('rgb(220, 38, 38)'); // #dc2626
+
+        // Test mouse out  
+        fireEvent.mouseOut(logoutButton);
+        expect(logoutButton.style.backgroundColor).toBe('rgb(239, 68, 68)'); // #ef4444
+    });
+});

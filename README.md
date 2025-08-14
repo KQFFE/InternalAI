@@ -235,16 +235,17 @@ The InternalAI frontend uses two types of tests for comprehensive coverage:
 - **Jest Unit Tests** for component testing (using React Testing Library)
 - **Playwright E2E Tests** for end-to-end testing
 
-### 2.1 Quick Test Run (All Tests)
+### 2.1 The All-in-One Test Script (Recommended)
 
-For WSL users, a convenient script runs all tests at once. To run on Windows, use Git Bash
-which provides a Unix-like shell environment that understands chmod and ./
+The most convenient way to run the entire test suite is by using the `run_all_tests.sh` script located in the project root. This script is designed to replicate the CI/CD pipeline, ensuring your changes will pass before you push them.
+
+It works on both WSL and Windows (using Git Bash, which provides a Unix-like shell).
 
 ```bash
-# Make script executable (first time only)
+# Make the script executable (only needs to be done once)
 chmod +x run_all_tests.sh
 
-# Run all tests
+# Run the entire test suite
 ./run_all_tests.sh
 ```
 

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+﻿﻿#!/bin/bash
 # run_all_tests.sh - InternalAI Test Suite (Matching CI/CD Pipeline)
 # Runs the same commands as GitHub Actions pipeline
 # Usage: ./run_all_tests.sh
@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 
 # Track results
 FRONTEND_UNIT_EXIT=0
+FRONTEND_DEPS_EXIT=0
 FRONTEND_E2E_EXIT=0
 FRONTEND_LINT_EXIT=0
 BACKEND_TEST_EXIT=0
@@ -55,7 +56,7 @@ fi
 
 # 1. Frontend Unit Tests with Coverage
 echo ""
-echo "🧪 Step 1/4: Running Frontend Unit Tests with Coverage"
+echo "🧪 Running Frontend Unit Tests with Coverage"
 echo "Command: npm test -- --coverage --watchAll=false"
 echo "-------------------------------------------------------"
 npm test -- --coverage --watchAll=false
@@ -67,23 +68,39 @@ else
     echo -e "❌ ${RED}Frontend unit tests failed${NC}"
 fi
 
-# 2. End-to-End Tests
+# 2. Install Playwright Dependencies
 echo ""
-echo "🎭 Step 2/4: Running End-to-End Tests"
+echo "🎭 Installing Playwright browser dependencies"
+echo "Command: npx playwright install-deps"
+echo "------------------------------------------------------"
+# This command installs system dependencies for WebKit, etc.
+# It will prompt for sudo password if needed.
+npx playwright install-deps
+FRONTEND_DEPS_EXIT=$?
+
+if [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
+    echo -e "✅ ${GREEN}Playwright dependencies are installed${NC}"
+else
+    echo -e "❌ ${RED}Failed to install Playwright dependencies${NC}"
+fi
+
+# 3. End-to-End Tests
+echo ""
+echo "🎭 Running End-to-End Tests"
 echo "Command: npm run test:e2e"
 echo "------------------------------------"
 npm run test:e2e
 FRONTEND_E2E_EXIT=$?
 
-if [ $FRONTEND_E2E_EXIT -eq 0 ]; then
+if [ $FRONTEND_E2E_EXIT -eq 0 ] && [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
     echo -e "✅ ${GREEN}E2E tests passed${NC}"
 else
     echo -e "❌ ${RED}E2E tests failed${NC}"
 fi
 
-# 3. ESLint Code Quality
+# 4. ESLint Code Quality
 echo ""
-echo "🔍 Step 3/4: Running ESLint Code Quality Check"
+echo "🔍 Running ESLint Code Quality Check"
 echo "Command: npx eslint src/ --format=compact --max-warnings=0"
 echo "-------------------------------------------------------------"
 npx eslint src/ --format=compact --max-warnings=0
@@ -106,60 +123,97 @@ echo "======================="
 
 cd backend
 
-# Determine the correct path for the virtual environment executables
-# Check if running in a Windows environment (like Git Bash)
+VENV_PATH="../.venv"
+
+# --- Robust Virtual Environment Setup ---
+
+# Function to find the correct venv bin path by checking for activate scripts
+find_venv_bin_path() {
+    if [ -f "$VENV_PATH/Scripts/activate" ]; then
+        echo "$VENV_PATH/Scripts"
+    elif [ -f "$VENV_PATH/bin/activate" ]; then
+        echo "$VENV_PATH/bin"
+    else
+        echo ""
+    fi
+}
+
+# Determine the expected bin path for the current shell to check for compatibility
+EXPECTED_VENV_BIN_PATH=""
 if [[ "${MSYSTEM}" == "MINGW64" ]]; then
-    # Use the Windows-style Scripts directory
-    VENV_BIN_PATH="../.venv/Scripts"
+    EXPECTED_VENV_BIN_PATH="$VENV_PATH/Scripts"
 else
-    # Use the Unix-style bin directory
-    VENV_BIN_PATH="../.venv/bin"
+    EXPECTED_VENV_BIN_PATH="$VENV_PATH/bin"
 fi
 
-# Check if virtual environment exists
-if [ ! -d "$VENV_BIN_PATH" ]; then
-    echo -e "${YELLOW}⚠️ Virtual environment not found. Creating one...${NC}"
-    cd ..
-    python -m venv .venv
-    cd backend
+# If the venv is not compatible with the current shell, create or upgrade it.
+if [ ! -f "$EXPECTED_VENV_BIN_PATH/activate" ]; then
+    if [ -d "$VENV_PATH" ]; then
+        echo -e "${YELLOW}⚠️ Virtual environment is incompatible with the current shell. Recreating it...${NC}"
+        rm -rf "$VENV_PATH"
+    else
+        echo -e "${YELLOW}⚠️ Virtual environment not found. Creating a new one...${NC}"
+    fi
+
+    # Use python3 on WSL/Linux and python on Windows (Git Bash) to create the venv
+    if [[ "${MSYSTEM}" == "MINGW64" ]]; then
+        python -m venv "$VENV_PATH" # Assumes python on Windows is correctly in PATH
+    else
+        # On Linux/WSL, require python3.11 to match the project standard defined in README.md and CI/CD.
+        if command -v python3.11 &> /dev/null; then
+            echo "   🐍 Found python3.11, using it to create venv (matches project standard)."
+            python3.11 -m venv "$VENV_PATH"
+        else
+            echo -e "${RED}❌ Error: python3.11 is not installed, but it is required for this project on WSL/Linux.${NC}"
+            echo -e "${YELLOW}💡 Please follow the setup instructions in the README.md (section 3.2) to install it."
+            echo -e "${YELLOW}   The command is likely: 'sudo apt install python3.11 python3.11-venv'${NC}"
+            cd ..; exit 1
+        fi
+    fi
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Failed to create the virtual environment.${NC}"
+        cd ..
+        exit 1
+    fi
 fi
 
-# Activate virtual environment (this is still a good practice for other environment variables)
-# We now use the variable `VENV_BIN_PATH` to find the correct activation script
-if [ -f "$VENV_BIN_PATH/activate" ]; then
-    echo "🔧 Activating virtual environment..."
-    source "$VENV_BIN_PATH/activate"
-else
-    echo -e "${RED}❌ Could not find virtual environment activation script at: $VENV_BIN_PATH/activate${NC}"
+# Now, find the ACTUAL bin path by probing, regardless of what we expected.
+# This handles cases where the `python` command in the PATH is from a different OS (e.g., WSL python in Git Bash).
+VENV_BIN_PATH=$(find_venv_bin_path)
+
+if [ -z "$VENV_BIN_PATH" ]; then
+    echo -e "${RED}❌ Could not find a valid virtual environment activation script after setup.${NC}"
+    echo -e "${YELLOW}💡 Please ensure Python is installed and accessible in your PATH.${NC}"
     cd ..
     exit 1
 fi
 
+# Activate virtual environment
+echo "🔧 Activating virtual environment from: $VENV_BIN_PATH"
+source "$VENV_BIN_PATH/activate"
+
 # Install/update dependencies using the specific pip from the venv
 echo "📦 Installing/updating backend dependencies..."
-"$VENV_BIN_PATH/pip" install --upgrade pip > /dev/null 2>&1
-"$VENV_BIN_PATH/pip" install -r requirements.txt > /dev/null 2>&1
+pip install --upgrade pip > /dev/null 2>&1
+pip install -r requirements.txt > /dev/null 2>&1
 echo -e "${GREEN}✅ Backend dependencies installed.${NC}"
 
 # Run tests using the specific pytest from the venv
 echo "🧪 Running pytest..."
-"$VENV_BIN_PATH/pytest"
-
-TEST_RESULT=$?
+pytest --cov=. --cov-report=html --cov-report=term-missing
+BACKEND_TEST_EXIT=$?
 
 # Deactivate virtual environment
 deactivate 2>/dev/null || true
 
 # Check test result
-if [ $TEST_RESULT -eq 0 ]; then
+if [ $BACKEND_TEST_EXIT -eq 0 ]; then
     echo -e "${GREEN}✅ Backend tests passed.${NC}"
 else
     echo -e "${RED}❌ Backend tests failed.${NC}"
 fi
 
 cd ..
-
-return $TEST_RESULT
 
 # ================================
 # SUMMARY REPORT
@@ -178,6 +232,12 @@ if [ $FRONTEND_UNIT_EXIT -eq 0 ]; then
     echo -e "✅ Frontend Unit Tests: ${GREEN}PASSED${NC}"
 else
     echo -e "❌ Frontend Unit Tests: ${RED}FAILED${NC}"
+fi
+
+if [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
+    echo -e "✅ Playwright Dependencies: ${GREEN}OK${NC}"
+else
+    echo -e "❌ Playwright Dependencies: ${RED}FAILED${NC}"
 fi
 
 if [ $FRONTEND_E2E_EXIT -eq 0 ]; then
@@ -215,7 +275,7 @@ fi
 
 # Overall Result
 echo ""
-TOTAL_FAILED=$((FRONTEND_UNIT_EXIT + FRONTEND_E2E_EXIT + FRONTEND_LINT_EXIT + BACKEND_TEST_EXIT))
+TOTAL_FAILED=$((FRONTEND_UNIT_EXIT + FRONTEND_DEPS_EXIT + FRONTEND_E2E_EXIT + FRONTEND_LINT_EXIT + BACKEND_TEST_EXIT))
 
 if [ $TOTAL_FAILED -eq 0 ]; then
     echo -e "🎉 ${GREEN}ALL TESTS PASSED!${NC} Pipeline would succeed ✅"
@@ -235,6 +295,12 @@ else
         echo "   📍 Frontend Unit Tests:"
         echo "      - Check test output above for specific failures"
         echo "      - Try: cd frontend && npm test"
+    fi
+    
+    if [ $FRONTEND_DEPS_EXIT -ne 0 ]; then
+        echo "   📍 Playwright Dependencies:"
+        echo "      - Failed to install system libraries for browsers."
+        echo "      - Try: cd frontend && npx playwright install-deps"
     fi
     
     if [ $FRONTEND_E2E_EXIT -ne 0 ]; then

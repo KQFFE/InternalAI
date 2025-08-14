@@ -235,16 +235,17 @@ The InternalAI frontend uses two types of tests for comprehensive coverage:
 - **Jest Unit Tests** for component testing (using React Testing Library)
 - **Playwright E2E Tests** for end-to-end testing
 
-### 2.1 Quick Test Run (All Tests)
+### 2.1 The All-in-One Test Script (Recommended)
 
-For WSL users, a convenient script runs all tests at once. To run on Windows, use Git Bash
-which provides a Unix-like shell environment that understands chmod and ./
+The most convenient way to run the entire test suite is by using the `run_all_tests.sh` script located in the project root. This script is designed to replicate the CI/CD pipeline, ensuring your changes will pass before you push them.
+
+It works on both WSL and Windows (using Git Bash, which provides a Unix-like shell).
 
 ```bash
-# Make script executable (first time only)
+# Make the script executable (only needs to be done once)
 chmod +x run_all_tests.sh
 
-# Run all tests
+# Run the entire test suite
 ./run_all_tests.sh
 ```
 
@@ -252,122 +253,93 @@ This script runs frontend unit tests, E2E tests, backend tests, and code quality
 
 ### 2.2 Individual Test Commands
 
-Whether you are using Windows PowerShell or a WSL terminal, the commands to run frontend tests are similar.
+You can run tests for the frontend and backend separately.
 
-1.  **Open a new terminal window/tab.**
-2.  **Navigate to the `frontend` directory:**
+#### **Frontend Tests (Jest, Playwright, ESLint)**
+
+All frontend test commands should be run from within the `frontend` directory.
+
+1.  **Navigate to the `frontend` directory:**
     * **For Windows:**
         ```powershell
         cd C:\Path\To\Your\InternalAI\Project\frontend
         ```
-        *(**Important:** Replace `C:\Path\To\Your\InternalAI\Project` with your actual project path)*
     * **For Windows (with WSL):**
-        First, ensure your terminal is connected to WSL (e.g., in VS Code, open a new WSL terminal). Then navigate:
         ```bash
         cd ~/projects/InternalAI/frontend
-        # Or, if you cloned to a different path:
-        # cd /path/to/your/InternalAI/frontend
         ```
 
-#### **Unit Tests (Jest + React Testing Library):**
-3.  **Run unit tests:**
+2.  **Run Unit Tests (Jest + React Testing Library):**
     ```bash
     npm test
     ```
-    * This command will start Jest in **watch mode**. By default, it tries to run tests related to files changed since your last Git commit.
-    * If you see "No tests found related to files changed since last commit.", simply **press `a` then Enter** at the prompt to run all tests.
-    * To run all tests **immediately without entering watch mode** (e.g., for CI/CD pipelines or a quick full run), you can use:
+    * This command starts Jest in **watch mode**, which intelligently runs tests related to files you've changed.
+    * If you see a message like "No tests found...", just **press `a`** to run all tests.
+    * To run all tests once **without watch mode** (useful for CI/CD):
         ```bash
         npm run test:all
         ```
-    * To run tests and then show a coverage map, you can use:
+    * To generate a **test coverage report**:
         ```bash
         npm test -- --coverage --watchAll=false
         ```
 
-#### **End-to-End Tests (Playwright):**
-4.  **Run E2E tests:**
+3.  **Run End-to-End Tests (Playwright):**
     ```bash
     npm run test:e2e
     ```
-    * This command runs Playwright tests that simulate real user interactions with your application.
-    * These tests run in headless browsers and test the full application flow.
+    * This command runs Playwright tests that **simulate a real user** interacting with your application in a headless browser (a browser without a visible UI). It tests the full application flow from start to finish.
 
-#### **Backend Tests (pytest):**
-5.  **Run backend tests:**
-    
-    **For WSL:**
-    ```bash
-    # Navigate to project root and activate virtual environment
-    cd ~/projects/InternalAI
-    source .venv/bin/activate
-    
-    # Install testing dependencies (first time only)
-    pip install pytest pytest-cov pytest-flask
-    
-    # Navigate to backend directory  
-    cd backend
-    
-    # Run tests
-    pytest
-    
-    # OR run with verbose output:
-    pytest -v
-    
-    # OR run with coverage (like CI/CD):
-    pytest --cov=. --cov-report=xml --cov-report=term-missing
-    ```
-    
-    **For Windows:**
-    ```powershell
-    # Navigate to project root and activate virtual environment
-    cd C:\Path\To\Your\InternalAI\Project
-    .\venv\Scripts\Activate.ps1
-    
-    # Install testing dependencies (first time only)
-    pip install pytest pytest-cov pytest-flask
-    
-    # Navigate to backend directory
-    cd backend
-    
-    # Run tests
-    pytest
-    ```
-    
-    * These tests verify the Flask API endpoints and backend functionality
-    * Tests are located in `backend/test_*.py` files
-    * Use `-v` flag for detailed output showing each test that runs
-
-#### **Code Quality Checks (ESLint):**
-6.  **Run ESLint for code quality analysis:**
-    
-    **Navigate to the frontend directory:**
-    ```bash
-    cd ~/projects/InternalAI/frontend
-    ```
-    
-    **Run ESLint (same as pipeline):**
+4.  **Run Code Quality Checks (ESLint):**
     ```bash
     npx eslint src/ --format=compact --max-warnings=0
     ```
-    
-    **Alternative ESLint commands:**
+    * This command checks your code for quality issues, potential bugs, and style consistency.
+    * **No output means no errors were found ✅**.
+    * For a more **detailed, human-readable report**, use the `stylish` format:
+        ```bash
+        npx eslint src/ --format=stylish
+        ```
+
+#### **Backend Tests (pytest)**
+
+Backend tests verify that the Flask API endpoints and server-side logic are working correctly.
+
+1.  **Navigate to the project root and activate the virtual environment:**
+    * **For Windows:**
+        ```powershell
+        cd C:\Path\To\Your\InternalAI\Project
+        .\venv\Scripts\Activate.ps1
+        ```
+    * **For Windows (with WSL):**
+        ```bash
+        cd ~/projects/InternalAI
+        source .venv/bin/activate
+        ```
+    * You must see `(venv)` at the start of your terminal prompt before proceeding.
+
+2.  **Install testing dependencies (first-time only):**
     ```bash
-    # More detailed output showing what files were checked
-    npx eslint src/ --format=stylish
-    
-    # Check specific file only
-    npx eslint src/App.test.js --format=compact --max-warnings=0
-    
-    # Check specific file with detailed output
-    npx eslint src/App.test.js --format=stylish
+    pip install pytest pytest-cov pytest-flask
     ```
+
+3.  **Navigate to the `backend` directory:**
+    ```bash
+    cd backend
+    ```
+
+4.  **Run the tests:**
+    ```bash
+    # Run all backend tests
+    pytest
     
-    **Expected Results:**
-    - **No output** = No errors found ✅
-    - **Error output** = Code quality issues found ❌
+    # Run with verbose output to see each test name as it runs
+    pytest -v
     
-    **Note:** ESLint checks for code quality, best practices, and Testing Library usage patterns. The pipeline uses the same commands, so running locally helps catch issues before pushing code.
+    # Run with a coverage report (matches the CI/CD pipeline)
+    pytest --cov=. --cov-report=xml --cov-report=term-missing
+    ```
+    * `pytest` automatically finds and runs any file in the directory named `test_*.py`.
 
 ### 2.3 Where to Add New Tests
 
@@ -419,14 +391,14 @@ Whether you are using Windows PowerShell or a WSL terminal, the commands to run 
 
 | Test Type | Command | Purpose | Location | Extension |
 |-----------|---------|---------|----------|-----------|
-| **Unit Tests** | `npm test` | Component testing | `frontend/src/` | `.test.js` |
-| **E2E Tests** | `npm run test:e2e` | Full app testing | `frontend/e2e/` | `.spec.js` |
-| **Backend Unit Tests** | `pytest` | API/backend testing | `backend/` | `test_*.py` |
-| **Code Quality** | `npx eslint src/` | Code analysis & linting | `frontend/src/` | `.js` files |
+| **Unit Tests**         | `npm test`              | Component testing       | `frontend/src/` | `.test.js`  |
+| **E2E Tests**          | `npm run test:e2e`      | Full app testing        | `frontend/e2e/` | `.spec.js`  |
+| **Code Quality**       | `npx eslint src/`       | Code analysis & linting | `frontend/src/` | `.js` files |
+| **Backend Unit Tests** | `pytest`                | API/backend testing     | `backend/`      | `test_*.py` |
 
 **Testing Dependencies Installation:**
-- **Frontend**: Dependencies installed automatically with `npm install`
-- **Backend**: Install with `pip install pytest pytest-cov pytest-flask` (one-time setup)
+- **Frontend**: Dependencies are included with `npm install`.
+- **Backend**: Install with `pip install pytest pytest-cov pytest-flask` (one-time setup).
 
 ---
 

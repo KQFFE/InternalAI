@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 
 # Track results
 FRONTEND_UNIT_EXIT=0
+FRONTEND_DEPS_EXIT=0
 FRONTEND_E2E_EXIT=0
 FRONTEND_LINT_EXIT=0
 BACKEND_TEST_EXIT=0
@@ -55,7 +56,7 @@ fi
 
 # 1. Frontend Unit Tests with Coverage
 echo ""
-echo "🧪 Step 1/4: Running Frontend Unit Tests with Coverage"
+echo "🧪 Running Frontend Unit Tests with Coverage"
 echo "Command: npm test -- --coverage --watchAll=false"
 echo "-------------------------------------------------------"
 npm test -- --coverage --watchAll=false
@@ -67,23 +68,39 @@ else
     echo -e "❌ ${RED}Frontend unit tests failed${NC}"
 fi
 
-# 2. End-to-End Tests
+# 2. Install Playwright Dependencies
 echo ""
-echo "🎭 Step 2/4: Running End-to-End Tests"
+echo "🎭 Installing Playwright browser dependencies"
+echo "Command: npx playwright install-deps"
+echo "------------------------------------------------------"
+# This command installs system dependencies for WebKit, etc.
+# It will prompt for sudo password if needed.
+npx playwright install-deps
+FRONTEND_DEPS_EXIT=$?
+
+if [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
+    echo -e "✅ ${GREEN}Playwright dependencies are installed${NC}"
+else
+    echo -e "❌ ${RED}Failed to install Playwright dependencies${NC}"
+fi
+
+# 3. End-to-End Tests
+echo ""
+echo "🎭 Running End-to-End Tests"
 echo "Command: npm run test:e2e"
 echo "------------------------------------"
 npm run test:e2e
 FRONTEND_E2E_EXIT=$?
 
-if [ $FRONTEND_E2E_EXIT -eq 0 ]; then
+if [ $FRONTEND_E2E_EXIT -eq 0 ] && [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
     echo -e "✅ ${GREEN}E2E tests passed${NC}"
 else
     echo -e "❌ ${RED}E2E tests failed${NC}"
 fi
 
-# 3. ESLint Code Quality
+# 4. ESLint Code Quality
 echo ""
-echo "🔍 Step 3/4: Running ESLint Code Quality Check"
+echo "🔍 Running ESLint Code Quality Check"
 echo "Command: npx eslint src/ --format=compact --max-warnings=0"
 echo "-------------------------------------------------------------"
 npx eslint src/ --format=compact --max-warnings=0
@@ -138,7 +155,21 @@ if [ ! -f "$EXPECTED_VENV_BIN_PATH/activate" ]; then
         echo -e "${YELLOW}⚠️ Virtual environment not found. Creating a new one...${NC}"
     fi
 
-    python -m venv "$VENV_PATH"
+    # Use python3 on WSL/Linux and python on Windows (Git Bash) to create the venv
+    if [[ "${MSYSTEM}" == "MINGW64" ]]; then
+        python -m venv "$VENV_PATH" # Assumes python on Windows is correctly in PATH
+    else
+        # On Linux/WSL, require python3.11 to match the project standard defined in README.md and CI/CD.
+        if command -v python3.11 &> /dev/null; then
+            echo "   🐍 Found python3.11, using it to create venv (matches project standard)."
+            python3.11 -m venv "$VENV_PATH"
+        else
+            echo -e "${RED}❌ Error: python3.11 is not installed, but it is required for this project on WSL/Linux.${NC}"
+            echo -e "${YELLOW}💡 Please follow the setup instructions in the README.md (section 3.2) to install it."
+            echo -e "${YELLOW}   The command is likely: 'sudo apt install python3.11 python3.11-venv'${NC}"
+            cd ..; exit 1
+        fi
+    fi
     if [ $? -ne 0 ]; then
         echo -e "${RED}❌ Failed to create the virtual environment.${NC}"
         cd ..
@@ -203,6 +234,12 @@ else
     echo -e "❌ Frontend Unit Tests: ${RED}FAILED${NC}"
 fi
 
+if [ $FRONTEND_DEPS_EXIT -eq 0 ]; then
+    echo -e "✅ Playwright Dependencies: ${GREEN}OK${NC}"
+else
+    echo -e "❌ Playwright Dependencies: ${RED}FAILED${NC}"
+fi
+
 if [ $FRONTEND_E2E_EXIT -eq 0 ]; then
     echo -e "✅ Frontend E2E Tests: ${GREEN}PASSED${NC}"
 else
@@ -238,7 +275,7 @@ fi
 
 # Overall Result
 echo ""
-TOTAL_FAILED=$((FRONTEND_UNIT_EXIT + FRONTEND_E2E_EXIT + FRONTEND_LINT_EXIT + BACKEND_TEST_EXIT))
+TOTAL_FAILED=$((FRONTEND_UNIT_EXIT + FRONTEND_DEPS_EXIT + FRONTEND_E2E_EXIT + FRONTEND_LINT_EXIT + BACKEND_TEST_EXIT))
 
 if [ $TOTAL_FAILED -eq 0 ]; then
     echo -e "🎉 ${GREEN}ALL TESTS PASSED!${NC} Pipeline would succeed ✅"
@@ -258,6 +295,12 @@ else
         echo "   📍 Frontend Unit Tests:"
         echo "      - Check test output above for specific failures"
         echo "      - Try: cd frontend && npm test"
+    fi
+    
+    if [ $FRONTEND_DEPS_EXIT -ne 0 ]; then
+        echo "   📍 Playwright Dependencies:"
+        echo "      - Failed to install system libraries for browsers."
+        echo "      - Try: cd frontend && npx playwright install-deps"
     fi
     
     if [ $FRONTEND_E2E_EXIT -ne 0 ]; then

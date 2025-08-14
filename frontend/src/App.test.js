@@ -463,6 +463,35 @@ describe('Admin Authentication Integration', () => {
         expect(screen.queryByText('Admin Mode')).not.toBeInTheDocument();
     });
 
+    it('handles failed admin logout where response is not ok', async () => {
+        global.fetch
+            .mockResolvedValueOnce({ // Login
+                ok: true,
+                json: async () => ({ success: true, message: 'Login successful' })
+            })
+            .mockResolvedValueOnce({ // Logout fails
+                ok: false,
+                status: 500,
+            });
+
+        render(<App />);
+
+        // Login first
+        fireEvent.click(screen.getByRole('button', { name: /Admin/i }));
+        fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'admin123' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+        await screen.findByText('Admin Mode');
+
+        // Attempt logout
+        fireEvent.click(screen.getByRole('button', { name: /Logout/i }));
+
+        // Wait for the fetch call to complete
+        await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+
+        // The UI should not change because the `if (response.ok)` block is skipped
+        expect(screen.getByText('Admin Mode')).toBeInTheDocument();
+    });
+
     it('handles admin logout error gracefully', async () => {
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
@@ -545,5 +574,31 @@ describe('Admin Authentication Integration', () => {
         // Test mouse out  
         fireEvent.mouseOut(logoutButton);
         expect(logoutButton.style.backgroundColor).toBe('rgb(239, 68, 68)'); // #ef4444
+    });
+});
+
+describe('HomePageContent branch coverage', () => {
+    it('applies correct logo class based on the current route', async () => {
+        // Mock fetch for team.json to prevent errors when navigating to the team page
+        jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve([{ name: 'Test Member', role: 'Tester', active: true, profilePicture: 'test.jpg' }]),
+            })
+        );
+
+        render(<App />);
+
+        // On the homepage, the logo should have the 'logo-white' class
+        const logo = screen.getByRole('img', { name: /Knowit company logo/i });
+        expect(logo).toHaveClass('logo-white');
+
+        // Navigate to the team page
+        fireEvent.click(screen.getByRole('link', { name: /Our team page/i }));
+        await screen.findByRole('heading', { name: /Our Amazing Team/i });
+
+        // On the team page, the logo should not have the 'logo-white' class
+        const logoOnTeamPage = screen.getByRole('img', { name: /Knowit company logo/i });
+        expect(logoOnTeamPage).not.toHaveClass('logo-white');
     });
 });

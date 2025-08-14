@@ -500,16 +500,10 @@ This is the traditional way to set up your development environment directly on W
         ```
         Your prompt should now be `(venv) PS D:\Projects\InternalAI\frontend>`.
     6.  **Install Frontend Dependencies:**
-            ```powershell
-            npm install
-            ```
-            This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries. This might take a few moments.
-
-    7.  **Install E2E Test Helper (for Playwright E2E tests):**
         ```powershell
-        npm install --save-dev start-server-and-test
+        npm install
         ```
-        This installs the helper tool that automatically starts the backend server before running Playwright end-to-end tests.
+        This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries. This might take a few moments.
 
 ### 3.2 Setup for Windows (with WSL)
 
@@ -645,16 +639,10 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```
         * Your prompt should now be `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend$`.
     2.  **Install frontend dependencies:**
-            ```bash
-            npm install
-            ```
-            This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
-
-    3.  **Install E2E Test Helper (for Playwright E2E tests):**
         ```bash
-        npm install --save-dev start-server-and-test
+        npm install
         ```
-        This installs the helper tool that automatically starts the backend server before running Playwright end-to-end tests.
+        * This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
 ---
 
 ## 4. Making Changes & Contributing (Your First Steps with Git)

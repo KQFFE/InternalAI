@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
 import License from './License';
 import TeamPage from './TeamPage';
+import AdminLogin from './components/AdminLogin';
 import CookieBanner from './CookieBanner';
+
+
+// --- Cookie Banner Component ---
+
+// --- End Cookie Banner Component ---
 
 function HomePageContent() {
     const navigate = useNavigate();
@@ -249,6 +255,10 @@ function App() {
     const [statisticsCookies, setStatisticsCookies] = useState(false);
     const [marketingCookies, setMarketingCookies] = useState(false);
 
+    // Admin Authentication State
+    const [showAdminLogin, setShowAdminLogin] = useState(false);
+    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
     useEffect(() => {
         const hasConsent = localStorage.getItem('cookieConsent');
         if (!hasConsent) {
@@ -285,9 +295,103 @@ function App() {
         setShowCookieModal(false);
     };
 
+    // Admin Authentication Handlers
+    const handleShowAdminLogin = () => {
+        setShowAdminLogin(true);
+    };
+
+    const handleAdminLogin = (loginData) => {
+        console.log('Admin login successful:', loginData);
+        setIsAdminAuthenticated(true);
+        setShowAdminLogin(false);
+    };
+
+    const handleCancelAdminLogin = () => {
+        setShowAdminLogin(false);
+    };
+
+    const handleAdminLogout = async () => {
+        try {
+            const response = await fetch('/api/admin/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                setIsAdminAuthenticated(false);
+                console.log('Admin logged out successfully');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     return (
         <Router>
             <div className="App font-inter">
+                {/* Admin Button - Top Right Corner */}
+                <div style={{
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    zIndex: 999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}>
+                    {isAdminAuthenticated ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{
+                                fontSize: '12px',
+                                color: '#10b981',
+                                fontWeight: '500',
+                                padding: '4px 8px',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderRadius: '4px'
+                            }}>
+                                Admin Mode
+                            </span>
+                            <button
+                                data-testid="admin-logout-button"
+                                onClick={handleAdminLogout}
+                                style={{
+                                    padding: '6px 12px',
+                                    fontSize: '12px',
+                                    backgroundColor: '#ef4444',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: '500'
+                                }}
+                                onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
+                                onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            data-testid="admin-login-button"
+                            onClick={handleShowAdminLogin}
+                            style={{
+                                padding: '6px 12px',
+                                fontSize: '12px',
+                                backgroundColor: '#6366f1',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500'
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#4f46e5'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#6366f1'}
+                        >
+                            Admin
+                        </button>
+                    )}
+                </div>
+
                 {/* Cookie Consent Banner */}
                 <CookieBanner
                     show={showCookieModal}
@@ -301,12 +405,21 @@ function App() {
                     marketingCookies={marketingCookies}
                     setMarketingCookies={setMarketingCookies}
                 />
+
                 {/* Everything else remains as before */}
                 <Routes>
                     <Route path="/" element={<HomePageContent />} />
                     <Route path="/team" element={<TeamPage />} />
                     <Route path="/license" element={<License />} />
                 </Routes>
+
+                {/* Admin Login Modal */}
+                {showAdminLogin && (
+                    <AdminLogin
+                        onLogin={handleAdminLogin}
+                        onCancel={handleCancelAdminLogin}
+                    />
+                )}
             </div>
         </Router>
     );

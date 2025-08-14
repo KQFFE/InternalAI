@@ -49,7 +49,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-i
 app.config['DEBUG'] = os.environ.get('FLASK_ENV') != 'production'
 # Admin authentication configuration
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
-UPLOAD_FOLDER = 'static/img'
+# Get the base directory of the current file
+basedir = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(basedir, '..', 'frontend', 'public', 'img')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Ensure upload directory exists
@@ -103,15 +105,13 @@ def allowed_file(filename):
     """Check if uploaded file has allowed extension"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def generate_safe_filename(name):
-    """Generate safe filename from person's name"""
-    # Convert to lowercase, replace spaces with hyphens, handle Swedish characters
+
+def generate_safe_filename(name, file_extension):
+    """Generate safe filename that retains special characters but is URL-friendly."""
+    # Convert name to lowercase and replace spaces with hyphens.
     safe_name = name.lower().replace(' ', '-')
-    safe_name = safe_name.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
-    safe_name = safe_name.replace('é', 'e').replace('ü', 'u')
-    # Remove any other non-alphanumeric characters except hyphens
-    safe_name = ''.join(c for c in safe_name if c.isalnum() or c == '-')
-    return f"{safe_name}.jpg"
+    # Return the new filename with the original file extension.
+    return f"{safe_name}.{file_extension}"
 
 def save_team_data(team_data):
     """Save team data to JSON file - integrates with your existing get_team_data paths"""
@@ -475,7 +475,7 @@ def handle_exception(e):
             'timestamp': datetime.now().isoformat()
         }), 500
 
-    # ================================
+# ================================
 # AUTHENTICATION ROUTES
 # ================================
 
@@ -557,20 +557,21 @@ def add_team_member():
         
         if 'image' in request.files:
             file = request.files['image']
-            if file and file.filename and allowed_file(file.filename):
+            if file and allowed_file(file.filename):
                 try:
+                    # Extract the file extension from the original filename
+                    file_extension = file.filename.rsplit('.', 1)[1].lower()
                     # Generate safe filename based on person's name
-                    filename = generate_safe_filename(name)
+                    filename = generate_safe_filename(name, file_extension)
                     filepath = os.path.join(UPLOAD_FOLDER, filename)
-                    
-                    # Save the file directly (no processing)
+                
+                    # Save the file directly
                     file.save(filepath)
                     image_filename = f'/img/{filename}'
                     logger.info(f"Image saved: {filepath}")
-                    
+                
                 except Exception as e:
                     logger.error(f"Failed to save image: {e}")
-                    # Continue with default image if upload fails
         
         # Create new member object
         new_member = {
@@ -639,14 +640,14 @@ def update_team_member(index):
             if file and file.filename and allowed_file(file.filename):
                 try:
                     # Generate safe filename based on (possibly updated) name
-                    filename = generate_safe_filename(member['name'])
+                    filename = generate_safe_filename(member['name'], file.filename)
                     filepath = os.path.join(UPLOAD_FOLDER, filename)
-                    
+
                     # Save new image
                     file.save(filepath)
                     member['profilePicture'] = f'/img/{filename}'
                     logger.info(f"Updated image for {member['name']}: {filepath}")
-                    
+
                 except Exception as e:
                     logger.error(f"Failed to save updated image: {e}")
                     # Continue without updating image if upload fails
@@ -750,6 +751,26 @@ def debug_upload():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# ================================
+# IMAGE SERVING ROUTE
+# ================================
+@app.route('/img/<path:filename>')
+def serve_image(filename):
+    """Serve image files from the UPLOAD_FOLDER, handling special characters"""
+    try:
+        # Flask's send_from_directory function is the best way to handle this.
+        # It's important to provide the correct path to the directory and the filename.
+        # It handles a lot of security and path-joining automatically.
+        # The filename passed to this function will be properly decoded by Flask.
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    except FileNotFoundError:
+        # If the file is not found, return a 404 error
+        return "Image not found.", 404
+    except Exception as e:
+        # Log the internal error for debugging and return a generic 500 error
+        logger.error(f"Error serving image '{filename}': {e}")
+        return "Internal server error.", 500
 
 # ================================
 # MAIN APPLICATION ENTRY POINT

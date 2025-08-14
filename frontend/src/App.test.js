@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
+import userEvent from '@testing-library/user-event';
 
 // Mock localStorage to simulate browser behavior in the test environment
 const localStorageMock = (function () {
@@ -214,5 +215,149 @@ describe('CookieBanner', () => {
     });
 
     expect(document.body).not.toHaveClass('modal-open');
+  });
+
+  it('expands and collapses a cookie category detail', async () => {
+    render(<App />);
+
+    // Show details first
+    const showDetailsButton = screen.getByRole('button', { name: /Visa detaljer/i });
+    fireEvent.click(showDetailsButton);
+
+    // Find the button to expand the "Nödvändiga" category
+    const necessaryCategoryButton = await screen.findByRole('button', { name: /Nödvändiga/i });
+
+    // The description container should be hidden initially
+    const descriptionContainer = screen.getByTestId('description-container-necessary');
+    expect(descriptionContainer).not.toBeVisible();
+
+    // Click to expand
+    fireEvent.click(necessaryCategoryButton);
+
+    // Now it should be visible
+    await waitFor(() => {
+      expect(descriptionContainer).toBeVisible();
+    });
+
+    // Click again to collapse
+    fireEvent.click(necessaryCategoryButton);
+
+    await waitFor(() => {
+      expect(descriptionContainer).not.toBeVisible();
+    });
+  });
+});
+
+describe('HomePageContent interactions for function coverage', () => {
+  beforeEach(() => {
+    // Ensure a clean slate for navigation tests
+    window.history.pushState({}, 'Home', '/');
+  });
+
+  it('handles clicks on news and footer buttons', () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+    render(<App />);
+
+    // These buttons have empty or console.log handlers. Clicking them covers the function call.
+    fireEvent.click(screen.getByRole('button', { name: /Read article about Summer Project 2025 from June 26/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Read article about Summer Project 2025 from July 1/i }));
+    expect(consoleSpy).toHaveBeenCalledWith('News item 2 clicked');
+
+    fireEvent.click(screen.getByRole('button', { name: /View all news articles/i }));
+    expect(consoleSpy).toHaveBeenCalledWith('More news clicked');
+
+    fireEvent.click(screen.getByRole('button', { name: /Find your new job at Knowit/i }));
+    // No assertion needed for the empty handler, just ensuring it's clicked without error.
+
+    consoleSpy.mockRestore();
+  });
+
+  it('navigates to team and license pages from hero buttons', async () => {
+    // Mock fetch for team.json to prevent errors when navigating to the team page
+    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([{ name: 'Test Member', role: 'Tester', active: true, profilePicture: 'test.jpg' }]),
+      })
+    );
+
+    render(<App />);
+
+    // 1. Test navigation to Team Page
+    fireEvent.click(screen.getByRole('button', { name: /Read more about our team/i }));
+
+    // Assert that we navigated to the team page
+    expect(await screen.findByRole('heading', { name: /Our Amazing Team/i })).toBeInTheDocument();
+
+    // 2. Navigate back home to test the other button
+    fireEvent.click(screen.getByRole('link', { name: /Go to homepage/i }));
+
+    // Assert we are back on the home page
+    expect(await screen.findByRole('heading', { name: /Shaping a better future with code/i })).toBeInTheDocument();
+
+    // 3. Test navigation to License Page
+    fireEvent.click(screen.getByRole('button', { name: /Knowit License Management/i }));
+
+    // Assert that we navigated to the license page
+    expect(await screen.findByRole('heading', { name: /License Page/i })).toBeInTheDocument();
+
+    // Clean up mock
+    fetchSpy.mockRestore();
+  });
+
+  it('navigates using header links and logo', async () => {
+    // Mock fetch for team.json to prevent errors when navigating to the team page
+    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([{ name: 'Test Member', role: 'Tester', active: true, profilePicture: 'test.jpg' }]),
+      })
+    );
+
+    render(<App />);
+
+    // 1. Navigate to Team Page using header link from the homepage
+    fireEvent.click(screen.getByRole('link', { name: /Our team page/i }));
+    expect(await screen.findByRole('heading', { name: /Our Amazing Team/i })).toBeInTheDocument();
+
+    // 2. Navigate back home using the logo link on the Team Page
+    fireEvent.click(screen.getByRole('link', { name: /Go to homepage/i }));
+    expect(await screen.findByRole('heading', { name: /Shaping a better future with code/i })).toBeInTheDocument();
+
+    // 3. NOW on the homepage, click the logo again to cover line 35 in App.js
+    fireEvent.click(screen.getByRole('link', { name: /Go to homepage/i }));
+    expect(await screen.findByRole('heading', { name: /Shaping a better future with code/i })).toBeInTheDocument();
+
+    // 4. Navigate to License Page using header link from the homepage
+    fireEvent.click(screen.getByRole('link', { name: /License information/i }));
+    expect(await screen.findByRole('heading', { name: /License Page/i })).toBeInTheDocument();
+
+    // Clean up mock
+    fetchSpy.mockRestore();
+  });
+});
+
+describe('CookieBanner interactions for function coverage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('allows changing multiple preferences and saving', async () => {
+    render(<App />);
+    expect(screen.getByText(/Vi använder cookies/i)).toBeInTheDocument();
+
+    // Find the "Funktionella" and "Marketing" toggles and click them
+    const functionalToggle = screen.getByLabelText(/Funktionella/i);
+    const marketingToggle = screen.getByLabelText(/Marketing/i);
+
+    await userEvent.click(functionalToggle);
+    await userEvent.click(marketingToggle);
+
+    const saveButton = screen.getByRole('button', { name: /Spara inställningar/i });
+    await userEvent.click(saveButton);
+
+    expect(localStorage.getItem('cookieConsent')).toBe('custom');
+    expect(localStorage.getItem('functionalityCookies')).toBe('true');
+    expect(localStorage.getItem('marketingCookies')).toBe('true');
   });
 });

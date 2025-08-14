@@ -153,7 +153,7 @@ function CookieBanner({
                                         </button>
                                         <div className="coi-consent-banner__category-description">Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.</div>
                                     </div>
-                                    <div className="coi-consent-banner__description-container" id="description-container-cookie_cat_necessary" aria-hidden={openCategory !== 'necessary'} style={{ display: openCategory === 'necessary' ? 'block' : 'none' }}>
+                                    <div data-testid="description-container-necessary" className="coi-consent-banner__description-container" id="description-container-cookie_cat_necessary" aria-hidden={openCategory !== 'necessary'} style={{ display: openCategory === 'necessary' ? 'block' : 'none' }}>
                                         {/* Details for Necessary cookies */}
                                     </div>
                                 </div>

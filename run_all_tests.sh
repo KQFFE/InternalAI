@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+﻿﻿#!/bin/bash
 # run_all_tests.sh - InternalAI Test Suite (Matching CI/CD Pipeline)
 # Runs the same commands as GitHub Actions pipeline
 # Usage: ./run_all_tests.sh
@@ -106,60 +106,83 @@ echo "======================="
 
 cd backend
 
-# Determine the correct path for the virtual environment executables
-# Check if running in a Windows environment (like Git Bash)
+VENV_PATH="../.venv"
+
+# --- Robust Virtual Environment Setup ---
+
+# Function to find the correct venv bin path by checking for activate scripts
+find_venv_bin_path() {
+    if [ -f "$VENV_PATH/Scripts/activate" ]; then
+        echo "$VENV_PATH/Scripts"
+    elif [ -f "$VENV_PATH/bin/activate" ]; then
+        echo "$VENV_PATH/bin"
+    else
+        echo ""
+    fi
+}
+
+# Determine the expected bin path for the current shell to check for compatibility
+EXPECTED_VENV_BIN_PATH=""
 if [[ "${MSYSTEM}" == "MINGW64" ]]; then
-    # Use the Windows-style Scripts directory
-    VENV_BIN_PATH="../.venv/Scripts"
+    EXPECTED_VENV_BIN_PATH="$VENV_PATH/Scripts"
 else
-    # Use the Unix-style bin directory
-    VENV_BIN_PATH="../.venv/bin"
+    EXPECTED_VENV_BIN_PATH="$VENV_PATH/bin"
 fi
 
-# Check if virtual environment exists
-if [ ! -d "$VENV_BIN_PATH" ]; then
-    echo -e "${YELLOW}⚠️ Virtual environment not found. Creating one...${NC}"
-    cd ..
-    python -m venv .venv
-    cd backend
+# If the venv is not compatible with the current shell, create or upgrade it.
+if [ ! -f "$EXPECTED_VENV_BIN_PATH/activate" ]; then
+    if [ -d "$VENV_PATH" ]; then
+        echo -e "${YELLOW}⚠️ Virtual environment is incompatible with the current shell. Recreating it...${NC}"
+        rm -rf "$VENV_PATH"
+    else
+        echo -e "${YELLOW}⚠️ Virtual environment not found. Creating a new one...${NC}"
+    fi
+
+    python -m venv "$VENV_PATH"
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Failed to create the virtual environment.${NC}"
+        cd ..
+        exit 1
+    fi
 fi
 
-# Activate virtual environment (this is still a good practice for other environment variables)
-# We now use the variable `VENV_BIN_PATH` to find the correct activation script
-if [ -f "$VENV_BIN_PATH/activate" ]; then
-    echo "🔧 Activating virtual environment..."
-    source "$VENV_BIN_PATH/activate"
-else
-    echo -e "${RED}❌ Could not find virtual environment activation script at: $VENV_BIN_PATH/activate${NC}"
+# Now, find the ACTUAL bin path by probing, regardless of what we expected.
+# This handles cases where the `python` command in the PATH is from a different OS (e.g., WSL python in Git Bash).
+VENV_BIN_PATH=$(find_venv_bin_path)
+
+if [ -z "$VENV_BIN_PATH" ]; then
+    echo -e "${RED}❌ Could not find a valid virtual environment activation script after setup.${NC}"
+    echo -e "${YELLOW}💡 Please ensure Python is installed and accessible in your PATH.${NC}"
     cd ..
     exit 1
 fi
 
+# Activate virtual environment
+echo "🔧 Activating virtual environment from: $VENV_BIN_PATH"
+source "$VENV_BIN_PATH/activate"
+
 # Install/update dependencies using the specific pip from the venv
 echo "📦 Installing/updating backend dependencies..."
-"$VENV_BIN_PATH/pip" install --upgrade pip > /dev/null 2>&1
-"$VENV_BIN_PATH/pip" install -r requirements.txt > /dev/null 2>&1
+pip install --upgrade pip > /dev/null 2>&1
+pip install -r requirements.txt > /dev/null 2>&1
 echo -e "${GREEN}✅ Backend dependencies installed.${NC}"
 
 # Run tests using the specific pytest from the venv
 echo "🧪 Running pytest..."
-"$VENV_BIN_PATH/pytest"
-
-TEST_RESULT=$?
+pytest --cov=. --cov-report=html --cov-report=term-missing
+BACKEND_TEST_EXIT=$?
 
 # Deactivate virtual environment
 deactivate 2>/dev/null || true
 
 # Check test result
-if [ $TEST_RESULT -eq 0 ]; then
+if [ $BACKEND_TEST_EXIT -eq 0 ]; then
     echo -e "${GREEN}✅ Backend tests passed.${NC}"
 else
     echo -e "${RED}❌ Backend tests failed.${NC}"
 fi
 
 cd ..
-
-return $TEST_RESULT
 
 # ================================
 # SUMMARY REPORT

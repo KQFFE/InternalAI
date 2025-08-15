@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from './test-utils';
+import { render, screen } from './test-utils';
 import App from './App';
 import userEvent from '@testing-library/user-event';
 

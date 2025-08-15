@@ -4,13 +4,16 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
+import { CookieConsentProvider } from './context/CookieConsentContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <CookieConsentProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </CookieConsentProvider>
   </React.StrictMode>
 );
 

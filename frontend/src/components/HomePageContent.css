@@ -47,7 +47,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
-    margin: 4rem 0;
 }
 
 .highlight-box {
@@ -65,14 +64,11 @@
 }
 
 /* News Section */
-.news-section {
-    margin: 4rem 0;
-}
+.news-section {}
 
 .news-section h2 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #ffffff;
     text-align: center;
     margin-bottom: 2rem;
 }
@@ -84,7 +80,6 @@
 }
 
 .news-item {
-    background-color: rgba(15, 52, 96, 0.5);
     padding: 1.5rem;
     border-radius: 8px;
 }
@@ -92,7 +87,6 @@
 .news-item h4 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
@@ -112,7 +106,6 @@
     display: block;
     text-align: center;
     margin-top: 2rem;
-    color: #93c5fd; /* blue-300 */
     font-weight: 600;
     text-decoration: none;
 }
@@ -121,24 +114,32 @@
     text-decoration: underline;
 }
 
-/* Careers Section */
-.careers-section {
-    text-align: center;
-    padding: 4rem 1rem;
-    background-color: rgba(15, 52, 96, 0.3);
-    border-radius: 8px;
-    margin-top: 4rem;
+.news-section-background {
+    background-color: #fefbe6;
 }
 
-.careers-section h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 1rem;
+/* Adjustments for elements inside the news section for light background */
+.news-section-background .news-section h2 {
+    color: #1a1a2e; /* Dark text color */
 }
 
-.careers-section p {
-    font-size: 1.25rem;
-    color: #cad2de;
-    margin-bottom: 2rem;
+.news-section-background .news-item {
+    background-color: #ffffff; /* White cards on the light yellow background */
+    border: 1px solid #e2e8f0; /* A light gray border */
+}
+
+.news-section-background .news-item h4 {
+    color: #1a1a2e; /* Dark text color */
+}
+
+.news-section-background .news-item p {
+    color: #4a5568; /* Gray text for description */
+}
+
+.news-section-background .news-item-link {
+    color: #4f46e5; /* Indigo link color */
+}
+
+.news-section-background .more-news-link {
+    color: #1a1a2e; /* Dark text color */
 }

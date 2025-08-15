@@ -130,12 +130,18 @@
     text-decoration: none;
     color: #94a3b8;
     transition: color 0.2s;
+    display: inline-block; /* Ensures the link takes the size of the icon */
+}
+
+.footer-social-links svg {
+    width: 24px;
+    height: 24px;
 }
 
 .footer-bottom-links a:hover,
 .footer-social-links a:hover {
     color: #ffffff;
-    text-decoration: underline;
+    text-decoration: none; /* Underline is not needed for icons */
 }
 
 /* Homepage-specific footer style */
@@ -162,6 +168,7 @@
 .site-footer--homepage .footer-careers-section .careers-link:hover,
 .site-footer--homepage .footer-column a:hover,
 .site-footer--homepage .footer-bottom-links a:hover,
+.site-footer--homepage .footer-social-links a:hover,
 .site-footer--homepage .footer-social-links a:hover {
     color: #000000; /* Black for link hover state */
 }

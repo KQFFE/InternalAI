@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './cookie-banner.css';
+import '../cookie-banner.css';
 
 
 function CookieBanner({

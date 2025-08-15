@@ -1,0 +1,62 @@
+/* d:/Dev/InternalAI/frontend/src/components/Footer.css */
+.site-footer {
+    background-color: #0f172a; /* A dark slate color, slightly different from the main bg */
+    color: #94a3b8; /* slate-400 */
+    padding: 2rem 1rem;
+    border-top: 1px solid #1e293b; /* slate-800 */
+    margin-top: auto; /* Pushes footer to the bottom in a flex container */
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-link {
+    color: #cbd5e1; /* slate-300 */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-social {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.social-link {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.social-link:hover {
+    color: #ffffff;
+}
+
+.footer-copyright p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+    .footer-content {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}

@@ -1,0 +1,151 @@
+/* d:/Dev/InternalAI/frontend/src/components/HomePageContent.css */
+.homepage-content {
+    color: #e0e6ed;
+    padding: 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    color: #cad2de;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-button {
+    background-color: #4f46e5;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hero-button:hover {
+    background-color: #4338ca;
+}
+
+/* Highlights Section */
+.highlights-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 4rem 0;
+}
+
+.highlight-box {
+    background-color: rgba(15, 52, 96, 0.5);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #16213e;
+}
+
+.highlight-box h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+/* News Section */
+.news-section {
+    margin: 4rem 0;
+}
+
+.news-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.news-item {
+    background-color: rgba(15, 52, 96, 0.5);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.news-item h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.news-item-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #3b82f6;
+    text-decoration: none;
+     font-weight: 500;
+}
+
+.news-item-link:hover {
+    text-decoration: underline;
+}
+
+.more-news-link {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    color: #93c5fd; /* blue-300 */
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.more-news-link:hover {
+    text-decoration: underline;
+}
+
+/* Careers Section */
+.careers-section {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: rgba(15, 52, 96, 0.3);
+    border-radius: 8px;
+    margin-top: 4rem;
+}
+
+.careers-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.careers-section p {
+    font-size: 1.25rem;
+    color: #cad2de;
+    margin-bottom: 2rem;
+}

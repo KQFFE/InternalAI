@@ -6,7 +6,7 @@ function HomePageContent() {
     const navigate = useNavigate();
 
     return (
-        <div className="homepage-content">
+        <>
             {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-text">
@@ -55,7 +55,7 @@ function HomePageContent() {
                 <p>We are always looking for talented people to join our team.</p>
                 <a href="#careers" className="hero-button">Find your new job at Knowit</a>
             </section>
-        </div>
+        </>
     );
 }
 

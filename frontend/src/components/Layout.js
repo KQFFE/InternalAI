@@ -9,7 +9,7 @@ function Layout() {
 
     return (
         // This div provides the consistent background for all pages
-        <div className="hero-gradient-bg font-sans text-gray-300 min-h-screen">
+        <div className="hero-gradient-bg font-sans text-gray-300 min-h-screen flex flex-col">
             <header
                 className="flex justify-between items-center p-6 md:p-10 container mx-auto"
                 role="banner"
@@ -67,7 +67,9 @@ function Layout() {
             </header>
 
             {/* The Outlet component renders the active child route (e.g., HomePage or TeamPage) */}
-            <Outlet />
+            <div className="flex-grow">
+                <Outlet />
+            </div>
             <Footer />
         </div>
     );

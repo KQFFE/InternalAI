@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import TeamPage from './pages/TeamPage';
 import Layout from './components/Layout';
@@ -25,7 +25,7 @@ function App() {
   } = useCookieConsent();
 
   return (
-    <Router>
+    <>
       <CookieBanner
         show={showCookieModal}
         onAcceptAll={acceptAllCookies}
@@ -49,7 +49,7 @@ function App() {
           <Route path="/license" element={<License />} />
         </Route>
       </Routes>
-    </Router>
+    </>
   );
 }
 

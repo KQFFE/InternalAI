@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; // For React 18+
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -9,11 +10,13 @@ import { CookieConsentProvider } from './context/CookieConsentContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <CookieConsentProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </CookieConsentProvider>
+    <Router>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </CookieConsentProvider>
+    </Router>
   </React.StrictMode>
 );
 

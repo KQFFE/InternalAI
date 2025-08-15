@@ -39,7 +39,7 @@ function HomePageContent() {
             <div className="news-section-background">
                 <div className="container mx-auto px-6 py-12">
                     {/* News Section */}
-                    <section className="news-section" id="news-section">
+                    <section className="news-section" id="news-section" aria-label="Latest news">
                         <h2 id="news-heading">News</h2>
                         <div className="news-grid">
                             <article className="news-item">

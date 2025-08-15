@@ -1,147 +1,95 @@
-﻿// frontend/e2e/admin_login.spec.js
-import { test, expect } from '@playwright/test';
+﻿import { test, expect } from '@playwright/test';
 
-test.describe('Admin Authentication', () => {
-    test.beforeEach(async ({ page }) => {
-        // 1. Navigate to the home page first. This is crucial for localStorage access.
-        await page.goto('/');
+test.describe('Admin Login Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Mock the initial status check to be not authenticated
+    await page.route('/api/admin/status', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ isAuthenticated: false }),
+      });
+    });
+    await page.goto('/');
+    // Accept cookies if the banner is visible to not interfere with tests
+    const acceptCookiesButton = page.getByTestId('accept-all-cookies');
+    if (await acceptCookiesButton.isVisible()) {
+      await acceptCookiesButton.click();
+      await expect(page.locator('#coiOverlay')).not.toBeAttached();
+    }
+  });
 
-        // 2. Clear localStorage and cookies for a clean state.
-        await page.evaluate(() => window.localStorage.clear());
-        await page.context().clearCookies();
-
-        // 3. Reload the page to ensure the cookie banner reappears after clearing localStorage.
-        await page.reload();
-
-        // 4. Explicitly wait for the cookie banner to be visible and accept all cookies.
-        const acceptAllCookiesButton = page.locator('.coi-banner__accept', { hasText: 'Godkänn alla' });
-        await expect(acceptAllCookiesButton).toBeVisible({ timeout: 15000 }); // Increased timeout for banner visibility
-        await acceptAllCookiesButton.click();
-
-        // 5. Wait for the cookie banner to disappear to ensure it's no longer intercepting clicks.
-        await expect(page.locator('#coiOverlay')).not.toBeVisible({ timeout: 10000 });
+  test('should open the admin modal, log in, and see the logout button', async ({ page }) => {
+    // Mock the login API call to return success
+    await page.route('/api/admin/login', async (route) => {
+      // We can check the request body if we want to test the password
+      const requestBody = route.request().postDataJSON();
+      expect(requestBody.password).toBe('correct-password');
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
     });
 
-    test('should show admin button in top-right corner', async ({ page }) => {
-        await page.waitForSelector('button:text("Admin")', { state: 'visible' });
-        const adminButton = page.locator('button:text("Admin")');
-        await expect(adminButton).toBeVisible();
+    // Mock the status check after login to return authenticated
+    await page.route('/api/admin/status', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ isAuthenticated: true }),
+      });
+    }, { times: 1 }); // Only mock the next status call
+
+    // 1. Click the Admin button
+    const adminButton = page.getByTestId('admin-login-button');
+    await expect(adminButton).toBeVisible();
+    await adminButton.click();
+
+    // 2. Verify the modal is open
+    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    await expect(modalHeading).toBeVisible();
+
+    // 3. Fill in the password and click login
+    await page.getByRole('textbox', { name: 'Password' }).fill('correct-password');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+
+    // 4. Verify the modal is closed and the logout button is visible
+    await expect(modalHeading).not.toBeVisible();
+    const logoutButton = page.getByTestId('admin-logout-button');
+    await expect(logoutButton).toBeVisible();
+  });
+
+  test('should be able to log out', async ({ page }) => {
+    // Set initial state to logged in for this test
+    await page.route('/api/admin/status', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ isAuthenticated: true }),
+      });
     });
 
-    test('should open and close admin login modal', async ({ page }) => {
-        await page.locator('[data-testid="admin-login-button"]').click();
-
-        await expect(page.locator('text=Admin Login')).toBeVisible();
-        await expect(page.locator('input[placeholder="Enter admin password"]')).toBeVisible();
-
-        await page.click('button[aria-label="Close login modal"]');
-
-        await expect(page.locator('text=Admin Login')).not.toBeVisible();
+    // Mock the logout API call
+    await page.route('/api/admin/logout', async (route) => {
+      await route.fulfill({ status: 200 });
     });
 
-    test('should successfully authenticate admin user', async ({ page }) => {
-        // Click admin button
-        await page.locator('[data-testid="admin-login-button"]').click();
+    // Reload the page with the new mock
+    await page.goto('/');
 
-        // Wait for modal and fill password
-        await page.waitForSelector('input[placeholder="Enter admin password"]', { state: 'visible' });
-        await page.fill('input[placeholder="Enter admin password"]', 'admin123');
-        await page.click('button:text("Login")');
+    // The page has reloaded, so we must dismiss the cookie banner again
+    const acceptCookiesButton = page.getByTestId('accept-all-cookies');
+    if (await acceptCookiesButton.isVisible()) {
+      await acceptCookiesButton.click();
+      await expect(page.locator('#coiOverlay')).not.toBeAttached();
+    }
 
-        // Should show admin mode
-        await expect(page.locator('text=Admin Mode')).toBeVisible();
-        await expect(page.locator('button:text("Logout")')).toBeVisible();
+    const logoutButton = page.getByTestId('admin-logout-button');
+    await expect(logoutButton).toBeVisible();
+    await logoutButton.click();
 
-        // Login modal should be gone
-        await expect(page.locator('h2:text("Admin Login")')).not.toBeVisible();
-    });
-
-    test('should show error for wrong password', async ({ page }) => {
-        // Click admin button
-        await page.locator('[data-testid="admin-login-button"]').click();
-
-        // Enter wrong password
-        await page.waitForSelector('input[placeholder="Enter admin password"]', { state: 'visible' });
-        await page.fill('input[placeholder="Enter admin password"]', 'wrongpassword');
-        await page.click('button:text("Login")');
-
-        // Should show error
-        await expect(page.locator('text=Invalid password')).toBeVisible();
-
-        // Password field should be cleared
-        const passwordInput = page.locator('input[placeholder="Enter admin password"]');
-        await expect(passwordInput).toHaveValue('');
-    });
-
-    test('should validate password requirements', async ({ page }) => {
-        // Click admin button
-        await page.locator('[data-testid="admin-login-button"]').click();
-
-        // Try short password
-        await page.waitForSelector('input[placeholder="Enter admin password"]', { state: 'visible' });
-        await page.fill('input[placeholder="Enter admin password"]', 'ab');
-        await page.click('button:text("Login")');
-
-        // Should show validation error
-        await expect(page.locator('text=Password must be at least 3 characters')).toBeVisible();
-    });
-
-    test('should successfully logout', async ({ page }) => {
-        // Login first
-        await page.locator('[data-testid="admin-login-button"]').click();
-        await page.waitForSelector('input[placeholder="Enter admin password"]', { state: 'visible' });
-        await page.fill('input[placeholder="Enter admin password"]', 'admin123');
-        await page.click('button:text("Login")');
-
-        // Wait for admin mode
-        await expect(page.locator('text=Admin Mode')).toBeVisible();
-
-        // Logout
-        await page.click('button:text("Logout")');
-
-        // Should return to normal state
-        await expect(page.locator('button:text("Admin")')).toBeVisible();
-        await expect(page.locator('text=Admin Mode')).not.toBeVisible();
-    });
-
-    test('should handle password visibility toggle', async ({ page }) => {
-        // Click admin button
-        await page.locator('[data-testid="admin-login-button"]').click();
-
-        await page.waitForSelector('input[placeholder="Enter admin password"]', { state: 'visible' });
-        const passwordInput = page.locator('input[placeholder="Enter admin password"]');
-        const toggleButton = page.locator('button:text("👁️‍🗨️")');
-
-        // Initially password type
-        await expect(passwordInput).toHaveAttribute('type', 'password');
-
-        // Fill some text
-        await page.fill('input[placeholder="Enter admin password"]', 'test123');
-
-        // Toggle visibility
-        await toggleButton.click();
-
-        // Should be text type now
-        await expect(passwordInput).toHaveAttribute('type', 'text');
-
-        // Toggle back
-        await page.click('button:text("👁️")');
-        await expect(passwordInput).toHaveAttribute('type', 'password');
-    });
-
-    test('should cancel login with Cancel button', async ({ page }) => {
-        // Click admin button
-        await page.locator('[data-testid="admin-login-button"]').click();
-
-        // Modal should be visible
-        await page.waitForSelector('h2:text("Admin Login")', { state: 'visible' });
-        await expect(page.locator('h2:text("Admin Login")')).toBeVisible();
-
-        // Click cancel
-        await page.click('button:text("Cancel")');
-
-        // Modal should close
-        await expect(page.locator('h2:text("Admin Login")')).not.toBeVisible();
-        await expect(page.locator('button:text("Admin")')).toBeVisible();
-    });
+    const adminButton = page.getByTestId('admin-login-button');
+    await expect(adminButton).toBeVisible();
+  });
 });

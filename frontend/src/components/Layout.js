@@ -30,19 +30,19 @@ function Layout() {
                     {/* Navigation links */}
                     <nav className="flex items-center space-x-6" role="navigation" aria-label="Main navigation">
                         <Link
-                            to="/team"
+                            to="/team" id="nav-team"
                             className="main-nav-link text-white text-lg hover:underline"
                         >
                             Our Team
                         </Link>
                         <Link
-                            to="/services"
+                            to="/services" id="nav-services"
                             className="main-nav-link text-white text-lg hover:underline"
                         >
                             Services
                         </Link>
                         <Link
-                            to="/contact"
+                            to="/contact" id="nav-contact"
                             className="main-nav-link text-white text-lg hover:underline"
                         >
                             Contact
@@ -53,11 +53,11 @@ function Layout() {
                     <div className="admin-auth-section">
                         {!isLoading && (
                             isAdmin ? (
-                                <button onClick={logout} className="admin-button logout-button">
+                                <button data-testid="admin-logout-button" onClick={logout} className="admin-button logout-button">
                                     Logout
                                 </button>
                             ) : (
-                                <button onClick={openLoginModal} className="admin-button login-button">
+                                <button data-testid="admin-login-button" onClick={openLoginModal} className="admin-button login-button">
                                     Admin
                                 </button>
                             )

@@ -18,8 +18,9 @@ InternalAI/
 │   └── 📁 workflows/
 │       └── azure-deployment.yml     # CI/CD pipeline configuration
 ├── 📁 backend/                      # Flask API server
+│   ├── 📁 tests/                    # Backend tests
+│   │   └── test_app.py              # Tests for Flask routes and API endpoints
 │   ├── app.py                       # Main Flask application
-│   ├── test_app.py                  # Tests for Flask routes and API endpoints
 │   └── requirements.txt             # Python dependencies
 ├── 📁 frontend/                     # React web application
 │   ├── 📁 public/
@@ -382,25 +383,26 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
 
 #### **Backend Tests (pytest):**
 * **Backend (Flask) Unit Tests:**
-    * Backend tests should be located in the `backend/` directory.
+    * Backend tests should be located in the `backend/tests/` directory.
     * Test files must start with `test_` prefix (e.g., `test_app.py`, `test_api.py`)
     * Current backend test structure:
         ```
         backend/
+        ├── tests/
+        │   └── test_app.py     # Tests for Flask routes and API endpoints
         ├── app.py              # Main Flask application
-        ├── test_app.py         # Tests for Flask routes and API endpoints
         └── requirements.txt    # Python dependencies
         ```
-    * `pytest` automatically finds files with `test_*.py` pattern within the `backend` directory.
+    * `pytest` automatically finds files with `test_*.py` pattern within the `backend` directory and its subdirectories.
 
 ### 2.4 Test Types Summary
 
 | Test Type | Command | Purpose | Location | Extension |
 |-----------|---------|---------|----------|-----------|
-| **Unit Tests**         | `npm test`              | Component testing       | `frontend/src/` | `.test.js`  |
-| **E2E Tests**          | `npm run test:e2e`      | Full app testing        | `frontend/e2e/` | `.spec.js`  |
-| **Code Quality**       | `npx eslint src/`       | Code analysis & linting | `frontend/src/` | `.js` files |
-| **Backend Unit Tests** | `pytest`                | API/backend testing     | `backend/`      | `test_*.py` |
+| **Unit Tests** | `npm test` | Component testing | `frontend/src/` | `.test.js` |
+| **E2E Tests** | `npm run test:e2e` | Full app testing | `frontend/e2e/` | `.spec.js` |
+| **Code Quality** | `npx eslint src/` | Code analysis & linting | `frontend/src/` | `.js` files |
+| **Backend Unit Tests** | `pytest` | API/backend testing | `backend/tests/` | `test_*.py` |
 
 **Testing Dependencies Installation:**
 - **Frontend**: Dependencies are included with `npm install`.

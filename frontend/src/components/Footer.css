@@ -2,10 +2,16 @@
 
 /* Base styles for the footer, designed to work on any page */
 .site-footer {
-  background-color: #ffd6b8; /* Your desired light background color */
-  color: #4a4a4a; /* A dark grey for readable text */
+  background-color: #ffd6b8; /* A light background color */
+  color: #0B0B26; /* Dark text for readability, from brand-black */
   padding: 4rem 2rem;
-  font-size: 0.9rem;
+  font-family: BagossStandard, Arial, sans-serif; /* Custom font with fallbacks */
+  font-size: 1.125rem; /* 18px, from sm */
+  line-height: 1.5; /* from base */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
+  -webkit-text-size-adjust: 100%;
 }
 
 .footer-content-grid {
@@ -30,14 +36,19 @@
 }
 
 .careers-heading {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2c2c2c; /* Dark color for headings */
+  font-size: 2.25rem; /* 36px, from 3xl */
+  font-weight: 400; /* normal */
+  color: #0B0B26; /* Dark color for headings */
   margin-bottom: 1rem;
+  font-family: BagossStandard, Arial, sans-serif;
+  line-height: 1.375; /* short */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
 }
 
 .careers-link {
-  color: #2c2c2c; /* Dark color for links */
+  color: #0B0B26; /* Dark color for links */
   text-decoration: none;
   font-weight: 600;
   display: inline-flex;
@@ -47,7 +58,7 @@
 }
 
 .careers-link:hover {
-  color: #4f46e5; /* Using an accent color */
+  color: #372BC5; /* Using brand-accent color */
 }
 
 .arrow-icon {
@@ -64,7 +75,7 @@
 .footer-column-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #2c2c2c; /* Dark color for headings */
+  color: #0B0B26; /* Dark color for headings */
   margin-bottom: 1rem;
 }
 
@@ -79,14 +90,14 @@
 
 .footer-column a,
 .footer-column address a {
-  color: #4a4a4a; /* Dark grey for links */
+  color: #0B0B26; /* Dark grey for links */
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-column a:hover,
 .footer-column address a:hover {
-  color: #4f46e5; /* Use accent color on hover */
+  color: #372BC5; /* Use accent color on hover */
   text-decoration: underline;
 }
 
@@ -96,7 +107,6 @@
 }
 
 .footer-bottom-section {
-  border-top: 1px solid #dcdcdc; /* Lighter border for light background */
   padding-top: 2rem;
   display: flex;
   flex-wrap: wrap;
@@ -104,7 +114,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.8rem;
-  color: #5a5a5a; /* Darker grey for bottom text */
+  color: #4A5568; /* Darker grey for bottom text, from gray-600 */
 }
 
 .footer-bottom-links {
@@ -114,12 +124,12 @@
 }
 
 .footer-bottom-links a {
-  color: #5a5a5a;
+  color: #4A5568;
   text-decoration: none;
 }
 
 .footer-bottom-links a:hover {
-  color: #2c2c2c;
+  color: #0B0B26;
   text-decoration: underline;
 }
 
@@ -129,10 +139,10 @@
 }
 
 .footer-social-links a {
-  color: #5a5a5a;
+  color: #4A5568;
   transition: color 0.2s ease;
 }
 
 .footer-social-links a:hover {
-  color: #4f46e5; /* Use accent color on hover */
+  color: #372BC5; /* Use accent color on hover */
 }

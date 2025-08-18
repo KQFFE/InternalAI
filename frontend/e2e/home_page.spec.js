@@ -1,16 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { dismissCookieBanner } from './utils/helpers.js';
 
 test.describe('Home Page', () => {
-  // Helper to dismiss the cookie banner if it's visible
-  const dismissCookieBanner = async (page) => {
-    const acceptCookiesButton = page.getByTestId('accept-all-cookies');
-    if (await acceptCookiesButton.isVisible()) {
-      await acceptCookiesButton.click();
-      // Wait for the entire overlay to be detached from the DOM.
-      await expect(page.locator('#coiOverlay')).not.toBeAttached();
-    }
-  };
-
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await dismissCookieBanner(page);

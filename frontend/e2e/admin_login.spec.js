@@ -1,20 +1,7 @@
-﻿﻿import { test, expect } from '@playwright/test';
+﻿﻿﻿﻿import { test, expect } from '@playwright/test';
+import { dismissCookieBanner } from './utils/helpers.js';
 
 test.describe('Admin Login Flow', () => {
-  // Helper to dismiss the cookie banner if it's visible
-  const dismissCookieBanner = async (page) => {
-    const acceptCookiesButton = page.getByTestId('accept-all-cookies');
-    try {
-      // Use a timeout to wait for the banner to appear, as it might have animations.
-      // This is more robust than a simple isVisible() check which does not wait.
-      await acceptCookiesButton.click({ timeout: 5000 });
-      await expect(page.locator('#coiOverlay')).not.toBeAttached();
-    } catch (e) {
-      // If the button is not found or not visible after the timeout,
-      // we assume the banner is not there and continue with the test.
-    }
-  };
-
   test.beforeEach(async ({ page }) => {
     // Mock the initial status check to be not authenticated
     await page.route('/api/admin/status', async (route) => {
@@ -55,6 +42,9 @@ test.describe('Admin Login Flow', () => {
   });
 
   test('should be able to log out', async ({ page }) => {
+    // Unroute the handler from beforeEach to override the initial state
+    await page.unroute('/api/admin/status');
+
     // Set initial state to logged in for this test
     await page.route('/api/admin/status', async (route) => {
       await route.fulfill({ json: { isAuthenticated: true } });

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTeam } from '../hooks/useTeam';
 import TeamMemberCard from './TeamMemberCard';
 

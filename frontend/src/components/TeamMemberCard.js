@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 // You can create a corresponding CSS file for component-specific styles
 // import './TeamMemberCard.css';

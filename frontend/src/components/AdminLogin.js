@@ -1,5 +1,5 @@
 // frontend/src/components/AdminLogin.js
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './AdminLogin.css';
 
 const AdminLogin = ({ onLogin, onCancel }) => {

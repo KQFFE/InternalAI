@@ -1,4 +1,3 @@
-import React from 'react';
 import TeamList from '../components/TeamList';
 import './TeamPage.css'; // Correct path for co-located styles
 

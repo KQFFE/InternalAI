@@ -18,8 +18,8 @@ function TeamList({ activeOnly = false }) {
 
   return (
     <div className="team-grid">
-      {team.map(member => (
-        <TeamMemberCard key={member.id} member={member} />
+      {team.map((member) => (
+        <TeamMemberCard key={member.id || member.name} member={member} />
       ))}
     </div>
   );

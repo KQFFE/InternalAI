@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const teamData = require('../public/team.json');
+import { test, expect } from '@playwright/test';
+import teamData from '../public/team.json' assert { type: 'json' };
 
 test.describe('team.json data structure and content', () => {
     

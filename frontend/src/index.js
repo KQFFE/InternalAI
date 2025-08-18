@@ -1,13 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; // For React 18+
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { AuthProvider } from './context/AuthContext';
+import { CookieConsentProvider } from './context/CookieConsentContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </CookieConsentProvider>
+    </Router>
   </React.StrictMode>
 );
 

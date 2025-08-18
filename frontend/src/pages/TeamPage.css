@@ -1,0 +1,140 @@
+/* frontend/src/pages/TeamPage.css */
+
+:root {
+  --team-page-bg: #0b0b26; /* Dark Background from new style */
+  --card-bg: #1e293b; /* Lighter Slate */
+  --text-primary: #fff; /* White text from new style */
+  --text-secondary: #94a3b8; /* Muted Slate */
+  --accent-color: #044d90; /* Mellow Blue from new style */
+  --accent-color-hover: #033a72; /* A slightly darker blue for hover */
+}
+
+.team-page-container {
+  padding: 3rem 20px;
+  font-family: Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+  font-feature-settings: "kern";
+  color: var(--text-primary);
+}
+
+.team-page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.team-page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.team-page-subtitle {
+  font-size: 1.25rem;
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--text-secondary);
+}
+
+.team-grid-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+  justify-content: center;
+}
+
+.team-member-card {
+  background-color: rgb(30, 30, 58);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  height: 400px;
+}
+
+.team-member-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.member-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 3px solid var(--accent-color);
+}
+
+.member-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: auto; /* Pushes all subsequent content to the bottom */
+}
+
+.member-role {
+  font-size: 1em;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.member-linkedin-link {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.member-linkedin-link:hover {
+  background-color: var(--accent-color-hover);
+}
+
+.loading,
+.error-message,
+.no-members-found {
+  text-align: center;
+  font-size: 1.25rem;
+  padding: 4rem;
+  color: var(--text-secondary);
+}
+
+.error-message {
+  color: #f87171; /* Red-400 for errors */
+}
+
+/* Responsive adjustments for team page content */
+@media (max-width: 767px) {
+  .team-page-container {
+    padding: 2rem 1rem;
+  }
+
+  .team-page-title {
+    font-size: 2rem;
+  }
+
+  .team-page-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .team-grid {
+    gap: 1rem;
+  }
+
+  .member-photo {
+    width: 100px;
+    height: 100px;
+  }
+}

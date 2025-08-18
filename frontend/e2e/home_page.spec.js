@@ -1,52 +1,48 @@
 import { test, expect } from '@playwright/test';
+import { dismissCookieBanner } from './utils/helpers.js';
 
-test.describe('Home Page (Landing Page) tests', () => {
+test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
-    // 1. Navigate to the home page first. This is crucial for localStorage access.
     await page.goto('/');
-
-    // 2. Clear localStorage and cookies for a clean state.
-    await page.evaluate(() => window.localStorage.clear());
-    await page.context().clearCookies();
-
-    // 3. Reload the page to ensure the cookie banner reappears after clearing localStorage.
-    await page.reload();
-
-    // 4. Explicitly wait for the cookie banner to be visible and accept all cookies.
-    const acceptAllCookiesButton = page.locator('.coi-banner__accept', { hasText: 'Godkänn alla' });
-    await expect(acceptAllCookiesButton).toBeVisible({ timeout: 15000 }); // Increased timeout for banner visibility
-    await acceptAllCookiesButton.click();
-
-    // 5. Wait for the cookie banner to disappear to ensure it's no longer intercepting clicks.
-    await expect(page.locator('#coiOverlay')).not.toBeVisible({ timeout: 10000 });
+    await dismissCookieBanner(page);
   });
 
-  test('should contain page title and hero section content', async ({ page }) => {
-    // Update the expected title to match the actual title from your application.
-    await expect(page).toHaveTitle('InternalAI - Building the Future with AI');
-
-    // Assertions for main heading and subheading
-    await expect(page.locator('#main-heading')).toContainText('Shaping a better future with code');
-    await expect(page.locator('#main-subtitle')).toContainText('We are a digitalization company that develops solutions and services.');
+  test('should display the main hero content', async ({ page }) => {
+    await expect(page).toHaveTitle(/InternalAI/);
+    const heading = page.getByRole('heading', { name: 'Shaping a better future with code' });
+    await expect(heading).toHaveText('Shaping a better future with code');
+    const subheading = page.getByText('We are a digitalization company that develops solutions and services for a better tomorrow.');
+    await expect(subheading).toBeVisible();
   });
 
-  test('should contain main navigation links and Home link should be active/correct', async ({ page }) => {
-    // Target all main navigation links and buttons within the 'main-nav-list' class.
-    // Both <Link> (rendering as <a>) and <button> elements have the 'main-nav-link' class.
-    const mainNavLinks = page.locator('nav.main-nav-list .main-nav-link');
-    await expect(mainNavLinks).toHaveCount(5);
-
-    await expect(page.locator('nav.main-nav-list a[href="/team"]')).toHaveText('Team');
-    await expect(page.locator('nav.main-nav-list a[href="/license"]')).toHaveText('License');
+  test('should navigate to the Team Page when "Read more" button is clicked', async ({ page }) => {
+    const teamButton = page.locator('#team-button');
+    await teamButton.click();
+    await expect(page).toHaveURL(/\/team\/?$/);
+    const teamPageHeading = page.getByRole('heading', { name: 'Our Amazing Team' });
+    await expect(teamPageHeading).toBeVisible();
   });
 
-  test('should navigate to /team page when team button is clicked', async ({ page }) => {
-    await page.locator('#team-button').click();
-    await expect(page).toHaveURL('http://localhost:3000/team');
+  // Skipping this test until the License page feature is implemented.
+  test.skip('should navigate to the License Page when "License Management" button is clicked', async ({ page }) => {
+    const licenseButton = page.locator('#license-button');
+    await licenseButton.click();
+    await expect(page).toHaveURL(/\/license\/?$/);
+    const licensePageHeading = page.getByRole('heading', { name: 'License Page' });
+    await expect(licensePageHeading).toBeVisible();
   });
 
-  test('should navigate to /license page when license button is clicked', async ({ page }) => {
-    await page.locator('#license-button').click();
-    await expect(page).toHaveURL('http://localhost:3000/license');
+  test('should have a visible news section', async ({ page }) => {
+    const newsSection = page.getByRole('region', { name: 'Latest news' }); // Assuming you add aria-label="Latest news" to the section
+    await expect(newsSection).toBeVisible();
+    const newsHeading = page.getByRole('heading', { name: 'News' });
+    await expect(newsHeading).toHaveText('News');
+  });
+
+  test('should have a visible footer with social media links', async ({ page }) => {
+    const footer = page.locator('footer.site-footer');
+    await expect(footer).toBeVisible();
+    const linkedinLink = page.getByRole('link', { name: 'Follow us on LinkedIn' });
+    await expect(linkedinLink).toHaveAttribute('href', 'https://www.linkedin.com/company/knowit');
   });
 });

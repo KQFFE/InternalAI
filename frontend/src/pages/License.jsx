@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx'; // For .xlsx and .xls files
 import Papa from 'papaparse'; // For .csv files
-import './License.css'; // <--- Import your new CSS file here
+import '../License.css'; //
 
 function License() {
   const [excelData, setExcelData] = useState(null); // State to store the parsed data

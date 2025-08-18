@@ -1,0 +1,148 @@
+/* d:\Dev\InternalAI\frontend\src\components\Footer.css */
+
+/* Base styles for the footer, designed to work on any page */
+.site-footer {
+  background-color: #ffd6b8; /* A light background color */
+  color: #0B0B26; /* Dark text for readability, from brand-black */
+  padding: 4rem 2rem;
+  font-family: BagossStandard, Arial, sans-serif; /* Custom font with fallbacks */
+  font-size: 1.125rem; /* 18px, from sm */
+  line-height: 1.5; /* from base */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
+  -webkit-text-size-adjust: 100%;
+}
+
+.footer-content-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.footer-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .footer-main-grid {
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+  }
+}
+
+.careers-heading {
+  font-size: 2.25rem; /* 36px, from 3xl */
+  font-weight: 400; /* normal */
+  color: #0B0B26; /* Dark color for headings */
+  margin-bottom: 1rem;
+  font-family: BagossStandard, Arial, sans-serif;
+  line-height: 1.375; /* short */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
+}
+
+.careers-link {
+  color: #0B0B26; /* Dark color for links */
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.careers-link:hover {
+  color: #372BC5; /* Using brand-accent color */
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.footer-links-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+}
+
+.footer-column-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0B0B26; /* Dark color for headings */
+  margin-bottom: 1rem;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-column a,
+.footer-column address a {
+  color: #0B0B26; /* Dark grey for links */
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-column a:hover,
+.footer-column address a:hover {
+  color: #372BC5; /* Use accent color on hover */
+  text-decoration: underline;
+}
+
+.footer-column address {
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.footer-bottom-section {
+  padding-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #4A5568; /* Darker grey for bottom text, from gray-600 */
+}
+
+.footer-bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-bottom-links a {
+  color: #4A5568;
+  text-decoration: none;
+}
+
+.footer-bottom-links a:hover {
+  color: #0B0B26;
+  text-decoration: underline;
+}
+
+.footer-social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-social-links a {
+  color: #4A5568;
+  transition: color 0.2s ease;
+}
+
+.footer-social-links a:hover {
+  color: #372BC5; /* Use accent color on hover */
+}

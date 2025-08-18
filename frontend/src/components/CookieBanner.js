@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './cookie-banner.css';
+import { useState, useEffect } from 'react';
+import '../cookie-banner.css';
 
 
 function CookieBanner({
@@ -81,11 +81,11 @@ function CookieBanner({
                         <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
                             <div className="coi-button-group">
                                 {showSaveButton ? (
-                                    <button tabIndex="0" aria-label="Spara inställningar" id="savePreferencesButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                    <button data-testid="save-cookie-preferences" tabIndex="0" aria-label="Spara inställningar" id="savePreferencesButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
                                 ) : (
-                                    <button tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
+                                    <button data-testid="decline-all-cookies" tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
                                 )}
-                                <button tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                                <button data-testid="accept-all-cookies" tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
                             </div>
                             <div className="coi-toggle-group">
                                 {!showDetails ? (

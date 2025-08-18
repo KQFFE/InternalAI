@@ -1,0 +1,25 @@
+.admin-auth-section {
+    /* Aligns the button vertically with nav links if needed */
+    display: flex;
+    align-items: center;
+}
+
+.admin-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem; /* 6px */
+    font-weight: 600;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.login-button {
+    background-color: #4f46e5; /* indigo-600 */
+}
+.login-button:hover { background-color: #4338ca; }
+
+.logout-button {
+    background-color: #ef4444; /* red-500 */
+}
+.logout-button:hover { background-color: #dc2626; }

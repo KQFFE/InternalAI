@@ -2,15 +2,10 @@
 
 /* Base styles for the footer, designed to work on any page */
 .site-footer {
-  background-color: #ffd6b8; /* A dark background for consistency */
-  color: #e0e0e0; /* A light grey for text */
+  background-color: #ffd6b8; /* Your desired light background color */
+  color: #4a4a4a; /* A dark grey for readable text */
   padding: 4rem 2rem;
   font-size: 0.9rem;
-}
-
-/* Special override for the homepage to make the footer transparent */
-.site-footer--homepage {
-  background-color: transparent;
 }
 
 .footer-content-grid {
@@ -37,12 +32,12 @@
 .careers-heading {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #2c2c2c; /* Dark color for headings */
   margin-bottom: 1rem;
 }
 
 .careers-link {
-  color: #ffffff;
+  color: #2c2c2c; /* Dark color for links */
   text-decoration: none;
   font-weight: 600;
   display: inline-flex;
@@ -69,7 +64,7 @@
 .footer-column-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2c2c2c; /* Dark color for headings */
   margin-bottom: 1rem;
 }
 
@@ -84,14 +79,14 @@
 
 .footer-column a,
 .footer-column address a {
-  color: #b0b0b0;
+  color: #4a4a4a; /* Dark grey for links */
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-column a:hover,
 .footer-column address a:hover {
-  color: #ffffff;
+  color: #4f46e5; /* Use accent color on hover */
   text-decoration: underline;
 }
 
@@ -101,7 +96,7 @@
 }
 
 .footer-bottom-section {
-  border-top: 1px solid #3c3c5a;
+  border-top: 1px solid #dcdcdc; /* Lighter border for light background */
   padding-top: 2rem;
   display: flex;
   flex-wrap: wrap;
@@ -109,7 +104,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.8rem;
-  color: #909090;
+  color: #5a5a5a; /* Darker grey for bottom text */
 }
 
 .footer-bottom-links {
@@ -119,12 +114,12 @@
 }
 
 .footer-bottom-links a {
-  color: #909090;
+  color: #5a5a5a;
   text-decoration: none;
 }
 
 .footer-bottom-links a:hover {
-  color: #ffffff;
+  color: #2c2c2c;
   text-decoration: underline;
 }
 
@@ -134,10 +129,10 @@
 }
 
 .footer-social-links a {
-  color: #909090;
+  color: #5a5a5a;
   transition: color 0.2s ease;
 }
 
 .footer-social-links a:hover {
-  color: #ffffff;
+  color: #4f46e5; /* Use accent color on hover */
 }

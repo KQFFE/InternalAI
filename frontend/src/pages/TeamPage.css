@@ -11,9 +11,6 @@
 }
 
 .team-page-container {
-  background-color: var(--team-page-bg);
-  color: var(--text-primary);
-  min-height: 100vh;
   padding: 3rem 1.5rem;
 }
 
@@ -26,12 +23,12 @@
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    color: #2c2c2c; /* A dark color for better contrast */
 }
 
 .team-page-subtitle {
   font-size: 1.25rem;
-  color: var(--text-secondary);
+  color: #4a4a4a; /* A slightly lighter dark color */
   max-width: 600px;
   margin: 0 auto;
 }

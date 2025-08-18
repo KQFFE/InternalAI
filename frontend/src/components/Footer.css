@@ -1,178 +1,143 @@
-/* d:/Dev/InternalAI/frontend/src/components/Footer.css */
+/* d:\Dev\InternalAI\frontend\src\components\Footer.css */
+
+/* Base styles for the footer, designed to work on any page */
 .site-footer {
-    background-color: #0f172a; /* A dark slate color, slightly different from the main bg */
-    color: #94a3b8; /* slate-400 */
-    padding: 0; /* Padding will be on the inner container */
-    border-top: 1px solid #1e293b; /* slate-800 */
-    margin-top: auto; /* Pushes footer to the bottom in a flex container */
+  background-color: #ffd6b8; /* A dark background for consistency */
+  color: #e0e0e0; /* A light grey for text */
+  padding: 4rem 2rem;
+  font-size: 0.9rem;
+}
+
+/* Special override for the homepage to make the footer transparent */
+.site-footer--homepage {
+  background-color: transparent;
 }
 
 .footer-content-grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .footer-main-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 3rem;
-    margin-bottom: 4rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
 }
 
 @media (min-width: 768px) {
-    .footer-main-grid {
-        grid-template-columns: 1fr 2fr;
-    }
+  .footer-main-grid {
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+  }
 }
 
-/* Careers Section */
-.footer-careers-section .careers-heading {
-    font-size: 2.5rem;
-    font-weight: 700;
-    transform: rotate(-6deg);
-    transform-origin: bottom left;
-    margin-bottom: 2rem;
-    max-width: 200px;
-    line-height: 1;
-    color: #ffffff;
+.careers-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
 }
 
-.footer-careers-section .careers-link {
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: #ffffff;
+.careers-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
 }
 
-.footer-careers-section .careers-link:hover .arrow-icon {
-    transform: translateX(4px);
+.careers-link:hover {
+  color: #4f46e5; /* Using an accent color */
 }
 
-.footer-careers-section .arrow-icon {
-    width: 20px;
-    height: 20px;
-    transition: transform 0.2s;
+.arrow-icon {
+  width: 20px;
+  height: 20px;
 }
 
-/* Links Section */
 .footer-links-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
 }
 
-.footer-column .footer-column-title {
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    font-size: 0.875rem;
-    letter-spacing: 0.05em;
+.footer-column-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1rem;
 }
 
 .footer-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-column a,
+.footer-column address a {
+  color: #b0b0b0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-column a:hover,
+.footer-column address a:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 .footer-column address {
-    font-style: normal;
-    line-height: 1.6;
-    font-size: 0.875rem;
+  font-style: normal;
+  line-height: 1.6;
 }
 
-.footer-column a {
-    text-decoration: none;
-    color: #94a3b8;
-    transition: color 0.2s;
-}
-
-.footer-column a:hover {
-    color: #ffffff;
-    text-decoration: underline;
-}
-
-/* Bottom Section */
 .footer-bottom-section {
-    border-top: 1px solid #1e293b;
-    padding-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    font-size: 0.875rem;
+  border-top: 1px solid #3c3c5a;
+  padding-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #909090;
 }
 
-@media (min-width: 768px) {
-    .footer-bottom-section {
-        flex-direction: row;
-        justify-content: space-between;
-    }
+.footer-bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
-.footer-bottom-links,
+.footer-bottom-links a {
+  color: #909090;
+  text-decoration: none;
+}
+
+.footer-bottom-links a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
 .footer-social-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
+  display: flex;
+  gap: 1rem;
 }
 
-.footer-bottom-links a,
 .footer-social-links a {
-    text-decoration: none;
-    color: #94a3b8;
-    transition: color 0.2s;
-    display: inline-block; /* Ensures the link takes the size of the icon */
+  color: #909090;
+  transition: color 0.2s ease;
 }
 
-.footer-social-links svg {
-    width: 24px;
-    height: 24px;
-}
-
-.footer-bottom-links a:hover,
 .footer-social-links a:hover {
-    color: #ffffff;
-    text-decoration: none; /* Underline is not needed for icons */
-}
-
-/* Homepage-specific footer style */
-.site-footer--homepage {
-    background-color: #ffd6b8; /* A warm, peachy-orange color */
-    color: #1a1a2e; /* Dark text for contrast */
-    border-top: none; /* Remove the dark top border on the homepage */
-}
-
-.site-footer--homepage .footer-careers-section .careers-heading,
-.site-footer--homepage .footer-column .footer-column-title {
-    color: #1a1a2e;
-}
-
-.site-footer--homepage .footer-careers-section .careers-link,
-.site-footer--homepage .footer-column a,
-.site-footer--homepage .footer-column address,
-.site-footer--homepage .footer-bottom-links a,
-.site-footer--homepage .footer-bottom-links span,
-.site-footer--homepage .footer-social-links a {
-    color: #16213e; /* Dark blue for links */
-}
-
-.site-footer--homepage .footer-careers-section .careers-link:hover,
-.site-footer--homepage .footer-column a:hover,
-.site-footer--homepage .footer-bottom-links a:hover,
-.site-footer--homepage .footer-social-links a:hover,
-.site-footer--homepage .footer-social-links a:hover {
-    color: #000000; /* Black for link hover state */
-}
-
-.site-footer--homepage .footer-bottom-section {
-    border-top-color: rgba(26, 26, 46, 0.2);
+  color: #ffffff;
 }

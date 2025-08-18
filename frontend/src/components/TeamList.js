@@ -15,6 +15,10 @@ function TeamList({ activeOnly = false }) {
     return <div>Error: {error.message}</div>;
   }
 
+  if (team.length === 0) {
+    return <p className="text-gray-400 italic text-center col-span-full">No team members to display.</p>;
+  }
+
   return (
     <div className="team-grid">
       {team.map(member => (

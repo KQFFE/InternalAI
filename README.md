@@ -35,11 +35,12 @@ InternalAI/
 │   │   ├── 📁 context/              # React Context providers and state management
 │   │   ├── 📁 hooks/                # Custom React hooks (e.g., useTeamData)
 │   │   ├── 📁 pages/                # Page-level components (e.g., HomePage, TeamPage)
-│   │   ├── 📁 utils/                # Shared utility functions
 │   │   ├── App.js                  # Top-level component, routing setup
 │   │   ├── App.css                 # Global styles
 │   │   └── index.js                # React application entry point
 │   ├── 📁 e2e/                     # End-to-end tests (Playwright)
+│   │   ├── 📁 utils/                # E2E test helpers
+│   │   │   └── helpers.js
 │   │   ├── home_page.spec.js
 │   │   ├── team_data.spec.js
 │   │   └── team_page.spec.js
@@ -351,35 +352,101 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
 ### 2.3 Where to Add New Tests
 
 #### **Unit Tests (Jest):**
-* **Frontend (React) Unit Tests:**
-    * Unit tests should be located in the `frontend/src/` directory.
-    * For a component named `MyComponent.js` (or `.jsx`, `.ts`, `.tsx`), its unit tests should be in a file named `MyComponent.test.js` (or `MyComponent.test.jsx`, `MyComponent.test.ts`, `MyComponent.test.tsx`) in the **same directory** as the component.
-    * Example File Structure:
-        ```
-        frontend/src/
-        ├── App.js
-        ├── App.test.js        <-- Unit test file for App.js
-        ├── components/
-        │   ├── MyButton.js
-        │   └── MyButton.test.js <-- Unit test file for MyButton.js
-        └── pages/
-            └── HomePage.js
-            └── HomePage.test.js <-- Unit test file for HomePage.js
-        ```
-    * `react-scripts` (which `npm test` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
+*   **Location**: Unit tests are located in the `frontend/src/` directory.
+*   **File Naming**: For a component `MyComponent.js`, the test file should be `MyComponent.test.js` and placed in the **same directory**.
+*   **Example File Structure**:
+    ```
+    frontend/src/
+    ├── App.js
+    ├── App.test.js        <-- Unit test file for App.js
+    ├── components/
+    │   ├── MyButton.js
+    │   └── MyButton.test.js <-- Unit test file for MyButton.js
+    └── pages/
+        └── HomePage.js
+        └── HomePage.test.js <-- Unit test file for HomePage.js
+    ```
+*   `react-scripts` (which `npm test` uses) automatically finds files with `.test.js`, `.spec.js`, etc., suffixes within the `src` directory.
+
+##### **Best Practices for Writing Unit Tests**
+
+-   **Co-locate Tests**: As mentioned, keep your test files right next to the component files they are testing. This makes them easy to find and maintain.
+-   **Use React Testing Library**: Query the DOM in a user-centric way using `@testing-library/react`. Prefer queries like `getByRole`, `getByLabelText`, and `getByText` over implementation details.
+-   **Mock Dependencies**: Use Jest's mocking capabilities (`jest.mock`) to isolate your component from its dependencies (like API calls or custom hooks) so you can test it in a controlled environment.
 
 #### **End-to-End Tests (Playwright):**
-* **E2E Tests:**
-    * E2E tests are located in the `frontend/e2e/` directory.
-    * Use `.spec.js` extension for consistency with Playwright conventions.
-    * Current E2E test structure:
+*   **Location**: E2E tests are located in the `frontend/e2e/` directory.
+*   **File Naming**: Use the `.spec.js` extension (e.g., `team_page.spec.js`).
+
+*   **Example File Structure**:
+    ```
+    frontend/e2e/
+    ├── home_page.spec.js    <-- Tests for home page functionality
+    ├── team_data.spec.js    <-- Tests for team data validation
+    └── team_page.spec.js    <-- Tests for team page interactions
+    ```
+*   Playwright (which `npm run test:e2e` uses) automatically finds `.spec.js` files within the `e2e` directory.
+
+##### **Best Practices for Writing E2E Tests**
+
+To ensure our E2E tests are reliable, fast, and easy to maintain, please follow these guidelines:
+
+1.  **Prioritize User-Facing Locators:**
+    Tests should interact with the application just like a real user. Use locators that are visible and accessible to users. The recommended priority is:
+    - `page.getByRole()`: For elements like buttons, links, and headings.
+    - `page.getByLabelText()`: For form inputs.
+    - `page.getByPlaceholderText()`: For inputs with placeholder text.
+    - `page.getByText()`: For finding non-interactive elements by their text content.
+    - `page.getByTestId()`: As a last resort for elements that are hard to identify otherwise.
+
+2.  **Use `data-testid` for Stable Selectors:**
+    Avoid using CSS classes or complex selectors (`.some-class > div:nth-child(2)`), as they are tied to styling and can break tests easily. Instead, add a `data-testid` attribute to your component.
+
+    *   **In your React Component (`.js` or `.jsx`):**
+        ```jsx
+        // Bad: Relies on a CSS class
+        // <div className="team-member-card">...</div>
+
+        // Good: Decoupled from styling, made for testing
+        <div className="team-member-card" data-testid="team-member-card">...</div>
         ```
-        frontend/e2e/
-        ├── home_page.spec.js    <-- Tests for home page functionality
-        ├── team_data.spec.js    <-- Tests for team data validation
-        └── team_page.spec.js    <-- Tests for team page interactions
+
+    *   **In your Playwright Test (`.spec.js`):**
+        ```javascript
+        // Bad: Brittle selector
+        // await expect(page.locator('.team-member-card')).toHaveCount(5);
+
+        // Good: Resilient and clear
+        await expect(page.getByTestId('team-member-card')).toHaveCount(5);
         ```
-    * Playwright (which `npm run test:e2e` uses) automatically finds `.spec.js` files within the `e2e` directory.
+
+3.  **Mock API Requests:**
+    Your tests should be independent of the backend. Use `page.route()` to intercept network requests and provide mock data. This makes tests faster and more reliable.
+
+    ```javascript
+    // Example from team_page.spec.js
+    await page.route('/team.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        body: JSON.stringify(mockTeamData),
+      });
+    });
+    ```
+
+4.  **Structure Tests Logically:**
+    Use `test.describe()` to group related tests. This is especially useful for testing a page in different states (e.g., data loaded successfully, loading state, error state).
+
+    ```javascript
+    test.describe('Team Page', () => {
+      test.describe('when data is successfully loaded', () => {
+        // ... happy path tests
+      });
+
+      test.describe('when handling API or data states', () => {
+        // ... tests for loading, error, and empty states
+      });
+    });
+    ```
 
 #### **Backend Tests (pytest):**
 * **Backend (Flask) Unit Tests:**

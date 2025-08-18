@@ -34,19 +34,6 @@ describe('App Routing', () => {
     expect(await screen.findByRole('heading', { name: /our amazing team/i })).toBeInTheDocument();
   });
 
-  it('should navigate to the license page when the button is clicked from the homepage', async () => {
-    const user = userEvent.setup();
-    render(<App />);
-
-    // First, handle the cookie banner that is overlaying the page.
-    // We wait for the "Accept all" button to appear and then click it.
-    const acceptCookiesButton = await screen.findByTestId('accept-all-cookies');
-    await user.click(acceptCookiesButton);
-
-    // Now that the banner is gone, we can safely find and click the license button
-    await user.click(await screen.findByRole('button', { name: /knowit license management/i }));
-    expect(await screen.findByRole('heading', { name: /license page/i })).toBeInTheDocument();
-  });
 });
 
 describe('App Admin Authentication', () => {

@@ -42,16 +42,30 @@ function HomePageContent() {
                     <section className="news-section" id="news-section" aria-label="Latest news">
                         <h2 id="news-heading">News</h2>
                         <div className="news-grid">
-                            <article className="news-item">
-                                <h4>Kristoffer, Sasan, Sakshi and Johanna is creating a landing page</h4>
-                                <p>The team is working hard on the new project.</p>
-                                <a href="#news1" className="news-item-link" id="news-item-1">Read more</a>
-                            </article>
-                            <article className="news-item">
-                                <h4>The team request earlier vacation leave</h4>
-                                <p>Summer is coming and the team wants to enjoy it.</p>
-                                <a href="#news2" className="news-item-link" id="news-item-2">Read more</a>
-                            </article>
+                            <a href="/news/story-1" className="news-item" id="news-item-1">
+                                <div className="news-item-content">
+                                    <div className="news-item-meta">
+                                        <span className="news-item-date">2024-10-26</span>
+                                        <span className="news-item-category">Project Update</span>
+                                    </div>
+                                    <h4 className="news-item-headline">Kristoffer, Sasan, Sakshi and Johanna are creating a landing page</h4>
+                                </div>
+                                <div className="news-item-arrow">
+                                    <span>&rarr;</span>
+                                </div>
+                            </a>
+                            <a href="/news/story-2" className="news-item" id="news-item-2">
+                                <div className="news-item-content">
+                                    <div className="news-item-meta">
+                                        <span className="news-item-date">2024-10-25</span>
+                                        <span className="news-item-category">HR News</span>
+                                    </div>
+                                    <h4 className="news-item-headline">The team requests earlier vacation leave</h4>
+                                </div>
+                                <div className="news-item-arrow">
+                                    <span>&rarr;</span>
+                                </div>
+                            </a>
                         </div>
                         <a href="#more-news" className="more-news-link" id="more-news-link">More news</a>
                     </section>

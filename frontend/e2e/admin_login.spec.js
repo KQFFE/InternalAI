@@ -52,11 +52,7 @@ test.describe('Admin Login Flow', () => {
   test('should be able to log out', async ({ page }) => {
     // Set initial state to logged in for this test
     await page.route('/api/admin/status', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ isAuthenticated: true }),
-      });
+      await route.fulfill({ json: { isAuthenticated: true } });
     });
 
     // Mock the logout API call

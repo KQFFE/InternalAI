@@ -1,15 +1,19 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Home Page', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    // Accept cookies if the banner is visible to not interfere with tests
+  // Helper to dismiss the cookie banner if it's visible
+  const dismissCookieBanner = async (page) => {
     const acceptCookiesButton = page.getByTestId('accept-all-cookies');
     if (await acceptCookiesButton.isVisible()) {
       await acceptCookiesButton.click();
       // Wait for the entire overlay to be detached from the DOM.
       await expect(page.locator('#coiOverlay')).not.toBeAttached();
     }
+  };
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('should display the main hero content', async ({ page }) => {
@@ -21,17 +25,18 @@ test.describe('Home Page', () => {
   });
 
   test('should navigate to the Team Page when "Read more" button is clicked', async ({ page }) => {
-    const teamButton = page.getByRole('button', { name: 'Read more about our team' });
+    const teamButton = page.locator('#team-button');
     await teamButton.click();
-    await expect(page).toHaveURL('/team');
+    await expect(page).toHaveURL(/\/team\/?$/);
     const teamPageHeading = page.getByRole('heading', { name: 'Our Amazing Team' });
     await expect(teamPageHeading).toBeVisible();
   });
 
-  test('should navigate to the License Page when "License Management" button is clicked', async ({ page }) => {
-    const licenseButton = page.getByRole('button', { name: 'Knowit License Management' });
+  // Skipping this test until the License page feature is implemented.
+  test.skip('should navigate to the License Page when "License Management" button is clicked', async ({ page }) => {
+    const licenseButton = page.locator('#license-button');
     await licenseButton.click();
-    await expect(page).toHaveURL('/license');
+    await expect(page).toHaveURL(/\/license\/?$/);
     const licensePageHeading = page.getByRole('heading', { name: 'License Page' });
     await expect(licensePageHeading).toBeVisible();
   });

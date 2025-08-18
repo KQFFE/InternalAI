@@ -1,22 +1,22 @@
 ﻿import { test, expect } from '@playwright/test';
 
 test.describe('Admin Login Flow', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock the initial status check to be not authenticated
-    await page.route('/api/admin/status', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ isAuthenticated: false }),
-      });
-    });
-    await page.goto('/');
-    // Accept cookies if the banner is visible to not interfere with tests
+  // Helper to dismiss the cookie banner if it's visible
+  const dismissCookieBanner = async (page) => {
     const acceptCookiesButton = page.getByTestId('accept-all-cookies');
     if (await acceptCookiesButton.isVisible()) {
       await acceptCookiesButton.click();
       await expect(page.locator('#coiOverlay')).not.toBeAttached();
     }
+  };
+
+  test.beforeEach(async ({ page }) => {
+    // Mock the initial status check to be not authenticated
+    await page.route('/api/admin/status', async (route) => {
+      await route.fulfill({ json: { isAuthenticated: false } });
+    });
+    await page.goto('/');
+    await dismissCookieBanner(page);
   });
 
   test('should open the admin modal, log in, and see the logout button', async ({ page }) => {
@@ -26,20 +26,9 @@ test.describe('Admin Login Flow', () => {
       const requestBody = route.request().postDataJSON();
       expect(requestBody.password).toBe('correct-password');
       await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true }),
+        json: { success: true },
       });
     });
-
-    // Mock the status check after login to return authenticated
-    await page.route('/api/admin/status', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ isAuthenticated: true }),
-      });
-    }, { times: 1 }); // Only mock the next status call
 
     // 1. Click the Admin button
     const adminButton = page.getByTestId('admin-login-button');
@@ -77,13 +66,7 @@ test.describe('Admin Login Flow', () => {
 
     // Reload the page with the new mock
     await page.goto('/');
-
-    // The page has reloaded, so we must dismiss the cookie banner again
-    const acceptCookiesButton = page.getByTestId('accept-all-cookies');
-    if (await acceptCookiesButton.isVisible()) {
-      await acceptCookiesButton.click();
-      await expect(page.locator('#coiOverlay')).not.toBeAttached();
-    }
+    await dismissCookieBanner(page);
 
     const logoutButton = page.getByTestId('admin-logout-button');
     await expect(logoutButton).toBeVisible();

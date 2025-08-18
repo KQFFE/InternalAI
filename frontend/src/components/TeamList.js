@@ -1,8 +1,6 @@
 import React from 'react';
 import { useTeam } from '../hooks/useTeam';
 import TeamMemberCard from './TeamMemberCard';
-// You can create a corresponding CSS file for component-specific styles
-// import './TeamList.css';
 
 function TeamList({ activeOnly = false }) {
   const { team, loading, error } = useTeam({ activeOnly });

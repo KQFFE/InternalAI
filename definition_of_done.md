@@ -11,6 +11,7 @@
 
 ### ✅ **Backend Requirements** 
 - **Unit Tests**: Add `test_*.py` files in `backend/` directory
+- **Unit Tests**: Add `test_*.py` files in `backend/tests/` directory
 - **API Tests**: Test all endpoints and business logic
 - **Security Scan**: Pass bandit security analysis 
 - **Code Coverage**: Maintain/improve backend coverage with pytest-cov

@@ -27,11 +27,17 @@ InternalAI/
 │   │   ├── team.json               # Team member data
 │   │   ├── favicon.ico             # Website icon
 │   │   └── 📁 img/                 # Team member photos
-│   ├── 📁 src/                     # React source code
-│   │   ├── App.js                  # Main React component
+│   ├── 📁 src/                     # React source code - organized for scalability
+│   │   ├── 📁 api/                  # API call logic (e.g., fetching team data)
+│   │   ├── 📁 assets/               # Local assets (images, fonts) imported by components
+│   │   ├── 📁 components/           # Reusable, general-purpose UI components (Button, Card)
+│   │   ├── 📁 context/              # React Context providers and state management
+│   │   ├── 📁 hooks/                # Custom React hooks (e.g., useTeamData)
+│   │   ├── 📁 pages/                # Page-level components (e.g., HomePage, TeamPage)
+│   │   ├── 📁 utils/                # Shared utility functions
+│   │   ├── App.js                  # Top-level component, routing setup
 │   │   ├── App.css                 # Global styles
-│   │   ├── index.js                # React entry point
-│   │   └── 📁 components/          # Reusable React components
+│   │   └── index.js                # React application entry point
 │   ├── 📁 e2e/                     # End-to-end tests (Playwright)
 │   │   ├── home_page.spec.js
 │   │   ├── team_data.spec.js

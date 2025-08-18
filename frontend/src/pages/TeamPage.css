@@ -1,17 +1,21 @@
 /* frontend/src/pages/TeamPage.css */
 
 :root {
-  /* Placeholder colors. Replace with official Knowit brand colors. */
-  --team-page-bg: #0f172a; /* Dark Slate Blue */
+  --team-page-bg: #0b0b26; /* Dark Background from new style */
   --card-bg: #1e293b; /* Lighter Slate */
-  --text-primary: #f1f5f9; /* Off-white */
+  --text-primary: #fff; /* White text from new style */
   --text-secondary: #94a3b8; /* Muted Slate */
-  --accent-color: #4f46e5; /* Indigo */
-  --accent-color-hover: #4338ca; /* Darker Indigo */
+  --accent-color: #044d90; /* Mellow Blue from new style */
+  --accent-color-hover: #033a72; /* A slightly darker blue for hover */
 }
 
 .team-page-container {
-  padding: 3rem 1.5rem;
+  padding: 3rem 20px;
+  font-family: Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+  font-feature-settings: "kern";
+  color: var(--text-primary);
 }
 
 .team-page-header {
@@ -23,14 +27,13 @@
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #2c2c2c; /* A dark color for better contrast */
 }
 
 .team-page-subtitle {
   font-size: 1.25rem;
-  color: #4a4a4a; /* A slightly lighter dark color */
   max-width: 600px;
   margin: 0 auto;
+  color: var(--text-secondary);
 }
 
 .team-grid-container {
@@ -40,58 +43,59 @@
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+  justify-content: center;
 }
 
 .team-member-card {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  background-color: rgb(30, 30, 58);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  height: 400px;
 }
 
 .team-member-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
 }
 
 .member-photo {
-  width: 140px;
-  height: 140px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 1.25rem;
-  border: 4px solid var(--accent-color);
+  margin-bottom: 15px;
+  border: 3px solid var(--accent-color);
 }
 
 .member-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--text-primary);
+  margin-bottom: auto; /* Pushes all subsequent content to the bottom */
 }
 
 .member-role {
-  font-size: 1rem;
+  font-size: 1em;
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
 .member-linkedin-link {
   background-color: var(--accent-color);
   color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  padding: 8px 15px;
+  border-radius: 5px;
   text-decoration: none;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-  margin-top: auto; /* Pushes the button to the bottom of the card */
+  font-weight: 500;
+  transition: background-color 0.3s;
 }
 
 .member-linkedin-link:hover {
@@ -127,9 +131,6 @@
 
   .team-grid {
     gap: 1rem;
-  }
-
-  .team-member-card {
   }
 
   .member-photo {

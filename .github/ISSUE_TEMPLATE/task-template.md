@@ -1,6 +1,6 @@
 ---
-name: Ny uppgift
-about: En mall för att skapa nya uppgifter.
+name: Task with template 
+about: Default template ready to be filled with information 
 title: ''
 labels: ['task']
 assignees: ''

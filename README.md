@@ -81,8 +81,10 @@ InternalAI/
     * [1.1 Running on Windows](#11-running-on-windows)
     * [1.2 Running on Windows (with WSL)](#12-running-on-windows-with-wsl)
 2.  [Running Tests](#2-running-tests)
-    * [2.1 How to Run Tests](#21-how-to-run-tests)
-    * [2.2 Where to Add New Tests](#22-where-to-add-new-tests)
+    * [2.1 The All-in-One Test Script (Recommended)](#21-the-all-in-one-test-script-recommended)
+    * [2.2 Individual Test Commands](#22-individual-test-commands)
+    * [2.3 Where to Add New Tests](#23-where-to-add-new-tests)
+    * [2.4 Test Types Summary](#24-test-types-summary)
 3.  [First-Time Setup: Getting Started](#3-first-time-setup-getting-started)
     * [3.1 Setup for Windows](#31-setup-for-windows)
     * [3.2 Setup for Windows (with WSL)](#32-setup-for-windows-with-wsl)
@@ -579,6 +581,14 @@ This is the traditional way to set up your development environment directly on W
         npm install
         ```
         This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries. This might take a few moments.
+
+8.  **Install Playwright Browsers:**
+    The project uses Playwright for end-to-end testing, which requires specific browser binaries to run.
+    1.  **Install the browsers:** While still in the `frontend` directory, run:
+        ```powershell
+        npx playwright install
+        ```
+    This command downloads the browsers (like Chromium, Firefox, and WebKit) that Playwright uses to simulate user interactions.
 
 ### 3.2 Setup for Windows (with WSL)
 

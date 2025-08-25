@@ -6,6 +6,7 @@ import License from './pages/License';
 import CookieBanner from './components/CookieBanner';
 import AdminLogin from './components/AdminLogin';
 import { useAuth } from './context/AuthContext';
+import AdminPanel from './components/AdminPanel';
 import { useCookieConsent } from './context/CookieConsentContext';
 
 function App() {
@@ -41,13 +42,17 @@ function App() {
         <AdminLogin onLogin={handleLoginSuccess} onCancel={closeLoginModal} />
       )}
       {/* The Layout component now wraps your page routes */}
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/team" element={<TeamPage />} />
-          <Route path="/license" element={<License />} />
-        </Route>
-      </Routes>
+        <Routes>
+            {/* Admin route - standalone without Layout wrapper */}
+            <Route path="/admin" element={<AdminPanel />} />
+
+            {/* Regular pages with Layout wrapper */}
+            <Route element={<Layout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/team" element={<TeamPage />} />
+                <Route path="/license" element={<License />} />
+            </Route>
+        </Routes>
     </>
   );
 }

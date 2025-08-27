@@ -1,0 +1,118 @@
+name: Sync PR Body with Linked Issue
+
+# This workflow runs whenever a pull request is opened, reopened, or synchronized.
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+# A single job to perform the sync.
+jobs:
+  sync:
+    permissions:
+      # Grant read permission for issues to fetch issue details
+      issues: read
+      # Grant write permission for pull-requests to update the PR body
+      pull-requests: write
+    # Runs on the latest version of Ubuntu.
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Use the issues-helper action to find the linked issue and get its body.
+      # The `github-token` is required to interact with the GitHub API.
+      - name: 🔍 Get linked issue body and number
+        uses: actions/github-script@v6
+        id: issues-helper
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const body = context.payload.pull_request.body;
+            if (!body) {
+              core.setFailed('PR body is empty. Cannot find linked issue.');
+              return;
+            }
+
+            // Regex to find keywords like "resolves #123", "closes #123", "fixes #123"
+            const regex = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/i;
+            const match = body.match(regex);
+
+            if (!match) {
+              core.setFailed('Could not find a linked issue in the PR body. Use keywords like "resolves #123".');
+              return;
+            }
+
+            const issueNumber = match[1];
+            console.log(`Found linked issue number: ${issueNumber}`);
+
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            const issueBody = issue.data.body || '';
+            core.setOutput('issue-body', issueBody);
+            core.setOutput('issue-number', issueNumber);
+
+      # Step 2: Use github-script to update the PR body with the template.
+      # This step uses the output from the previous step.
+      - name: ✍️ Update PR body with issue details
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Helper function to extract a section from the issue body by its heading.
+            function getSection(body, title) {
+              const regex = new RegExp(`###\\s+${title}\\s*\\n([\\s\\S]*?)(?=\\n###|$)`, 'i');
+              const match = body.match(regex);
+              return match ? match[1].trim() : null;
+            }
+
+            // Access the issue body from the previous step's output.
+            const issueBody = `${{ steps.issues-helper.outputs.issue-body }}`;
+            const issueNumber = `${{ steps.issues-helper.outputs.issue-number }}`;
+
+            // Extract Description and Acceptance Criteria from the issue body.
+            const description = getSection(issueBody, 'Description');
+            const acceptanceCriteria = getSection(issueBody, 'Acceptance Criteria');
+
+            // Use the extracted sections, or provide sensible fallbacks.
+            const finalDescription = description || issueBody; // If no description section, use the whole body.
+            const finalAcceptanceCriteria = acceptanceCriteria || '*(No acceptance criteria found in issue)*';
+
+            // Define the template to be used.
+            const template = [
+              `### Linked Issue`,
+              `Resolves #${issueNumber}`,
+              ``,
+              `### Description`,
+              `${finalDescription}`,
+              ``,
+              `### Acceptance Criteria`,
+              `${finalAcceptanceCriteria}`,
+              ``,
+              `---`,
+              ``,
+              `### Definition of Ready Checklist`,
+              `- [ ] Code is documented and commented where needed.`,
+              `- [ ] All new and existing tests pass.`,
+              `- [ ] A review has been requested from at least one other team member.`,
+              `- [ ] All code has been reviewed by the developer for logic and formatting.`,
+              `- [ ] All new code has been linted and is free of formatting errors.`,
+              ``,
+              `### How to Test`,
+              `*(Please provide clear, step-by-step instructions on how to test this PR.)*`,
+              `1. `,
+              `2. `,
+              `3. `
+            ].join('\n');
+
+            // Update the pull request body using the GitHub REST API.
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: template
+            });

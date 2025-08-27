@@ -16,7 +16,8 @@ Here's how the InternalAI project is organized:
 InternalAI/
 ├── 📁 .github/
 │   └── 📁 workflows/
-│       └── azure-deployment.yml     # CI/CD pipeline configuration
+│       ├── azure-deployment.yml     # CI/CD pipeline for Azure deployment
+│       └── pr-issue-sync.yml        # Syncs PR body with linked issue
 ├── 📁 backend/                      # Flask API server
 │   ├── 📁 tests/                    # Backend tests
 │   │   └── test_app.py              # Tests for Flask routes and API endpoints
@@ -824,10 +825,10 @@ Committing saves changes to your local computer. To send them to GitHub, you nee
 
 1.  **Push to GitHub:**
     ```bash
-    git push --set-upstream origin your-feature-name
+    git push --set-upstream origin your-branch-name
     ```
-    * **Important:** Replace `your-feature-name` with the exact same name you used when creating your branch in Step B.
-    * The first time you push a new branch, you need the `--set-upstream origin your-feature-name` part. This creates the branch on GitHub.
+    * **Important:** Replace `your-branch-name` with the exact same name you used when creating your branch in Step B.
+    * The first time you push a new branch, you need the `--set-upstream origin your-branch-name` part. This creates the branch on GitHub.
     * After the first push, you can usually just use `git push`.
 
 2.  **What if it's rejected? (`non-fast-forward` error)**
@@ -835,31 +836,35 @@ Committing saves changes to your local computer. To send them to GitHub, you nee
     * **Solution 1:** Get their changes: `git pull origin main`
     * **Solution 2:** If that doesn't work, ask for help - merge conflicts can be tricky for beginners!
 
-### Step F: Propose Your Changes (Pull Request)
+### Step F: Create a Pull Request & Check for Readiness
 
 Once your changes are on GitHub, create a Pull Request (PR) to ask for your changes to be reviewed and merged into the `main` branch.
 
 1.  **Go to GitHub:** Open your web browser and go to your project's GitHub page: `https://github.com/KnowitQSS/InternalAI`
 
-2.  **Look for the PR Banner:** GitHub will usually show a yellow banner like:
-    ```
-    your-feature-name had recent pushes [Compare & pull request]
-    ```
-    Click the green **"Compare & pull request"** button.
+2.  **Look for the PR Banner:** GitHub will usually show a yellow banner for your recently pushed branch. Click the green **"Compare & pull request"** button.
 
-3.  **Set Up Your Pull Request:**
-    * **Base branch:** Should be `main` (where you want your changes to go)
-    * **Compare branch:** Should be `your-feature-name` (your branch)
-    * **Title:** Give it a clear title describing what you did
-    * **Description:** Explain what you changed and why
+3.  **Fill Out the Pull Request:**
+    Your PR will automatically be populated by a workflow (`pr-issue-sync.yml`) based on the issue you link.
+    *   **Title:** The title should be clear and concise (e.g., `feat: Add team member filtering` or `fix: Correct API endpoint for user data`).
+    *   **Initial Description:** In the PR description box, just type one of the closing keywords followed by the issue number. For example:
+        ```
+        Resolves #42
+        ```
+        This links the PR to the issue and will close it automatically when the PR is merged.
 
-4.  **Create Pull Request:** Click the green **"Create pull request"** button.
+4.  **Create Pull Request and Complete the Template:**
+    *   Click the green **"Create pull request"** button.
+    *   Immediately after, the automation will run and **replace** your PR description with a pre-filled template, pulling the "Description" and "Acceptance Criteria" from the linked issue.
+    *   **Refresh the PR page.** You will see the new, automated description. Click "Edit" to fill in the remaining sections:
+        *   **How to Test:** Provide clear, step-by-step instructions for how a reviewer can test your changes.
+        *   **Definition of Ready Checklist:** Go through this checklist and tick off each box by putting an `x` inside the brackets (`[x]`).
 
 5.  **What happens next:**
-    * Others can review your code
-    * You might get feedback or requests for changes
-    * Once approved, someone will merge your changes into `main`
-    * Your changes will then be deployed automatically!
+    * Your PR will trigger automated tests via GitHub Actions.
+    * A team member will review your code.
+    * You might get feedback or requests for changes. Make them on the same branch and push again.
+    * Once approved and all checks pass, your PR will be merged into `main` and deployed automatically!
 
 ### 🔧 Helpful Git Commands for Daily Use
 
@@ -871,8 +876,8 @@ git branch          # See which branch you're on
 
 **Switch between branches:**
 ```bash
-git checkout main               # Switch to main branch
-git checkout your-feature-name  # Switch to your feature branch
+git checkout main             # Switch to main branch
+git checkout your-branch-name # Switch to your feature branch
 ```
 
 **Make more changes to your branch:**

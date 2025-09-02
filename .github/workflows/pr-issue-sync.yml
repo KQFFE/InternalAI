@@ -30,6 +30,7 @@ jobs:
           result-encoding: string
           script: |
             const body = context.payload.pull_request.body;
+            console.log(`Searching for linked issue in PR body:\n---\n${body}\n---`);
             if (!body) {
               core.setFailed('PR body is empty. Cannot find linked issue.');
               return;
@@ -64,8 +65,9 @@ jobs:
         with:
           script: |
             // Helper function to extract a section from the issue body by its heading.
+            // This is now more robust: handles optional colons and is case-insensitive.
             function getSection(body, title) {
-              const regex = new RegExp(`###\\s+${title}\\s*\\n([\\s\\S]*?)(?=\\n###|$)`, 'i');
+              const regex = new RegExp(`###\\s+${title}:?\\s*\\n([\\s\\S]*?)(?=\\n###|$)`, 'i');
               const match = body.match(regex);
               return match ? match[1].trim() : null;
             }
@@ -73,6 +75,7 @@ jobs:
             // Access the issue body from the previous step's output.
             const issueBody = `${{ steps.issues-helper.outputs.issue-body }}`;
             const issueNumber = `${{ steps.issues-helper.outputs.issue-number }}`;
+            console.log(`Parsing issue #${issueNumber} body:\n---\n${issueBody}\n---`);
 
             // Extract Description and Acceptance Criteria from the issue body.
             const description = getSection(issueBody, 'Description');

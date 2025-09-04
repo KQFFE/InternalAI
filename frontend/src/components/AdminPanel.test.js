@@ -1,9 +1,8 @@
 // frontend/src/components/AdminPanel.test.js
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import AdminPanel from './AdminPanel';
-
+import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 // Mock the AuthContext
@@ -13,6 +12,14 @@ jest.mock('../context/AuthContext', () => ({
 
 // Mock fetch globally for AdminLogin component
 global.fetch = jest.fn();
+
+const renderWithRouter = (component) => {
+    return render(
+        <MemoryRouter>
+            {component}
+        </MemoryRouter>
+    );
+};
 
 describe('AdminPanel Component', () => {
     beforeEach(() => {
@@ -33,7 +40,7 @@ describe('AdminPanel Component', () => {
                 logout: jest.fn()
             });
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-loading')).toBeInTheDocument();
             expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
@@ -50,7 +57,7 @@ describe('AdminPanel Component', () => {
                 logout: jest.fn()
             });
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-login-wrapper')).toBeInTheDocument();
             expect(screen.getByText('Admin Login')).toBeInTheDocument();
@@ -69,7 +76,7 @@ describe('AdminPanel Component', () => {
         test('renders admin panel when user is authenticated', () => {
             useAuth.mockReturnValue(mockAuthenticatedUser);
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-panel')).toBeInTheDocument();
             expect(screen.getByTestId('admin-header')).toBeInTheDocument();
@@ -78,37 +85,11 @@ describe('AdminPanel Component', () => {
             expect(screen.getByText('Dashboard')).toBeInTheDocument();
         });
 
-        test('displays logout button when authenticated', () => {
-            useAuth.mockReturnValue(mockAuthenticatedUser);
-
-            render(<AdminPanel />);
-
-            const logoutButton = screen.getByTestId('logout-button');
-            expect(logoutButton).toBeInTheDocument();
-            expect(logoutButton).toHaveTextContent('Logout');
-        });
-
-        test('calls logout function when logout button is clicked', async () => {
-            const user = userEvent.setup();
-            const mockLogout = jest.fn();
-
-            useAuth.mockReturnValue({
-                ...mockAuthenticatedUser,
-                logout: mockLogout
-            });
-
-            render(<AdminPanel />);
-
-            const logoutButton = screen.getByTestId('logout-button');
-            await user.click(logoutButton);
-
-            expect(mockLogout).toHaveBeenCalledTimes(1);
-        });
 
         test('renders all admin section cards with correct test ids', () => {
             useAuth.mockReturnValue(mockAuthenticatedUser);
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-sections')).toBeInTheDocument();
             expect(screen.getByTestId('team-management-card')).toBeInTheDocument();
@@ -119,7 +100,7 @@ describe('AdminPanel Component', () => {
         test('all admin section buttons are disabled and show "Coming Soon"', () => {
             useAuth.mockReturnValue(mockAuthenticatedUser);
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             const teamButton = screen.getByTestId('team-management-button');
             const contentButton = screen.getByTestId('content-management-button');
@@ -136,25 +117,28 @@ describe('AdminPanel Component', () => {
         test('displays correct content for each card', () => {
             useAuth.mockReturnValue(mockAuthenticatedUser);
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             // Team Management card
             expect(screen.getByText('Team Management')).toBeInTheDocument();
-            expect(screen.getByText('Manage team members and their information.')).toBeInTheDocument();
+            expect(screen.getByText((content, element) =>
+                content.includes('Manage team members') &&
+                element.tagName.toLowerCase() === 'p'
+            )).toBeInTheDocument();
 
             // Content Management card
             expect(screen.getByText('Content Management')).toBeInTheDocument();
-            expect(screen.getByText('Update website content and pages.')).toBeInTheDocument();
+            expect(screen.getByText('Update site content, news articles, and company information.')).toBeInTheDocument();
 
             // Settings card
             expect(screen.getByText('Settings')).toBeInTheDocument();
-            expect(screen.getByText('Configure application settings.')).toBeInTheDocument();
+            expect(screen.getByText('Configure application settings and preferences.')).toBeInTheDocument();
         });
 
         test('dashboard has correct welcome message', () => {
             useAuth.mockReturnValue(mockAuthenticatedUser);
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument();
             expect(screen.getByText('Welcome to the admin panel. This is where you\'ll manage the application.')).toBeInTheDocument();
@@ -163,7 +147,7 @@ describe('AdminPanel Component', () => {
 
     describe('Authentication State Transitions', () => {
         test('transitions from loading to unauthenticated', () => {
-            const { rerender } = render(<AdminPanel />);
+            const { rerender } = renderWithRouter(<AdminPanel />);
 
             // Start with loading state
             useAuth.mockReturnValue({
@@ -190,7 +174,7 @@ describe('AdminPanel Component', () => {
         });
 
         test('transitions from unauthenticated to authenticated', () => {
-            const { rerender } = render(<AdminPanel />);
+            const { rerender } = renderWithRouter(<AdminPanel />);
 
             // Start with unauthenticated state
             useAuth.mockReturnValue({
@@ -211,7 +195,13 @@ describe('AdminPanel Component', () => {
                 logout: jest.fn()
             });
 
-            rerender(<AdminPanel />);
+
+            rerender(
+                <MemoryRouter>
+                    <AdminPanel />
+                </MemoryRouter>
+            );
+
             expect(screen.getByTestId('admin-panel')).toBeInTheDocument();
             expect(screen.queryByTestId('admin-login-wrapper')).not.toBeInTheDocument();
         });
@@ -226,7 +216,7 @@ describe('AdminPanel Component', () => {
                 logout: jest.fn()
             });
 
-            render(<AdminPanel />);
+            renderWithRouter(<AdminPanel />);
 
             const h1 = screen.getByRole('heading', { level: 1 });
             expect(h1).toHaveTextContent('Admin Panel');
@@ -235,26 +225,13 @@ describe('AdminPanel Component', () => {
             expect(h2).toHaveTextContent('Dashboard');
 
             const h3Elements = screen.getAllByRole('heading', { level: 3 });
-            expect(h3Elements).toHaveLength(3);
+            expect(h3Elements).toHaveLength(4);
             expect(h3Elements[0]).toHaveTextContent('Team Management');
             expect(h3Elements[1]).toHaveTextContent('Content Management');
-            expect(h3Elements[2]).toHaveTextContent('Settings');
+            expect(h3Elements[2]).toHaveTextContent('User Analytics');
+            expect(h3Elements[3]).toHaveTextContent('Settings');
         });
 
-        test('logout button has proper attributes', () => {
-            useAuth.mockReturnValue({
-                isAdmin: true,
-                isLoading: false,
-                handleLoginSuccess: jest.fn(),
-                logout: jest.fn()
-            });
-
-            render(<AdminPanel />);
-
-            const logoutButton = screen.getByTestId('logout-button');
-            expect(logoutButton).toHaveAttribute('type', 'button');
-            expect(logoutButton).toHaveClass('logout-button');
-        });
     });
 
     describe('Edge Cases', () => {
@@ -266,7 +243,7 @@ describe('AdminPanel Component', () => {
                 logout: undefined
             });
 
-            expect(() => render(<AdminPanel />)).not.toThrow();
+            expect(() => renderWithRouter(<AdminPanel />)).not.toThrow();
         });
 
         test('handles null auth context values', () => {
@@ -277,7 +254,7 @@ describe('AdminPanel Component', () => {
                 logout: null
             });
 
-            expect(() => render(<AdminPanel />)).not.toThrow();
+            expect(() => renderWithRouter(<AdminPanel />)).not.toThrow();
         });
 
         test('handles empty auth context gracefully', () => {
@@ -288,7 +265,7 @@ describe('AdminPanel Component', () => {
                 logout: undefined
             });
 
-            expect(() => render(<AdminPanel />)).not.toThrow();
+            expect(() => renderWithRouter(<AdminPanel />)).not.toThrow();
         });
     });
 });

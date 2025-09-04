@@ -1,4 +1,4 @@
-.admin-auth-section {
+﻿.admin-auth-section {
     /* Aligns the button vertically with nav links if needed */
     display: flex;
     align-items: center;
@@ -23,3 +23,109 @@
     background-color: #ef4444; /* red-500 */
 }
 .logout-button:hover { background-color: #dc2626; }
+
+
+/* Admin navigation link styling */
+.admin-nav-link {
+    position: relative;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .admin-nav-link::before {
+        content: '⚙️';
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .admin-nav-link:hover {
+        color: #3498DB;
+        text-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+    }
+
+    .admin-nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);
+        transition: width 0.3s ease;
+    }
+
+    .admin-nav-link:hover::after {
+        width: 100%;
+    }
+
+/* Enhanced admin auth section styling */
+.admin-auth-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.login-button {
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+    .login-button:hover {
+        background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
+
+.logout-button {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+    .logout-button:hover {
+        background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+/* Responsive design for admin elements */
+@media (max-width: 768px) {
+    .admin-auth-section {
+        margin-left: auto;
+    }
+
+    .admin-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 640px) {
+    /* Stack navigation vertically on very small screens */
+    header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .admin-auth-section {
+        margin-left: 0;
+    }
+}

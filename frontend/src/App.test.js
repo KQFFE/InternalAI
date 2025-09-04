@@ -1,6 +1,8 @@
 import { render, screen } from './test-utils';
 import App from './App';
 import userEvent from '@testing-library/user-event';
+import * as AuthContext from './context/AuthContext';
+
 
 // Mock the fetch calls that our contexts will make.
 // This allows us to test the integration without making real network requests.
@@ -21,18 +23,31 @@ afterEach(() => {
 });
 
 describe('App Routing', () => {
+
   it('should render the home page by default', async () => {
     render(<App />);
     // Use findBy to wait for any async operations in contexts to complete
     expect(await screen.findByRole('heading', { name: /shaping a better future with code/i })).toBeInTheDocument();
   });
 
-  it('should navigate to the team page when the nav link is clicked', async () => {
-    const user = userEvent.setup();
-    render(<App />);
-    await user.click(await screen.findByRole('link', { name: /our team/i }));
-    expect(await screen.findByRole('heading', { name: /our amazing team/i })).toBeInTheDocument();
-  });
+    it('should navigate to the team page when the nav link is clicked', async () => {
+        jest.spyOn(AuthContext, 'useAuth').mockReturnValue({
+            isAdmin: true,
+            isLoading: false,
+            logout: jest.fn(),
+            openLoginModal: jest.fn(),
+            handleLoginSuccess: jest.fn()
+        });
+
+        const user = userEvent.setup();
+        render(<App />);
+
+        await user.click(await screen.findByRole('link', { name: /our team/i }));
+        expect(await screen.findByRole('heading', { name: /our amazing team/i })).toBeInTheDocument();
+
+        // Restore the original implementation
+        AuthContext.useAuth.mockRestore();
+    });
 
 });
 

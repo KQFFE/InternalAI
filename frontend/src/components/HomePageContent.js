@@ -1,3 +1,4 @@
+// frontend/src/components/HomePageContent.js - Updated to remove team button navigation
 import { useNavigate } from 'react-router-dom';
 import './HomePageContent.css';
 
@@ -13,7 +14,15 @@ function HomePageContent() {
                         <p id="main-subtitle">We are a digitalization company that develops solutions and services for a better tomorrow.</p>
                     </div>
                     <div className="hero-buttons">
-                        <button onClick={() => navigate('/team')} className="hero-button" id="team-button">Read more about our team</button>
+                        {/* Disabled team button - no longer navigates */}
+                        <button
+                            className="hero-button hero-button-disabled"
+                            id="team-button"
+                            disabled
+                            title="Login as admin to access team information"
+                        >
+                            Read more about our team
+                        </button>
                         <button onClick={() => navigate('/license')} className="hero-button" id="license-button">Knowit License Management</button>
                     </div>
                 </section>

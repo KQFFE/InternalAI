@@ -1,11 +1,13 @@
+// frontend/src/components/AdminPanel.js - Updated to use unified header
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import AdminLogin from './AdminLogin';
+import Header from './Header';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
-    //const { isAdmin, isLoading, handleLoginSuccess, logout } = useAuth();
-    const { isAdmin = false, isLoading = false, handleLoginSuccess = () => { }, logout = () => { } } = useAuth() || {};
+    const { isAdmin = false, isLoading = false, handleLoginSuccess = () => { } } = useAuth() || {};
+
     // Show loading state while checking authentication
     if (isLoading) {
         return (
@@ -28,47 +30,43 @@ const AdminPanel = () => {
     // Show admin interface if authenticated
     return (
         <div className="admin-panel" data-testid="admin-panel">
-            <header className="admin-header" data-testid="admin-header">
-                <h1>Admin Panel</h1>
-                <div className="admin-actions" data-testid="admin-actions">
-                    <button
-                        onClick={logout}
-                        className="logout-button"
-                        type="button"
-                        data-testid="logout-button"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </header>
+            {/* Header wrapper with test ID */}
+            <div className="admin-header" data-testid="admin-header">
+                <Header centerTitle="Admin Panel" showNavigation={false} />
+            </div>
 
-            <main className="admin-content" data-testid="admin-content">
+            <div className="admin-content" data-testid="admin-content">
                 <div className="admin-dashboard" data-testid="admin-dashboard">
                     <h2>Dashboard</h2>
                     <p>Welcome to the admin panel. This is where you'll manage the application.</p>
+                </div>
 
-                    {/* Placeholder for future admin functionality */}
-                    <div className="admin-sections" data-testid="admin-sections">
-                        <div className="admin-card" data-testid="team-management-card">
-                            <h3>Team Management</h3>
-                            <p>Manage team members and their information.</p>
-                            <button disabled data-testid="team-management-button">Coming Soon</button>
-                        </div>
+                <div className="admin-sections" data-testid="admin-sections">
+                    <div className="admin-card" data-testid="team-management-card">
+                        <h3>Team Management</h3>
+                        <p>Manage team members, add new members, and update information.</p>
+                        <button data-testid="team-management-button" disabled>Coming Soon</button>
+                    </div>
 
-                        <div className="admin-card" data-testid="content-management-card">
-                            <h3>Content Management</h3>
-                            <p>Update website content and pages.</p>
-                            <button disabled data-testid="content-management-button">Coming Soon</button>
-                        </div>
+                    <div className="admin-card" data-testid="content-management-card">
+                        <h3>Content Management</h3>
+                        <p>Update site content, news articles, and company information.</p>
+                        <button data-testid="content-management-button" disabled>Coming Soon</button>
+                    </div>
 
-                        <div className="admin-card" data-testid="settings-card">
-                            <h3>Settings</h3>
-                            <p>Configure application settings.</p>
-                            <button disabled data-testid="settings-button">Coming Soon</button>
-                        </div>
+                    <div className="admin-card" data-testid="user-analytics-card">
+                        <h3>User Analytics</h3>
+                        <p>View site usage statistics and user behavior insights.</p>
+                        <button data-testid="user-analytics-button" disabled>Coming Soon</button>
+                    </div>
+
+                    <div className="admin-card" data-testid="settings-card">
+                        <h3>Settings</h3>
+                        <p>Configure application settings and preferences.</p>
+                        <button data-testid="settings-button" disabled>Coming Soon</button>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     );
 };

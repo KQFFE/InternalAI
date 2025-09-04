@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from flask import Flask, render_template, jsonify, send_from_directory, request, session
 from flask_cors import CORS
@@ -42,11 +42,14 @@ app = Flask(__name__,
 # Configuration
 # ================================
 # Configure CORS for full-stack development
-CORS(app, origins=['*'])
+CORS(app, origins=['*'], supports_credentials=True)
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['DEBUG'] = os.environ.get('FLASK_ENV') != 'production'
+app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
 # Admin authentication configuration
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 # Get the base directory of the current file
@@ -162,8 +165,8 @@ def require_admin(f):
     """Decorator to require admin authentication for routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get('admin_authenticated'):
-            return jsonify({'error': 'Authentication required'}), 401
+        if not session.get('admin_authenticated', False):
+            return jsonify({'error': 'Admin authentication required'}), 401
         return f(*args, **kwargs)
     return decorated_function
 
@@ -227,7 +230,7 @@ def serve_react_routes(path):
             logger.error(f"Error serving static file {static_path}: {e}")
             return jsonify({'error': 'File not found'}), 404
     
-    # Handle API routes
+    # Handle unknown API routes only
     if path.startswith('api/'):
         logger.warning(f"API endpoint not found: {path}")
         return jsonify({
@@ -256,6 +259,7 @@ def serve_react_routes(path):
     except Exception as e:
         logger.error(f"Error serving React app for path {path}: {e}")
         return jsonify({'error': 'Application error'}), 500
+
 
 # ================================
 # API ROUTES
@@ -481,41 +485,123 @@ def handle_exception(e):
 
 @app.route('/api/admin/login', methods=['POST'])
 def admin_login():
-    """Admin login endpoint"""
+    """Admin login endpoint with proper session management"""
     try:
-        data = request.get_json()
-        if not data or 'password' not in data:
-            return jsonify({'error': 'Password required'}), 400
-        
-        password = data.get('password')
-        
-        if password == ADMIN_PASSWORD:
-            session['admin_authenticated'] = True
-            logger.info("Admin login successful")
+        # Validate content type
+        if not request.is_json:
             return jsonify({
-                'success': True, 
-                'message': 'Logged in successfully'
+                'success': False,
+                'error': 'Content-Type must be application/json'
+            }), 400
+        
+        # Handle JSON decode errors specifically
+        try:
+            data = request.get_json()
+        except Exception as json_error:
+            logger.warning(f"Invalid JSON in admin login: {json_error}")
+            return jsonify({
+                'success': False,
+                'error': 'Invalid JSON format'
+            }), 400
+
+        if data is None:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }), 400
+        
+        password = data.get('password', '').strip()
+        
+        # Validate password
+        if not password:
+            return jsonify({
+                'success': False,
+                'error': 'Password is required'
+            }), 400
+        
+        if len(password) < 3:
+            return jsonify({
+                'success': False,
+                'error': 'Password must be at least 3 characters'
+            }), 400
+        
+        # Check environment variable
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        if not admin_password:
+            logger.error("ADMIN_PASSWORD not set in environment")
+            return jsonify({
+                'success': False,
+                'error': 'Server configuration error'
+            }), 500
+        
+        # Authenticate
+        if password == admin_password:
+            session['admin_authenticated'] = True
+            session.permanent = True  # Make session persistent
+            logger.info(f"Admin login successful from {request.remote_addr}")
+            return jsonify({
+                'success': True,
+                'message': 'Login successful'
             })
         else:
-            logger.warning("Failed admin login attempt")
-            return jsonify({'error': 'Invalid password'}), 401
+            logger.warning(f"Failed admin login attempt from {request.remote_addr}")
+            return jsonify({
+                'success': False,
+                'error': 'Invalid password'
+            }), 401
             
     except Exception as e:
         logger.error(f"Error in admin login: {e}")
-        return jsonify({'error': 'Login failed'}), 500
+        return jsonify({
+            'success': False,
+            'error': 'Login failed due to server error'
+        }), 500
 
 @app.route('/api/admin/logout', methods=['POST'])
 def admin_logout():
     """Admin logout endpoint"""
-    session.pop('admin_authenticated', None)
-    logger.info("Admin logged out")
-    return jsonify({'success': True, 'message': 'Logged out successfully'})
+    try:
+        was_authenticated = session.get('admin_authenticated', False)
+        session.pop('admin_authenticated', None)
+        session.clear()  # Clear entire session for security
+        
+        if was_authenticated:
+            logger.info(f"Admin logged out from {request.remote_addr}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Logged out successfully'
+        })
+    except Exception as e:
+        logger.error(f"Error in admin logout: {e}")
+        return jsonify({
+            'success': True,
+            'message': 'Logged out'
+        })  # Still return success even if there was an error
 
 @app.route('/api/admin/check', methods=['GET'])
 def check_admin():
-    """Check admin authentication status"""
+    """Check admin authentication status (DEPRECATED - use /api/admin/status)"""
+    logger.warning("Deprecated endpoint /api/admin/check called - use /api/admin/status")
     authenticated = session.get('admin_authenticated', False)
     return jsonify({'authenticated': authenticated})
+
+@app.route('/api/admin/status', methods=['GET'])
+def admin_status():
+    """Check admin authentication status - matches frontend expectations"""
+    try:
+        authenticated = session.get('admin_authenticated', False)
+        return jsonify({
+            'isAuthenticated': authenticated,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error checking admin status: {e}")
+        return jsonify({
+            'isAuthenticated': False,
+            'error': 'Status check failed',
+            'timestamp': datetime.now().isoformat()
+        }), 500
 
 # ================================
 # TEAM MANAGEMENT ROUTES

@@ -1,19 +1,22 @@
+// frontend/src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
+export { AuthContext };
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // Used to check initial auth status
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     // Check if the user is already authenticated on page load
     const checkAuthStatus = useCallback(async () => {
         setIsLoading(true);
         try {
-            // This assumes a backend endpoint exists to check the session
             const response = await fetch('/api/admin/status');
             if (response.ok) {
                 const data = await response.json();
@@ -48,10 +51,20 @@ export const AuthProvider = ({ children }) => {
             console.error('Logout failed:', error);
         } finally {
             setIsAdmin(false);
+            // Always navigate to home page after logout
+            navigate('/');
         }
     };
 
-    const value = { isAdmin, isLoginModalOpen, isLoading, handleLoginSuccess, logout, openLoginModal, closeLoginModal };
+    const value = {
+        isAdmin,
+        isLoginModalOpen,
+        isLoading,
+        handleLoginSuccess,
+        logout,
+        openLoginModal,
+        closeLoginModal
+    };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,4 +1,4 @@
-/* d:/Dev/InternalAI/frontend/src/components/HomePageContent.css */
+/* /InternalAI/frontend/src/components/HomePageContent.css */
 /* Hero Section */
 .hero-section {
     text-align: center;
@@ -181,4 +181,40 @@
 
 .news-section-background .more-news-link:hover {
     color: #372BC5; /* brand-accent */
+}
+
+/* Disabled team button styling */
+.hero-button-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: rgba(255, 255, 255, 0.7);
+    position: relative;
+}
+
+    .hero-button-disabled:hover {
+        transform: none;
+        box-shadow: none;
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    }
+
+    .hero-button-disabled:focus {
+        outline: 2px solid rgba(108, 117, 125, 0.5);
+        outline-offset: 2px;
+    }
+
+/* Override any existing hover effects for disabled state */
+.hero-button.hero-button-disabled:hover {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Ensure disabled state takes precedence */
+button.hero-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }

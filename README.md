@@ -553,7 +553,23 @@ This is the traditional way to set up your development environment directly on W
         You'll know it worked because your PowerShell prompt will change to include `(venv)` at the beginning, like this: `(venv) PS D:\Projects\InternalAI>`.
         * **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
 
-6.  **Install Project Dependencies (Backend):**
+6.  **Configure Environment Variables:**
+    Environment variables store sensitive settings like passwords that shouldn't be shared in code.
+    1.  **Copy the example file:**
+        ```powershell
+        cp backend\.env.example backend\.env
+        ```
+    2.  **Edit the environment file:** Open `backend\.env` in any text editor and update:
+        ```
+        # Set a secure admin password (replace with your choice)
+        ADMIN_PASSWORD=YourLocalTestPassword123
+        
+        # Keep as development for local work
+        FLASK_ENV=development
+        ```
+    3.  **Save the file.** The `.env` file stays on your computer and is never uploaded to GitHub.
+
+7.  **Install Project Dependencies (Backend):**
     "Dependencies" are other Python tools or libraries that our InternalAI project needs to run.
     1.  **Install Them:** While your `(venv)` is active and you're in your `InternalAI` project folder (e.g., `(venv) PS D:\Projects\InternalAI>`), type:
         ```powershell
@@ -561,7 +577,7 @@ This is the traditional way to set up your development environment directly on W
         ```
         This command reads the `requirements.txt` file in the `backend` folder which lists all the necessary tools, and `pip` (Python's package installer) will download and install them into your `venv`. This might take a few moments.
 
-7.  **Install Frontend Dependencies (React):**
+8.  **Install Frontend Dependencies (React):**
     The frontend also has its own set of dependencies. You'll need Node.js and npm installed globally for this.
     1.  **Download Node.js:** Go to the official Node.js website: [https://nodejs.org/en/download](https://nodejs.org/en/download)
     2.  **Choose the LTS Version:** Download the "LTS" (Long Term Support) Windows Installer.
@@ -583,7 +599,7 @@ This is the traditional way to set up your development environment directly on W
         ```
         This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries. This might take a few moments.
 
-8.  **Install Playwright Browsers:**
+9.  **Install Playwright Browsers:**
     The project uses Playwright for end-to-end testing, which requires specific browser binaries to run.
     1.  **Install the browsers:** While still in the `frontend` directory, run:
         ```powershell
@@ -717,7 +733,28 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```
         * This reads the `requirements.txt` file in the `backend` folder and installs all necessary Python libraries. This might take a few moments.
 
-6.  **Set Up Frontend Dependencies:**
+ 6.  **Configure Environment Variables:**
+    Environment variables store sensitive settings like passwords that shouldn't be shared in code.
+    1.  **Copy the example file:**
+        ```bash
+        cp backend/.env.example backend/.env
+        ```
+    2.  **Edit the environment file:** You can use any text editor. For beginners, `nano` is simple:
+        ```bash
+        nano backend/.env
+        ```
+        Update the content to:
+        ```
+        # Set a secure admin password (replace with your choice)
+        ADMIN_PASSWORD=test123
+        
+        # Keep as development for local work  
+        FLASK_ENV=development
+        ```
+        * In nano: Use `Ctrl+X` to exit, press `Y` to save, then `Enter` to confirm.
+    3.  **The `.env` file stays on your computer** and is never uploaded to GitHub.
+
+7.  **Set Up Frontend Dependencies:**
     * Your React frontend also needs its own tools.
     1.  **Go to the `frontend` folder:**
         ```bash

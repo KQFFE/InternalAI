@@ -79,7 +79,6 @@ describe('AdminPanel Component', () => {
             renderWithRouter(<AdminPanel />);
 
             expect(screen.getByTestId('admin-panel')).toBeInTheDocument();
-            expect(screen.getByTestId('admin-header')).toBeInTheDocument();
             expect(screen.getByTestId('admin-content')).toBeInTheDocument();
             expect(screen.getByText('Admin Panel')).toBeInTheDocument();
             expect(screen.getByText('Dashboard')).toBeInTheDocument();

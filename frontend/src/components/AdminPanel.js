@@ -31,9 +31,7 @@ const AdminPanel = () => {
     return (
         <div className="admin-panel" data-testid="admin-panel">
             {/* Header wrapper with test ID */}
-            <div className="admin-header" data-testid="admin-header">
-                <Header centerTitle="Admin Panel" showNavigation={false} />
-            </div>
+            <Header centerTitle="Admin Panel" showNavigation={false} />
 
             <div className="admin-content" data-testid="admin-content">
                 <div className="admin-dashboard" data-testid="admin-dashboard">

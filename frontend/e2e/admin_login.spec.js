@@ -1,5 +1,23 @@
-﻿﻿﻿﻿import { test, expect } from '@playwright/test';
-import { dismissCookieBanner } from './utils/helpers.js';
+﻿﻿import { test, expect } from './test-fixtures.js';
+
+// Centralized locators for easier maintenance
+const LOCATORS = {
+  adminLoginButton: '[data-testid="admin-login-button"]',
+  logoutButton: '[data-testid="admin-logout-button"]',
+  modal: '[data-testid="admin-login-modal"]',
+  modalHeading: 'heading[name="Admin Login"]',
+  passwordInput: 'textbox[name="Password"]',
+  loginSubmitButton: 'button[name="Login"][exact=true]',
+  cancelButton: 'button[name="Cancel"]',
+  closeModalButton: 'button[name="Close login modal"]',
+  togglePasswordButton: 'button[aria-label*="password"]',
+  errorMessage: '.error-message',
+  // For focus trapping, use more specific test-ids
+  passwordInputById: '[data-testid="admin-password-input"]',
+  togglePasswordById: '[data-testid="toggle-password-visibility-button"]',
+  loginSubmitById: '[data-testid="login-button"]',
+  cancelButtonById: '[data-testid="cancel-button"]',
+};
 
 test.describe('Admin Login Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,8 +25,7 @@ test.describe('Admin Login Flow', () => {
     await page.route('/api/admin/status', async (route) => {
       await route.fulfill({ json: { isAuthenticated: false } });
     });
-    await page.goto('/');
-    await dismissCookieBanner(page);
+    await page.goto('/'); // Cookie banner is handled by the test fixture
   });
 
   test('should open the admin modal, log in, and see the logout button', async ({ page }) => {
@@ -23,21 +40,21 @@ test.describe('Admin Login Flow', () => {
     });
 
     // 1. Click the Admin button
-    const adminButton = page.getByTestId('admin-login-button');
+    const adminButton = page.locator(LOCATORS.adminLoginButton);
     await expect(adminButton).toBeVisible();
     await adminButton.click();
 
     // 2. Verify the modal is open
-    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    const modalHeading = page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' });
     await expect(modalHeading).toBeVisible();
 
     // 3. Fill in the password and click login
-    await page.getByRole('textbox', { name: 'Password' }).fill('correct-password');
-    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.getByRole(LOCATORS.passwordInput.split('[')[0], { name: 'Password' }).fill('correct-password');
+    await page.getByRole(LOCATORS.loginSubmitButton.split('[')[0], { name: 'Login', exact: true }).click();
 
     // 4. Verify the modal is closed and the logout button is visible
     await expect(modalHeading).not.toBeVisible();
-    const logoutButton = page.getByTestId('admin-logout-button');
+    const logoutButton = page.locator(LOCATORS.logoutButton);
     await expect(logoutButton).toBeVisible();
   });
 
@@ -56,14 +73,18 @@ test.describe('Admin Login Flow', () => {
     });
 
     // Reload the page with the new mock
-    await page.goto('/');
-    await dismissCookieBanner(page);
+    await page.goto('/'); // Fixture handles cookie banner
 
-    const logoutButton = page.getByTestId('admin-logout-button');
+    const logoutButton = page.locator(LOCATORS.logoutButton);
     await expect(logoutButton).toBeVisible();
-    await logoutButton.click();
 
-    const adminButton = page.getByTestId('admin-login-button');
+    // Atomically click and wait for the network request to ensure UI updates
+    await Promise.all([
+      page.waitForResponse(resp => resp.url().includes('/api/admin/logout')),
+      logoutButton.click(),
+    ]);
+
+    const adminButton = page.locator(LOCATORS.adminLoginButton);
     await expect(adminButton).toBeVisible();
   });
 
@@ -79,19 +100,19 @@ test.describe('Admin Login Flow', () => {
     });
 
     // Click the Admin button
-    await page.getByTestId('admin-login-button').click();
+    await page.locator(LOCATORS.adminLoginButton).click();
 
     // Verify the modal is open
-    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    const modalHeading = page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' });
     await expect(modalHeading).toBeVisible();
 
     // Fill in the wrong password and click login
-    const passwordInput = page.getByRole('textbox', { name: 'Password' });
+    const passwordInput = page.getByRole(LOCATORS.passwordInput.split('[')[0], { name: 'Password' });
     await passwordInput.fill('wrong-password');
-    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.getByRole(LOCATORS.loginSubmitButton.split('[')[0], { name: 'Login', exact: true }).click();
 
     // Verify the error message is shown
-    await expect(page.locator('.error-message')).toHaveText('Invalid password');
+    await expect(page.locator(LOCATORS.errorMessage)).toHaveText('Invalid password');
 
     // Verify the password input is cleared
     await expect(passwordInput).toHaveValue('');
@@ -102,18 +123,18 @@ test.describe('Admin Login Flow', () => {
 
   test('should show a client-side validation error for a short password', async ({ page }) => {
     // Click the Admin button
-    await page.getByTestId('admin-login-button').click();
+    await page.locator(LOCATORS.adminLoginButton).click();
 
     // Verify the modal is open
-    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    const modalHeading = page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' });
     await expect(modalHeading).toBeVisible();
 
     // Fill in a short password and click login
-    await page.getByRole('textbox', { name: 'Password' }).fill('a');
-    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.getByRole(LOCATORS.passwordInput.split('[')[0], { name: 'Password' }).fill('a');
+    await page.getByRole(LOCATORS.loginSubmitButton.split('[')[0], { name: 'Login', exact: true }).click();
 
     // Verify the validation error message is shown
-    await expect(page.locator('.error-message')).toHaveText('Password must be at least 3 characters');
+    await expect(page.locator(LOCATORS.errorMessage)).toHaveText('Password must be at least 3 characters');
     
     // Verify the modal is still open
     await expect(modalHeading).toBeVisible();
@@ -121,13 +142,13 @@ test.describe('Admin Login Flow', () => {
 
   test('should handle password visibility toggle', async ({ page }) => {
     // Click the Admin button
-    await page.getByTestId('admin-login-button').click();
+    await page.locator(LOCATORS.adminLoginButton).click();
     
     // Wait for modal to be visible
-    await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible();
+    await expect(page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' })).toBeVisible();
 
-    const passwordInput = page.getByRole('textbox', { name: 'Password' });
-    const showPasswordButton = page.getByRole('button', { name: 'Show password' });
+    const passwordInput = page.getByRole(LOCATORS.passwordInput.split('[')[0], { name: 'Password' });
+    const showPasswordButton = page.locator(LOCATORS.togglePasswordButton);
 
     // Initially, it should be a password input
     await expect(passwordInput).toHaveAttribute('type', 'password');
@@ -137,7 +158,7 @@ test.describe('Admin Login Flow', () => {
 
     // It should now be a text input
     await expect(passwordInput).toHaveAttribute('type', 'text');
-    const hidePasswordButton = page.getByRole('button', { name: 'Hide password' });
+    const hidePasswordButton = page.locator(LOCATORS.togglePasswordButton);
     await expect(hidePasswordButton).toBeVisible();
 
     // Click toggle again to hide password
@@ -147,10 +168,10 @@ test.describe('Admin Login Flow', () => {
 
   test('should allow canceling the login modal with the Cancel button', async ({ page }) => {
     // Click the Admin button
-    await page.getByTestId('admin-login-button').click();
+    await page.locator(LOCATORS.adminLoginButton).click();
 
     // Verify the modal is open
-    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    const modalHeading = page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' });
     await expect(modalHeading).toBeVisible();
 
     // Click the cancel button
@@ -161,8 +182,8 @@ test.describe('Admin Login Flow', () => {
   });
 
   test('should allow closing the login modal with the close button', async ({ page }) => {
-    await page.getByTestId('admin-login-button').click();
-    const modalHeading = page.getByRole('heading', { name: 'Admin Login' });
+    await page.getByRole('button', { name: 'Admin' }).click();
+    const modalHeading = page.getByRole(LOCATORS.modalHeading.split('[')[0], { name: 'Admin Login' });
     await expect(modalHeading).toBeVisible();
 
     // Click the close button (the '×')
@@ -170,5 +191,43 @@ test.describe('Admin Login Flow', () => {
 
     // Verify the modal is closed
     await expect(modalHeading).not.toBeVisible();
+  });
+
+  test('should trap focus within the modal', async ({ page }) => {
+    // 1. Click the Admin button to open the modal
+    const adminButton = page.locator(LOCATORS.adminLoginButton);
+    await adminButton.click();
+
+    // 2. Verify the modal is open and the first element (close button) has focus
+    const modal = page.locator(LOCATORS.modal);
+    const closeButton = page.getByRole('button', { name: 'Close login modal' });
+    await expect(modal).toBeVisible();
+    await expect(closeButton).toBeFocused();
+
+    // 3. Tab to the password input and check focus
+    await page.keyboard.press('Tab');
+    const passwordInput = page.locator(LOCATORS.passwordInputById);
+    await expect(passwordInput).toBeFocused();
+
+    // 4. Fill the password to enable the login button
+    await passwordInput.fill('a-valid-password');
+
+    // 5. Tab through the rest of the elements
+    await page.keyboard.press('Tab');
+    await expect(page.locator(LOCATORS.togglePasswordById)).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(page.locator(LOCATORS.loginSubmitById)).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(page.locator(LOCATORS.cancelButtonById)).toBeFocused();
+
+    // 6. Test forward wrap-around from the last element to the first
+    await page.keyboard.press('Tab');
+    await expect(closeButton).toBeFocused();
+
+    // 7. Test backward wrap-around from the first element to the last
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.locator(LOCATORS.cancelButtonById)).toBeFocused();
   });
 });

@@ -1,6 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../cookie-banner.css';
 
+
+const CookieCategory = ({ name, label, description, isOpen, onToggle, children }) => {
+    return (
+        <div className="coi-consent-banner__category-container">
+            <div className="coi-consent-banner__category-controls">
+                <button
+                    tabIndex="0"
+                    aria-controls={`description-container-cookie_cat_${name}`}
+                    aria-expanded={isOpen}
+                    onClick={onToggle}
+                    className="coi-consent-banner__category-name"
+                >
+                    <div aria-hidden="true" className={`ci-arrow ${isOpen ? 'open' : ''}`}></div>
+                    <h3 aria-label={label}>{label}</h3>
+                </button>
+                <div className="coi-consent-banner__category-description">{description}</div>
+            </div>
+            <div
+                data-testid={`description-container-${name}`}
+                className="coi-consent-banner__description-container"
+                id={`description-container-cookie_cat_${name}`}
+                aria-hidden={!isOpen}
+                style={{ display: isOpen ? 'block' : 'none' }}
+            >
+                {children}
+            </div>
+        </div>
+    );
+};
 
 function CookieBanner({
     show,
@@ -18,19 +47,68 @@ function CookieBanner({
     const [showPolicy, setShowPolicy] = useState(false);
     const [preferencesChanged, setPreferencesChanged] = useState(false);
     const [openCategory, setOpenCategory] = useState(null);
+    const bannerRef = useRef(null);
+    const policyHeadlineRef = useRef(null); // Ref for the policy headline
 
     useEffect(() => {
-        if (show) {
-            document.body.classList.add('modal-open');
-        } else {
-            document.body.classList.remove('modal-open');
+        if (!show) {
+            return; // Do nothing if the banner is not shown
         }
 
-        // Cleanup function to ensure the class is removed when the component unmounts
+        // --- Setup logic when banner is shown ---
+        document.body.classList.add('modal-open');
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.setAttribute('aria-hidden', 'true');
+        }
+
+        // Focus management when the banner appears or its view changes
+        if (showPolicy) {
+            // When policy view is active, focus its headline
+            policyHeadlineRef.current?.focus();
+        } else {
+            // When main consent view is active, focus the first action button
+            const firstButton = bannerRef.current?.querySelector(
+                '.coi-button-group button:not([disabled])'
+            );
+            firstButton?.focus();
+        }
+
+        // Trap focus within the modal for keyboard users.
+        const handleFocusTrap = (event) => {
+            if (event.key === 'Tab' && bannerRef.current) {
+                const focusableElements = bannerRef.current.querySelectorAll(
+                    'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                );
+                const firstElement = focusableElements[0];
+                const lastElement = focusableElements[focusableElements.length - 1];
+
+                if (event.shiftKey) {
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        event.preventDefault();
+                    }
+                } else if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
+        };
+        document.addEventListener('keydown', handleFocusTrap);
+
+        // --- Cleanup logic ---
         return () => {
             document.body.classList.remove('modal-open');
+            if (mainContent) {
+                mainContent.removeAttribute('aria-hidden');
+            }
+            document.removeEventListener('keydown', handleFocusTrap);
+
+            // Return focus to a logical element on the page after the banner closes.
+            const mainHeading = document.getElementById('main-heading');
+            mainHeading?.focus();
         };
-    }, [show]); // This effect runs whenever the `show` prop changes
+    }, [show, showPolicy]);
 
     if (!show) return null;
 
@@ -48,7 +126,7 @@ function CookieBanner({
 
     return (
         <div id="coiOverlay" role="banner" aria-hidden="false" className="coi-overlay">
-            <div role="dialog" tabIndex="-1" aria-modal="true" id="coi-banner-wrapper" className="coi-banner__wrapper"
+            <div ref={bannerRef} role="dialog" tabIndex="-1" aria-modal="true" id="coi-banner-wrapper" className="coi-banner__wrapper"
                 aria-describedby="coiBannerHeadline" aria-labelledby="coi-banner-wrapper_label" lang="sv" dir="ltr" aria-hidden="false">
                 {!showPolicy ? (
                     <div id="coiPage-1" className="coi-banner__page">
@@ -96,6 +174,47 @@ function CookieBanner({
                             </div>
                         </div>
 
+                        {showDetails && (
+                            <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
+                                <CookieCategory
+                                    name="necessary"
+                                    label="Nödvändiga"
+                                    description="Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies."
+                                    isOpen={openCategory === 'necessary'}
+                                    onToggle={() => toggleCategory('necessary')}
+                                >
+                                    {/* Details for Necessary cookies would go here if they could be expanded */}
+                                </CookieCategory>
+                                <CookieCategory
+                                    name="functional"
+                                    label="Funktionella"
+                                    description="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i."
+                                    isOpen={openCategory === 'functional'}
+                                    onToggle={() => toggleCategory('functional')}
+                                >
+                                    {/* Details for Functional cookies */}
+                                </CookieCategory>
+                                <CookieCategory
+                                    name="statistic"
+                                    label="Statistiska"
+                                    description="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter."
+                                    isOpen={openCategory === 'statistic'}
+                                    onToggle={() => toggleCategory('statistic')}
+                                >
+                                    {/* Details for Statistic cookies */}
+                                </CookieCategory>
+                                <CookieCategory
+                                    name="marketing"
+                                    label="Marketing"
+                                    description="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer."
+                                    isOpen={openCategory === 'marketing'}
+                                    onToggle={() => toggleCategory('marketing')}
+                                >
+                                    {/* Details for Marketing cookies */}
+                                </CookieCategory>
+                            </div>
+                        )}
+
                         <div className="coi-banner-consent-group">
                             <div className="coi-banner-consent-field">
                                 <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_necessary">
@@ -142,29 +261,11 @@ function CookieBanner({
                                 </div>
                             </div>
                         </div>
-
-                        {showDetails && (
-                            <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
-                                <div className="coi-consent-banner__category-container">
-                                    <div className="coi-consent-banner__category-controls">
-                                        <button tabIndex="0" aria-controls="description-container-cookie_cat_necessary" aria-expanded={openCategory === 'necessary'} onClick={() => toggleCategory('necessary')} className="coi-consent-banner__category-name">
-                                            <div aria-hidden="true" className={`ci-arrow ${openCategory === 'necessary' ? 'open' : ''}`}></div>
-                                            <h3 aria-label="Nödvändiga">Nödvändiga</h3>
-                                        </button>
-                                        <div className="coi-consent-banner__category-description">Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.</div>
-                                    </div>
-                                    <div data-testid="description-container-necessary" className="coi-consent-banner__description-container" id="description-container-cookie_cat_necessary" aria-hidden={openCategory !== 'necessary'} style={{ display: openCategory === 'necessary' ? 'block' : 'none' }}>
-                                        {/* Details for Necessary cookies */}
-                                    </div>
-                                </div>
-                                {/* Repeat for other categories: Functional, Statistic, Marketing */}
-                            </div>
-                        )}
                     </div>
                 ) : (
                     <div id="coiPage-3" className="coi-banner__page">
                         <div className="coi-banner__cookiedeclaration">
-                            <h2 className="coi-banner__headline" id="coiPolicyHeadline">Policy för kakor</h2>
+                            <h2 ref={policyHeadlineRef} tabIndex="-1" className="coi-banner__headline" id="coiPolicyHeadline">Policy för kakor</h2>
                             {/* Header and policy text */}
                         </div>
                         <div className="coi-banner__page-footer" role="navigation" aria-label="third-menu">

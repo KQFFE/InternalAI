@@ -305,7 +305,7 @@ All frontend test commands should be run from within the `frontend` directory.
     ```bash
     npx eslint src/ --format=compact --max-warnings=0
     ```
-    * This command checks your code for quality issues, potential bugs, and style consistency.
+    * This command checks your code for quality issues, potential bugs, and style consistency. It includes the `eslint-plugin-jsx-a11y` plugin to catch common accessibility issues directly in your JSX.
     * **No output means no errors were found ✅**.
     * For a more **detailed, human-readable report**, use the `stylish` format:
         ```bash
@@ -376,6 +376,25 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
 -   **Co-locate Tests**: As mentioned, keep your test files right next to the component files they are testing. This makes them easy to find and maintain.
 -   **Use React Testing Library**: Query the DOM in a user-centric way using `@testing-library/react`. Prefer queries like `getByRole`, `getByLabelText`, and `getByText` over implementation details.
 -   **Mock Dependencies**: Use Jest's mocking capabilities (`jest.mock`) to isolate your component from its dependencies (like API calls or custom hooks) so you can test it in a controlled environment.
+-   **Write Accessibility Tests**: To ensure the application is compliant with WCAG 2.1 AA standards, all components must be tested for accessibility. This involves both automated and manual checks.
+
+    *   **Automated Checks**: The project uses `jest-axe` to integrate `axe-core` automated accessibility checks into our unit tests. This helps catch regressions before they reach production. All new components should include a test like this:
+        ```javascript
+        import { render } from '@testing-library/react';
+        import { axe } from 'jest-axe';
+        import MyComponent from './MyComponent';
+
+        it('should have no accessibility violations', async () => {
+          const { container } = render(<MyComponent />); // Or your page component
+          const results = await axe(container);
+          expect(results).toHaveNoViolations();
+        });
+        ```
+
+    *   **Manual Auditing**: Automated tests can only catch a portion of accessibility issues. Before a feature is considered complete, it must be manually audited:
+        *   **Keyboard Navigation**: Unplug your mouse and ensure all interactive elements are reachable and operable using only the keyboard (`Tab`, `Shift+Tab`, `Enter`, `Space`, `Escape`). The focus indicator must be clearly visible.
+        *   **Screen Reader Testing**: Test the component's functionality with a screen reader (e.g., NVDA, VoiceOver, or JAWS) to ensure content is announced logically and all controls are understandable.
+        *   **Browser Auditing Tools**: Use browser extensions like **Axe DevTools** and the built-in **Lighthouse** accessibility audit to check for issues. The goal is to achieve a Lighthouse accessibility score of 100.
 
 #### **End-to-End Tests (Playwright):**
 *   **Location**: E2E tests are located in the `frontend/e2e/` directory.

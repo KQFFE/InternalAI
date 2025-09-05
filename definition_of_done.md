@@ -56,7 +56,18 @@
 - **Functionality**: Feature works as specified in user story/requirements
 - **Cross-browser**: Tested in major browsers (Chrome, Firefox, Safari, Edge)
 - **Responsive**: Works on mobile, tablet, and desktop viewports
-- **Accessibility**: Follows basic accessibility guidelines
+- **Accessibility (WCAG 2.1 AA)**: All new features must be fully compliant with WCAG 2.1 AA standards.
+  - **Perceivable**:
+    - All non-text content has text alternatives (WCAG 1.1.1).
+    - Color is not used as the sole means of conveying information (WCAG 1.4.1).
+    - Color contrast meets a 4.5:1 ratio for normal text and 3:1 for large text (WCAG 1.4.3).
+  - **Operable**:
+    - All functionality is available from a keyboard (WCAG 2.1.1).
+    - Keyboard focus is always visible and logical (WCAG 2.4.7, 2.4.3).
+  - **Understandable**:
+    - Content is readable and understandable, with proper heading structure and labels (WCAG 1.3.1, 4.1.2).
+  - **Robust**:
+    - The feature is compatible with current and future user agents, including assistive technologies.
 - **Performance**: No significant performance regressions
 
 ### ✅ **Ready for Production**

@@ -411,7 +411,71 @@
     padding: 16px;
     margin-top: 24px;
     font-size: 15px;
-    color: #222;
+    color: #222; /* gray-800 */
+}
+
+/* Category Details (Accordion) */
+.coi-consent-banner__category-container {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.coi-consent-banner__category-container:last-of-type {
+    border-bottom: none;
+}
+
+.coi-consent-banner__category-controls {
+    display: flex;
+    align-items: flex-start; /* Top-aligns the button and description */
+    gap: 1.5rem; /* Space between button and description */
+}
+
+.coi-consent-banner__category-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    flex-shrink: 0; /* Prevent the button from shrinking */
+    width: 150px; /* Give it a fixed width to create a column */
+}
+
+.coi-consent-banner__category-name h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827; /* gray-800 */
+    margin: 0;
+}
+
+.ci-arrow {
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid #374151; /* gray-700 */
+    border-bottom: 2px solid #374151;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+}
+
+.ci-arrow.open {
+    transform: rotate(-135deg);
+    margin-top: -6px; /* Adjust position when open */
+}
+
+.coi-consent-banner__category-description {
+    font-size: 0.875rem; /* 14px */
+    color: #4b5563; /* gray-600 */
+    line-height: 1.5;
+    flex-grow: 1; /* Allow description to take remaining space */
+}
+
+.coi-consent-banner__description-container {
+    padding-left: calc(150px + 1.5rem); /* Align with the description text */
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: #4b5563;
 }
 
 /* Cookie declaration */

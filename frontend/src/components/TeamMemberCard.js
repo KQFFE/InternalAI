@@ -11,7 +11,6 @@ function TeamMemberCard({ member }) {
     // Use an `article` for semantic HTML, as this is a self-contained piece of content.
     <article
       className="team-member-card bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105"
-      // `aria-labelledby` connects the card to the member's name for screen readers.
       aria-labelledby={`member-name-${member.id || member.name}`}
     >
       <img

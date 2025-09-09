@@ -11,6 +11,7 @@ from flask import Flask, render_template, jsonify, send_from_directory, request,
 from flask_cors import CORS
 from functools import wraps
 from werkzeug.utils import secure_filename
+from flask_swagger_ui import get_swaggerui_blueprint
 
 def get_flask_version():
     """Get Flask version using the recommended method"""
@@ -59,6 +60,35 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ================================
+# SWAGGER CONFIGURATION
+# ================================
+
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI
+API_URL = '/api/swagger.json'  # URL for exposing the swagger spec
+
+# Create swagger blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "InternalAI API Documentation"
+    }
+)
+
+# Register swagger blueprint
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+# Add this route to serve the swagger.json file (add with your other routes)
+@app.route('/api/swagger.json')
+def swagger_spec():
+    """Serve the OpenAPI specification"""
+    try:
+        with open(os.path.join(os.path.dirname(__file__), 'swagger.json'), 'r') as f:
+            return jsonify(json.load(f))
+    except FileNotFoundError:
+        return jsonify({'error': 'Swagger specification not found'}), 404
 
 # ================================
 # STARTUP LOGGING (Flask 3.x compatible)
@@ -316,8 +346,13 @@ def get_team_api():
                 'timestamp': datetime.now().isoformat()
             }), 404
         
-        # Filter active members
-        active_members = [member for member in team_data if member.get('active', False)]
+        # Filter active members and add index
+        active_members = []
+        for index, member in enumerate(team_data):
+            if member.get('active', False):
+                member_with_index = member.copy()
+                member_with_index['index'] = index  # Add original array index
+                active_members.append(member_with_index)
         
         return jsonify({
             'status': 'success',
@@ -613,10 +648,18 @@ def get_admin_team():
     """Get all team members for admin (including inactive)"""
     try:
         team_data = get_team_data()
+        
+        # Add index to each member
+        members_with_index = []
+        for index, member in enumerate(team_data):
+            member_with_index = member.copy()
+            member_with_index['index'] = index
+            members_with_index.append(member_with_index)
+        
         return jsonify({
             'success': True,
-            'members': team_data,
-            'count': len(team_data),
+            'members': members_with_index,
+            'count': len(members_with_index),
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
@@ -744,10 +787,14 @@ def update_team_member(index):
         # Save changes
         if save_team_data(team_data):
             logger.info(f"Updated team member: {original_name} -> {member['name']}")
+            # Add index to returned member
+            member_with_index = member.copy()
+            member_with_index['index'] = index
+            
             return jsonify({
                 'success': True, 
                 'message': f'Successfully updated {member["name"]}',
-                'member': member
+                'member': member_with_index
             })
         else:
             return jsonify({'error': 'Failed to save changes'}), 500
@@ -772,10 +819,14 @@ def toggle_team_member(index):
         
         if save_team_data(team_data):
             logger.info(f"Toggled team member status: {member['name']} -> {status}")
+            # Add index to returned member
+            member_with_index = member.copy()
+            member_with_index['index'] = index
+            
             return jsonify({
                 'success': True, 
                 'message': f'Successfully {status} {member["name"]}',
-                'member': member
+                'member': member_with_index
             })
         else:
             return jsonify({'error': 'Failed to save changes'}), 500

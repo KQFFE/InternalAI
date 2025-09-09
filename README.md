@@ -21,7 +21,9 @@ InternalAI/
 ├── 📁 backend/                      # Flask API server
 │   ├── 📁 tests/                    # Backend tests
 │   │   └── test_app.py              # Tests for Flask routes and API endpoints
+│   │   └── test_admin_crud.py       # Tests for admin CRUD endpoints
 │   ├── app.py                       # Main Flask application
+│   ├── swagger.json                 # OpenAPI specification for Swagger UI
 │   └── requirements.txt             # Python dependencies
 ├── 📁 frontend/                     # React web application
 │   ├── 📁 public/
@@ -73,6 +75,19 @@ InternalAI/
 - `frontend/public/` - Static assets (images, data files, icons)
 - `frontend/e2e/` - Automated browser tests using Playwright
 - `.github/workflows/` - Automated deployment and testing pipelines
+
+### 📚 API Documentation
+
+**Interactive API Documentation:**
+- **Swagger UI**: Available at `http://localhost:5000/api/docs` when running the development server
+- **Production**: `https://qss-ai-webapp.azurewebsites.net/api/docs`
+- **OpenAPI Spec**: Complete API specification in `backend/swagger.json`
+
+The Swagger interface provides:
+- Interactive testing of all API endpoints
+- Request/response schemas and examples
+- Authentication requirements for admin endpoints
+- Complete documentation for team management CRUD operations
 
 ---
 

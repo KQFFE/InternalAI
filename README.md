@@ -234,7 +234,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
  # InternalAI Development Aliases
 
 # Backend setup and run
-alias backend="cd ~/projects/InternalAI && source .venv/bin/activate && cd backend && python3 app.py"
+alias backend="cd ~/projects/InternalAI && source .venv/bin/activate && export FLASK_APP=run.py && python3 run.py"
 
 # Frontend setup and run  
 alias frontend="cd ~/projects/InternalAI/frontend && npm start"

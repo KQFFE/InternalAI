@@ -197,9 +197,20 @@ jobs:
         mkdir -p deployment
     
         # Copy Flask app files
-        cp backend/app.py deployment/
+        cp run.py deployment/
         cp backend/requirements.txt deployment/
     
+        # Copy entire backend directory for database functionality
+        cp -r backend deployment/
+
+        # Remove test files and cache from deployment 
+        rm -rf deployment/backend/tests/
+        rm -rf deployment/backend/__pycache__/
+        rm -rf deployment/backend/.pytest_cache/
+        rm -rf deployment/backend/htmlcov/
+        rm -f deployment/backend/.coverage
+        rm -f deployment/backend/coverage.xml 
+
         # Copy ONLY web.config (no startup.sh to avoid conflicts)
         if [ -f "web.config" ]; then
           cp web.config deployment/

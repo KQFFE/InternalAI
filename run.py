@@ -13,6 +13,44 @@ if project_root not in sys.path:
 # The app factory is called to create the app instance.
 app = create_app()
 
+# ================================
+# AUTO-INITIALIZE DATABASE ON STARTUP
+# ================================
+def initialize_database():
+    """Initialize database tables and run migrations on startup"""
+    try:
+        from backend.database import db
+        
+        with app.app_context():
+            # Check if we're using a database (not SQLite file for local dev)
+            database_url = os.environ.get('DATABASE_URL')
+            
+            if database_url and ('mssql' in database_url or 'postgresql' in database_url):
+                print("🗄️  Initializing production database...")
+                
+                # Create tables if they don't exist
+                db.create_all()
+                
+                # Check if we need to seed data
+                from backend.models import TeamMember
+                if TeamMember.query.count() == 0:
+                    print("📊 Seeding database with initial data...")
+                    from backend.seed import seed_database
+                    seed_database()
+                
+                print("✅ Database initialization complete")
+            else:
+                print("🛠️  Using local SQLite database - skipping auto-migration")
+                
+    except Exception as e:
+        print(f"❌ Database initialization failed: {e}")
+        # Don't crash the app - log error and continue
+        import traceback
+        traceback.print_exc()
+
+# Initialize database on app startup
+initialize_database()
+
 # This file allows the 'flask' command to discover the app automatically.
 # You can now run commands like 'flask db upgrade' from the project root
 # without setting FLASK_APP, as Flask will find the 'app' object here.

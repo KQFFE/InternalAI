@@ -43,11 +43,6 @@
           "active": {
             "type": "boolean",
             "example": true
-          },
-          "index": {
-            "type": "integer",
-            "example": 0,
-            "description": "Array index for CRUD operations"
           }
         }
       },
@@ -207,6 +202,44 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/team/{member_id}": {
+      "get": {
+        "summary": "Get a specific team member by ID",
+        "tags": [ "Team" ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "description": "The database ID of the team member to retrieve.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of team member data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/TeamMember" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Team member not found.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
       }
@@ -428,20 +461,20 @@
         }
       }
     },
-    "/admin/team/{index}/update": {
+    "/admin/team/{id}/update": {
       "post": {
         "summary": "Update team member",
         "tags": [ "Admin" ],
         "security": [ { "AdminAuth": [] } ],
         "parameters": [
           {
-            "name": "index",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer"
             },
-            "description": "Team member index"
+            "description": "Team member database ID"
           }
         ],
         "requestBody": {
@@ -519,20 +552,20 @@
         }
       }
     },
-    "/admin/team/{index}": {
+    "/admin/team/{id}": {
       "delete": {
         "summary": "Delete team member",
         "tags": [ "Admin" ],
         "security": [ { "AdminAuth": [] } ],
         "parameters": [
           {
-            "name": "index",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer"
             },
-            "description": "Team member index"
+            "description": "Team member database ID"
           }
         ],
         "responses": {
@@ -569,20 +602,20 @@
         }
       }
     },
-    "/admin/team/{index}/toggle": {
+    "/admin/team/{id}/toggle": {
       "post": {
         "summary": "Toggle team member active status",
         "tags": [ "Admin" ],
         "security": [ { "AdminAuth": [] } ],
         "parameters": [
           {
-            "name": "index",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer"
             },
-            "description": "Team member index"
+            "description": "Team member database ID"
           }
         ],
         "responses": {

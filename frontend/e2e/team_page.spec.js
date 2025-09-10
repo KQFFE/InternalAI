@@ -4,6 +4,7 @@ import { dismissCookieBanner } from './utils/helpers.js';
 // Mock team data to use in tests, covering various cases.
 const mockTeamData = [
   {
+    id: 1,
     name: 'John Doe',
     role: 'Senior Developer',
     profilePicture: '/img/john-doe.jpg',
@@ -11,6 +12,7 @@ const mockTeamData = [
     active: true,
   },
   {
+    id: 2,
     name: 'Jane Smith',
     role: 'Product Manager',
     profilePicture: '/img/jane-smith.jpg',
@@ -18,6 +20,7 @@ const mockTeamData = [
     active: true,
   },
   {
+    id: 3,
     name: 'Bob Wilson',
     role: 'Designer',
     profilePicture: '/img/bob-wilson.jpg',
@@ -35,11 +38,18 @@ test.describe('Team Page', () => {
   test.describe('when team data is successfully loaded', () => {
     test.beforeEach(async ({ page }) => {
       // 1. Intercept and mock the API call to return our mock data
-      await page.route('/team.json', async (route) => {
+      await page.route('/api/team', async (route) => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(mockTeamData),
+          body: JSON.stringify({
+            status: 'success',
+            message: 'Team data retrieved successfully',
+            data: activeMembers,
+            count: activeMembers.length,
+            total_members: mockTeamData.length,
+            timestamp: new Date().toISOString()
+          }),
         });
       });
       // 2. Navigate to the team page directly.
@@ -132,7 +142,8 @@ test.describe('Team Page', () => {
       await expect(profilePics.first()).toBeVisible();
 
       // The src should have been replaced with the placeholder image URL from the component's onError handler
-      await expect(profilePics.first()).toHaveAttribute('src', 'https://placehold.co/400x400/cccccc/333333?text=Profile');
+      // Note: The component now uses a local fallback image.
+      await expect(profilePics.first()).toHaveAttribute('src', '/img/fallback-knowit.png');
     });
   });
 
@@ -140,8 +151,9 @@ test.describe('Team Page', () => {
   test.describe('when handling API or data states', () => {
     // Test to simulate a loading state and check if the loading message is displayed.
     test('should handle loading state appropriately', async ({ page }) => {
-      // Mock the API to never resolve, keeping the component in a loading state
-      await page.route('/team.json', async (route) => {
+      // Mock the API to never resolve, keeping the component in a loading state.
+      // Note: This needs to be set before page.goto()
+      await page.route('/api/team', async (route) => {
         return new Promise(() => {});
       });
 
@@ -155,7 +167,7 @@ test.describe('Team Page', () => {
     // Test to simulate an error state from the API and verify the error message is displayed.
     test('should handle error state appropriately', async ({ page }) => {
       // Mock the API to simulate a server error
-      await page.route('/team.json', (route) => {
+      await page.route('/api/team', (route) => {
         route.fulfill({
           status: 500,
           body: 'Internal Server Error',
@@ -173,20 +185,28 @@ test.describe('Team Page', () => {
     // Test to verify the "No members" message is shown when the mock data is empty.
     test('should display "No active team members" message if data is empty', async ({ page }) => {
       // Mock the API to return an empty array, which results in no active members.
-      await page.route('/team.json', (route) => {
+      await page.route('/api/team', (route) => {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify([]),
+          body: JSON.stringify({
+            status: 'success',
+            message: 'Team data retrieved successfully',
+            data: [], // Return an empty data array
+            count: 0,
+            total_members: 0,
+            timestamp: new Date().toISOString()
+          }),
         });
       });
 
       // Navigate to trigger the new route
       await page.goto('/team');
       await dismissCookieBanner(page);
-      // Since specific locators failed, we'll check the entire page body for the empty state message.
-      // This confirms the message is displayed, regardless of its specific container.
-      await expect(page.locator('body')).toContainText(/No team members to display/i);
+      // Use the specific data-testid for the "no members" message for a more robust assertion.
+      const noMembersMessage = page.getByTestId('no-members-message');
+      await expect(noMembersMessage).toBeVisible();
+      await expect(noMembersMessage).toHaveText('No active team members to display at the moment.');
     });
   });
 });

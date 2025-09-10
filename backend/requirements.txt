@@ -1,48 +1,42 @@
 # backend/requirements.txt
-# Backend dependencies for InternalAI Flask API
-# Updated to match your current working versions
-
-# Core Flask dependencies (your current versions)
-blinker==1.9.0
-click==8.2.1
-colorama==0.4.6
-Flask==3.1.1
-flask-cors==6.0.1
-itsdangerous==2.2.0
-Jinja2==3.1.6
-MarkupSafe==3.0.2
-Werkzeug==3.1.3
-
-# Testing dependencies (your current versions)
-iniconfig==2.1.0
-packaging==25.0
-pluggy==1.6.0
-pytest==8.4.1
-pytest-cov==4.1.0
-pytest-mock==3.12.0
-pytest-flask==1.3.0
-Pygments==2.19.2
-coverage==7.3.2
-
-# Security scanning
-bandit>=1.8.6
-
-# Production deployment additions
-gunicorn==21.2.0
+# =================================================================
+# Core Application Dependencies
+# =================================================================
+Flask==3.0.3
+Flask-Cors==6.0.1
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.7
 python-dotenv==1.0.0
+Flask-Swagger-UI==5.21.0
 
-# Future: Database support (uncomment when needed)
-# SQLAlchemy==2.0.23
-# Flask-SQLAlchemy==3.1.1
-# psycopg2-binary==2.9.9  # PostgreSQL
-# PyMySQL==1.1.0          # MySQL
+# =================================================================
+# Database Drivers
+# =================================================================
+# SQLite is built-in.
+# For production, we need a driver for Azure SQL or PostgreSQL.
+pyodbc>=5.1.0  # For Azure SQL (MSSQL)
 
-# Future: Authentication (uncomment when needed)
-# Flask-Login==0.6.3
-# Flask-JWT-Extended==4.6.0
-# passlib==1.7.4
+# =================================================================
+# Production Web Server
+# =================================================================
+gunicorn==22.0.0
 
-# API documentation
-Flask-RESTX==1.3.0
-flask-marshmallow==0.15.0
-flask-swagger-ui
+# =================================================================
+# Development & Testing Dependencies
+# =================================================================
+bandit>=1.8.6        # Security scanning
+pytest==8.4.1        # Core testing framework
+pytest-cov==5.0.0    # Code coverage
+pytest-mock==3.14.0  # Mocking utilities
+pytest-flask==1.3.0  # Flask testing utilities
+
+# =================================================================
+# Future Dependencies (Examples)
+# =================================================================
+# psycopg2-binary==2.9.9    # PostgreSQL driver
+# PyMySQL==1.1.0            # MySQL driver
+# Flask-Login==0.6.3        # User session management
+# Flask-JWT-Extended==4.6.0 # API authentication
+# passlib==1.7.4            # Password hashing
+# Flask-RESTX==1.3.0        # API documentation
+# flask-marshmallow==0.15.0 # Object serialization

@@ -1,4 +1,4 @@
-﻿﻿#!/bin/bash
+﻿﻿﻿﻿#!/bin/bash
 # run_all_tests.sh - InternalAI Test Suite (Matching CI/CD Pipeline)
 # Runs the same commands as GitHub Actions pipeline
 # Usage: ./run_all_tests.sh
@@ -47,7 +47,7 @@ cd frontend
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
     echo "📦 Installing frontend dependencies..."
-    npm install
+    npm ci
     if [ $? -ne 0 ]; then
         echo -e "${RED}❌ Failed to install frontend dependencies${NC}"
         exit 1
@@ -194,8 +194,8 @@ source "$VENV_BIN_PATH/activate"
 
 # Install/update dependencies using the specific pip from the venv
 echo "📦 Installing/updating backend dependencies..."
-pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt > /dev/null 2>&1
+python -m pip install --upgrade pip --quiet
+pip install -r requirements.txt --quiet
 echo -e "${GREEN}✅ Backend dependencies installed.${NC}"
 
 # Run tests using the specific pytest from the venv

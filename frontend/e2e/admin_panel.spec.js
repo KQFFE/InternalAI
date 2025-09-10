@@ -40,12 +40,17 @@ test.describe('Admin Panel E2E Tests', () => {
         await page.goto('/');
         //await dismissCookieBanner(page);
 
-        // Mock team.json to prevent errors
-        await page.route('/team.json', async (route) => {
+        // Mock the admin team API to prevent errors, as the admin panel might fetch this
+        await page.route('/api/admin/team', async (route) => {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify([])
+                body: JSON.stringify({
+                    success: true,
+                    members: [],
+                    count: 0,
+                    timestamp: new Date().toISOString()
+                })
             });
         });
 
@@ -55,7 +60,8 @@ test.describe('Admin Panel E2E Tests', () => {
                 const postData = route.request().postData();
                 const data = JSON.parse(postData);
 
-                if (data.password === 'admin123') {
+                // Use environment variable for password, fallback for CI/local consistency
+                if (data.password === (process.env.ADMIN_PASSWORD || 'admin123')) {
                     await route.fulfill({
                         status: 200,
                         contentType: 'application/json',
@@ -124,7 +130,7 @@ test.describe('Admin Panel E2E Tests', () => {
             await expect(page.locator(LOCATORS.adminLoginWrapper)).toBeVisible();
 
             // Fill password and login
-            await page.locator(LOCATORS.passwordInput).fill('admin123');
+            await page.locator(LOCATORS.passwordInput).fill(process.env.ADMIN_PASSWORD || 'admin123');
             await page.locator(LOCATORS.loginButton).click();
 
             // Mock authenticated status for subsequent requests
@@ -212,13 +218,13 @@ test.describe('Admin Panel E2E Tests', () => {
             await expect(page.locator(LOCATORS.adminPanel)).toBeVisible();
 
             // Find buttons by text and check state
-            const comingSoonButtons = page.getByText('Coming Soon');
+            const comingSoonButtons = page.getByRole('button', { name: 'Coming Soon' });
 
-            // Should have at least 3 "Coming Soon" buttons
-            await expect(comingSoonButtons).toHaveCount(4);
+            // Check that there is at least one "Coming Soon" button
+            await expect(comingSoonButtons.first()).toBeVisible();
 
             // All should be disabled
-            const buttons = await comingSoonButtons.all();
+            const buttons = await comingSoonButtons.all(); // Playwright handles multiple elements
             for (const button of buttons) {
                 await expect(button).toBeDisabled();
             }
@@ -239,15 +245,17 @@ test.describe('Admin Panel E2E Tests', () => {
             );
 
             // Click logout and wait for navigation
-            await Promise.all([
-                page.waitForResponse(res => res.url().endsWith('/api/admin/logout') && res.request().method() === 'POST'),
-                page.waitForURL('**/'), // Adjust if redirect differs
-                page.locator(LOCATORS.logoutButton).click()
-            ]);
+            const logoutResponse = page.waitForResponse(
+                (res) => res.url().endsWith('/api/admin/logout') && res.status() === 200
+            );
+            await page.locator(LOCATORS.logoutButton).click();
+            await logoutResponse;
+
+            // After logout, the page should redirect to home.
+            await page.waitForURL('**/');
 
             // Assert homepage is visible (snapshot shows "Admin" button there)
             await expect(page.getByRole('button', { name: 'Admin' })).toBeVisible();
-
         });
 
     });

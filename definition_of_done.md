@@ -47,7 +47,7 @@
 ### ✅ **Update When Required**
 - **README.md**: Project setup, new features, or architectural changes
 - **API Documentation**: New endpoints or changed request/response formats
-- **Team Data**: Updated `team.json` for team changes
+- **Seeding Data**: Update `backend/data/team.json` for changes to initial seed data
 - **Dependencies**: Document new tools or libraries in README
 
 ## Acceptance Criteria

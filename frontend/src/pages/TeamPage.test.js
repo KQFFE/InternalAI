@@ -1,36 +1,88 @@
-import React from 'react';
 // Use the custom render from test-utils which includes Router and other providers
-import { render, screen } from '../test-utils';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import TeamPage from './TeamPage';
 
-// Mock the TeamList component to isolate TeamPage tests
-jest.mock('../components/TeamList', () => {
-    // The mock returns a simple div with a test ID so we can find it.
-    // The props it receives (like activeOnly) can also be tested.
-    return function MockedTeamList({ activeOnly }) {
-        return <div data-testid="mock-team-list" data-active-only={String(activeOnly)}></div>;
-    };
-});
-
 describe('TeamPage Component', () => {
-    test('renders the main heading and subtitle', () => {
-        render(<TeamPage />);
-        
-        // Check for the H1 title
-        expect(screen.getByRole('heading', { name: /our amazing team/i, level: 1 })).toBeInTheDocument();
-        
-        // Check for the subtitle paragraph
-        expect(screen.getByText(/meet the dedicated professionals/i)).toBeInTheDocument();
+  // Mock successful fetch response before each test
+  beforeEach(() => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        status: 'success',
+        data: [
+          { id: 1, name: 'John Doe', role: 'Developer', active: true },
+          { id: 2, name: 'Jane Smith', role: 'Designer', active: true },
+        ],
+      }),
     });
+  });
 
-    test('renders the TeamList component and passes activeOnly prop', () => {
-        render(<TeamPage />);
+  afterEach(() => {
+    // Restore the original fetch implementation
+    global.fetch.mockRestore();
+  });
 
-        // Check that our mocked TeamList is rendered
-        const mockedTeamList = screen.getByTestId('mock-team-list');
-        expect(mockedTeamList).toBeInTheDocument();
+  test('renders the main heading and subtitle after data fetching', async () => {
+    render(<TeamPage />);
 
-        // Check that the activeOnly prop was passed correctly
-        expect(mockedTeamList).toHaveAttribute('data-active-only', 'true');
-    });
+    // Use findBy* queries to wait for the element to appear after the loading state.
+    const heading = await screen.findByRole('heading', { name: /our amazing team/i });
+    expect(heading).toBeInTheDocument();
+
+    const subtitle = await screen.findByText(/meet the dedicated professionals/i);
+    expect(subtitle).toBeInTheDocument();
+  });
+
+  test('displays team members after successful fetch', async () => {
+    render(<TeamPage />);
+
+    // Wait for a team member's name to appear
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Developer')).toBeInTheDocument();
+  });
+
+  test('displays a loading message initially', () => {
+    // Temporarily override the mock to not resolve immediately
+    global.fetch.mockImplementationOnce(() => new Promise(() => {}));
+    render(<TeamPage />);
+    expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
+  });
+
+  test('displays an error message if the fetch fails', async () => {
+    // Temporarily mock console.error to silence the expected error message
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Mock a failed fetch
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: false,
+        status: 500,
+      })
+    );
+
+    render(<TeamPage />);
+
+    // Wait for the error message to appear
+    expect(await screen.findByTestId('error-message')).toBeInTheDocument();
+    expect(screen.getByText(/error: network response was not ok/i)).toBeInTheDocument();
+
+    // Restore the original console.error implementation
+    consoleErrorSpy.mockRestore();
+  });
+
+  test('displays a message when no team members are returned', async () => {
+    // Mock a successful fetch with an empty data array
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ status: 'success', data: [] }),
+      })
+    );
+
+    render(<TeamPage />);
+
+    // Wait for the "no members" message
+    expect(await screen.findByTestId('no-members-message')).toBeInTheDocument();
+  });
 });

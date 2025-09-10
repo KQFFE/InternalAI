@@ -1,20 +1,33 @@
 import pytest
 import sys
 import os
-import json
 from unittest.mock import patch, mock_open
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app import app, get_team_data, get_flask_version, log_startup_info
+from backend.app import create_app, get_flask_version, log_startup_info
+from backend.database import db
+from backend.models import TeamMember
 
 @pytest.fixture
-def client():
-    """Create a test client for the Flask app."""
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+def app():
+    """Create and configure a new app instance for each test."""
+    # Use an in-memory SQLite database for testing
+    app = create_app({
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+        'WTF_CSRF_ENABLED': False
+    })
+    with app.app_context():
+        db.create_all()
+        yield app
+        db.drop_all()
+
+@pytest.fixture
+def client(app):
+    """A test client for the app."""
+    return app.test_client()
 
 @pytest.fixture
 def sample_team_data():
@@ -25,14 +38,16 @@ def sample_team_data():
             "role": "Tester",
             "profilePicture": "/img/test-person-one.jpg",
             "linkedinUrl": "https://www.linkedin.com/in/test-person-one/",
-            "active": True
+            "active": True,
+            "id": 1
         },
         {
             "name": "Test Person Two",
             "role": "Manager",
             "profilePicture": "/img/test-person-two.jpg", 
             "linkedinUrl": "https://www.linkedin.com/in/test-person-two/",
-            "active": False
+            "active": False,
+            "id": 2
         }
     ]
 
@@ -53,11 +68,12 @@ def test_health_endpoint(client):
     assert data['components']['backend'] == 'Flask'
     assert data['components']['frontend'] == 'React'
 
-def test_home_route(client):
+def test_home_route(client, app):
     """Test the home route serves without error."""
-    response = client.get('/')
-    # Should either return 200 or 404/500 (if templates not found in CI)
-    assert response.status_code in [200, 404, 500]
+    with patch('backend.app.render_template') as mock_render:
+        mock_render.return_value = "OK"
+        response = client.get('/')
+        assert response.status_code == 200
 
 def test_api_info_endpoint(client):
     """Test the API info endpoint with comprehensive checks."""
@@ -79,10 +95,11 @@ def test_api_info_endpoint(client):
     assert isinstance(data['features'], list)
     assert len(data['features']) > 0
 
-@patch('app.get_team_data')
-def test_team_endpoint_success(mock_get_team_data, client, sample_team_data):
+@patch('backend.app.TeamMember.query')
+def test_team_endpoint_success(mock_query, client, sample_team_data):
     """Test the team endpoint with successful data retrieval."""
-    mock_get_team_data.return_value = sample_team_data
+    # Mock the database return value
+    mock_query.all.return_value = [TeamMember(**d) for d in sample_team_data]
     
     response = client.get('/api/team')
     assert response.status_code == 200
@@ -102,10 +119,10 @@ def test_team_endpoint_success(mock_get_team_data, client, sample_team_data):
     assert active_member['name'] == 'Test Person One'
     assert active_member['active'] == True
 
-@patch('app.get_team_data')
-def test_team_endpoint_no_data(mock_get_team_data, client):
+@patch('backend.app.TeamMember.query')
+def test_team_endpoint_no_data(mock_query, client):
     """Test team endpoint when no team data is available."""
-    mock_get_team_data.return_value = []
+    mock_query.all.return_value = []
     
     response = client.get('/api/team')
     assert response.status_code == 404
@@ -115,8 +132,8 @@ def test_team_endpoint_no_data(mock_get_team_data, client):
     assert data['data'] == []
     assert data['count'] == 0
 
-@patch('app.get_team_data')
-def test_team_endpoint_no_active_members(mock_get_team_data, client):
+@patch('backend.app.TeamMember.query')
+def test_team_endpoint_no_active_members(mock_query, client):
     """Test team endpoint when no active members exist."""
     inactive_data = [
         {
@@ -127,23 +144,22 @@ def test_team_endpoint_no_active_members(mock_get_team_data, client):
             "active": False
         }
     ]
-    mock_get_team_data.return_value = inactive_data
+    mock_query.all.return_value = [TeamMember(**d) for d in inactive_data]
     
     response = client.get('/api/team')
-    assert response.status_code == 200  # Fixed: Should be 200, not 404
+    assert response.status_code == 200
     data = response.get_json()
-    assert data['status'] == 'success'  # Fixed: Should be success, not error
+    assert data['status'] == 'success'
     assert data['count'] == 0  # No active members
     assert data['total_members'] == 1  # But 1 total member exists
 
-@patch('app.get_team_data', side_effect=Exception("Database error"))
-def test_team_endpoint_error(mock_get_team_data, client):
+@patch('backend.app.TeamMember.query')
+def test_team_endpoint_error(mock_query, client):
     """Test team endpoint error handling."""
+    mock_query.all.side_effect = Exception("Database error")
     response = client.get('/api/team')
     assert response.status_code == 500
     data = response.get_json()
-    assert 'error' in data
-    # Fixed: Check the actual response structure
     assert data.get('message') == 'Failed to load team data'
     assert data.get('error') == 'Database error'
 
@@ -158,34 +174,12 @@ def test_get_flask_version():
     assert isinstance(version, str)
     assert len(version) > 0
 
-@patch('app.logger')
-def test_log_startup_info(mock_logger):
+@patch('backend.app.logger')
+def test_log_startup_info(mock_logger, app):
     """Test startup logging function."""
-    log_startup_info()
+    log_startup_info(app)
     # Check that logger.info was called multiple times
     assert mock_logger.info.call_count >= 5
-
-@patch('builtins.open', mock_open(read_data='[{"name": "Test", "role": "Tester", "active": true}]'))
-@patch('os.path.exists', return_value=True)
-def test_get_team_data_success(mock_exists):
-    """Test successful team data loading."""
-    data = get_team_data()
-    assert isinstance(data, list)
-    assert len(data) == 1
-    assert data[0]['name'] == 'Test'
-
-@patch('os.path.exists', return_value=False)
-def test_get_team_data_file_not_found(mock_exists):
-    """Test team data loading when file not found."""
-    data = get_team_data()
-    assert data == []
-
-@patch('builtins.open', side_effect=Exception("File read error"))
-@patch('os.path.exists', return_value=True)
-def test_get_team_data_read_error(mock_exists, mock_open_error):
-    """Test team data loading with file read error."""
-    data = get_team_data()
-    assert data == []
 
 # ================================
 # ROUTE PARAMETER TESTS
@@ -194,16 +188,17 @@ def test_get_team_data_read_error(mock_exists, mock_open_error):
 def test_serve_react_routes_with_extension(client):
     """Test serving static files with extensions."""
     # Test that files with extensions are handled
-    response = client.get('/favicon.ico')
-    # Should attempt to serve the file (may be 404 if file doesn't exist, 500 if path issues)
-    assert response.status_code in [200, 404, 500]
+    with patch('backend.app.send_from_directory') as mock_send:
+        mock_send.return_value = "OK"
+        response = client.get('/favicon.ico')
+        assert response.status_code == 200
 
-def test_serve_react_routes_spa_route(client):
+def test_serve_react_routes_spa_route(client, app):
     """Test serving SPA routes without extensions."""
-    # Test React router path
-    response = client.get('/some-spa-route')
-    # Should serve the React app (may be 404/500 if template not found in CI)
-    assert response.status_code in [200, 404, 500]
+    with patch('backend.app.render_template') as mock_render:
+        mock_render.return_value = "OK"
+        response = client.get('/some-spa-route')
+        assert response.status_code == 200
 
 def test_debug_static_endpoint(client):
     """Test debug static files endpoint."""
@@ -229,18 +224,16 @@ def test_method_not_allowed(client):
     """Test method not allowed error."""
     # Try POST on GET-only endpoint
     response = client.post('/api/health')
-    # Fixed: Accept 500 as valid (some Flask configurations return 500 instead of 405)
-    assert response.status_code in [405, 500]
+    assert response.status_code == 405
 
 # ================================
 # CONFIGURATION TESTS
 # ================================
 
-def test_app_configuration():
+def test_app_configuration(app):
     """Test Flask app configuration."""
     assert app.config['SECRET_KEY'] is not None
     assert 'DEBUG' in app.config
-    # Fixed: Check actual static folder path (could be absolute path)
     assert app.static_folder is not None
     assert 'static' in app.static_folder
     assert app.template_folder is not None
@@ -256,10 +249,10 @@ def test_cors_headers(client):
     # CORS headers should be present (added by flask-cors)
     assert response.status_code == 200
 
-@patch('app.get_team_data')
-def test_api_chain_calls(mock_get_team_data, client, sample_team_data):
+@patch('backend.app.TeamMember.query')
+def test_api_chain_calls(mock_query, client, sample_team_data):
     """Test chaining multiple API calls."""
-    mock_get_team_data.return_value = sample_team_data
+    mock_query.all.return_value = [TeamMember(**d) for d in sample_team_data]
     
     # Call health endpoint
     response = client.get('/api/health')
@@ -279,8 +272,8 @@ def test_api_chain_calls(mock_get_team_data, client, sample_team_data):
 # PERFORMANCE TESTS
 # ================================
 
-@patch('app.get_team_data')
-def test_large_team_data(mock_get_team_data, client):
+@patch('backend.app.TeamMember.query')
+def test_large_team_data(mock_query, client):
     """Test handling of large team datasets."""
     # Create a large dataset
     large_dataset = []
@@ -293,7 +286,7 @@ def test_large_team_data(mock_get_team_data, client):
             "active": i % 3 == 0  # Every third person is active
         })
     
-    mock_get_team_data.return_value = large_dataset
+    mock_query.all.return_value = [TeamMember(**d) for d in large_dataset]
     
     response = client.get('/api/team')
     assert response.status_code == 200
@@ -303,35 +296,6 @@ def test_large_team_data(mock_get_team_data, client):
     assert data['total_members'] == 100
     active_count = len([p for p in large_dataset if p['active']])
     assert data['count'] == active_count
-
-# ================================
-# STATIC FILES TESTS (Fixed)
-# ================================
-
-def test_static_file_handling(client):
-    """Test static file serving."""
-    # Test that static files are properly configured
-    response = client.get('/static/test.txt')
-    # Fixed: Accept 500 as valid (template/static path issues in test environment)
-    assert response.status_code in [404, 500]
-
-def test_image_serving(client):
-    """Test image file serving from static directory."""
-    # Test image serving
-    response = client.get('/static/img/test-image.jpg')
-    # Fixed: Accept 500 as valid (template/static path issues in test environment)
-    assert response.status_code in [404, 500]
-
-# ================================
-# TEMPLATE HANDLING TESTS (Fixed)
-# ================================
-
-def test_template_rendering(client):
-    """Test template rendering capability."""
-    # Test that templates are properly configured
-    response = client.get('/')
-    # Fixed: Accept 500 as valid (template not found in test environment)
-    assert response.status_code in [200, 404, 500]
 
 # ================================
 # CONTENT TYPE TESTS

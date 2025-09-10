@@ -18,7 +18,9 @@ InternalAI/
 │   └── 📁 workflows/
 │       ├── azure-deployment.yml     # CI/CD pipeline for Azure deployment
 │       └── pr-issue-sync.yml        # Syncs PR body with linked issue
-├── 📁 backend/                      # Flask API server
+├── 📁 backend/                      # Flask API server and database logic
+│   ├── 📁 data/                     # Data files for seeding
+│   │   └── team.json             # Initial team data for database seeding
 │   ├── 📁 tests/                    # Backend tests
 │   │   └── test_app.py              # Tests for Flask routes and API endpoints
 │   │   └── test_admin_crud.py       # Tests for admin CRUD endpoints
@@ -26,9 +28,8 @@ InternalAI/
 │   ├── swagger.json                 # OpenAPI specification for Swagger UI
 │   └── requirements.txt             # Python dependencies
 ├── 📁 frontend/                     # React web application
-│   ├── 📁 public/
-│   │   ├── index.html              # HTML template
-│   │   ├── team.json               # Team member data
+│   ├── 📁 public/                   # Static assets served by the browser
+│   │   ├── index.html              # Main HTML template for the React app
 │   │   ├── favicon.ico             # Website icon
 │   │   └── 📁 img/                 # Team member photos
 │   ├── 📁 src/                     # React source code - organized for scalability
@@ -45,7 +46,6 @@ InternalAI/
 │   │   ├── 📁 utils/                # E2E test helpers
 │   │   │   └── helpers.js
 │   │   ├── home_page.spec.js
-│   │   ├── team_data.spec.js
 │   │   └── team_page.spec.js
 │   ├── package.json                # Frontend dependencies & scripts
 │   └── package-lock.json           # Dependency lock file
@@ -62,10 +62,10 @@ InternalAI/
 - **Frontend (React)**: Modern web interface built with React, served statically
 - **Backend (Flask)**: Python API server that serves the React app and provides API endpoints
 - **Deployment**: Single Azure App Service that serves both frontend and backend
-- **Database**: Currently file-based (team.json), ready for database integration
+- **Database**: SQLite for local development, with `Flask-SQLAlchemy` and `Flask-Migrate` for easy transition to production databases like PostgreSQL or Azure SQL
 
 **Development Workflow:**
-1. **Frontend**: React development server (`npm start`) on port 3000
+1. **Frontend**: React development server (`npm start`) on port 3000.
 2. **Backend**: Flask development server (`python app.py`) on port 5000  
 3. **Production**: Combined deployment where Flask serves React build files
 
@@ -73,7 +73,7 @@ InternalAI/
 - `backend/` - All server-side Python code and configurations
 - `frontend/src/` - React components, pages, and client-side logic
 - `frontend/public/` - Static assets (images, data files, icons)
-- `frontend/e2e/` - Automated browser tests using Playwright
+- `backend/data/` - Contains `team.json`, used only for initial database seeding
 - `.github/workflows/` - Automated deployment and testing pipelines
 
 ### 📚 API Documentation
@@ -127,42 +127,28 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```powershell
     .\venv\Scripts\Activate.ps1
     ```
-    You should see `(venv)` at the beginning of your prompt.
-4.  **Navigate to the `backend` folder:**
+    You should see `(venv)` at the beginning of your prompt. This command should be run from the project root.
+4.  **Run the Flask server (from the project root):**
     ```powershell
-    cd backend
-    ```
-5.  **Set the Flask application environment variable:**
-    ```powershell
-    $env:FLASK_APP = "app.py"
-    ```
-6.  **Run the Flask server:**
-    ```powershell
-    flask run
+    python run.py
     ```
     You should see messages like `Running on http://127.0.0.1:5000`. Keep this window open and running. To stop the server, press `Ctrl + C`.
 
-    OR you can run
-    ```powershell
-    python app.py
-    ```
-    Both commands start Flask's built-in development server but the second version is simpler to set up and easier for testing and debugging.
-
-7.  **Open your second PowerShell window.**
-8.  **Navigate to your project root:**
+5.  **Open your second PowerShell window.**
+6.  **Navigate to your project root:**
     ```powershell
     cd C:\Path\To\Your\InternalAI\Project
     ```
     *(**Important:** Again, replace this with your actual project path.)*
-9.  **Navigate to the `frontend` folder:**
+7.  **Navigate to the `frontend` folder:**
     ```powershell
     cd frontend
     ```
-10. **Install frontend dependencies (if not already done):**
+8.  **Install frontend dependencies (if not already done):**
     ```powershell
     npm install
     ```
-11. **Start the React development server:**
+9.  **Start the React development server:**
     ```powershell
     npm start
     ```
@@ -177,58 +163,39 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     * Once the new VS Code window opens and connects to your WSL distro, go to "File" > "Open Folder..." and navigate to your project within the WSL file system (e.g., `/home/your_username/projects/InternalAI/`).
 2.  **Open your first WSL terminal (for Backend):**
     * In VS Code, open a new terminal: `Ctrl+`` (backtick) or go to "Terminal" > "New Terminal".
-3.  **Navigate to the `backend` folder:**
+3.  **Activate your Python virtual environment (from the project root):**
     ```bash
-    cd backend
+    source .venv/bin/activate
     ```
-4.  **Activate your Python virtual environment:**
+    * You should see `(venv)` at the beginning of your terminal prompt, like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI$`
+4.  **Run the Flask server (from the project root):**
     ```bash
-    source ../.venv/bin/activate
-    ```
-    * You should see `(venv)` at the beginning of your terminal prompt, like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/backend$`
-5.  **Tell Flask where your app is:**
-    ```bash
-    export FLASK_APP=app.py
-    ```
-6.  **Run the Flask server:**
-    ```bash
-    flask run
+    python3.11 run.py
     ```
     * You should see messages like `Running on http://127.0.0.1:5000`. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
 
-    OR you can run
-    ```bash
-    python app.py
-    ```
-    Both commands start Flask's built-in development server but the second version is simpler to set up and easier for testing and debugging.
-
-7.  **Open your second WSL terminal (for Frontend):**
+5.  **Open your second WSL terminal (for Frontend):**
     * In VS Code, click the `+` icon next to your current terminal tab to open a new one, or go to "Terminal" > "New Terminal".
-8.  **Navigate to the `frontend` folder:**
+6.  **Navigate to the `frontend` folder:**
     ```bash
     cd frontend
     ```
     * Your prompt should look like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend$`
-9.  **Ensure correct Node.js version (if using NVM):**
+7.  **Ensure correct Node.js version (if using NVM):**
     ```bash
     nvm use --lts
     ```
-    * This makes sure your terminal is using the recommended Node.js version.
-10. **Ensure Python command works (one-time setup):**
-    ```bash
-    sudo apt install python-is-python3
-    ```
-    * This ensures `python` command points to `python3` (required for Flask)
-11. **Install frontend dependencies (if not already done):**
+    * This ensures your terminal is using the recommended Node.js version.
+8.  **Install frontend dependencies (if not already done):**
     ```bash
     npm install
     ```
-12. **Start the React development server:**
+9.  **Start the React development server:**
     ```bash
     npm start
     ```
     * This will usually automatically open your web browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
-13. **Alternative super lazy start using aliases**
+10. **Alternative super lazy start using aliases**
     In your environment there is .bashrc file that you find on the same level as your username. Open it in any editor (or write: nano ~/.bashrc) and add these lines at the bottom of the file, save and close:
  ```   
  # InternalAI Development Aliases
@@ -236,7 +203,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
 # Backend setup and run
 alias backend="cd ~/projects/InternalAI && source .venv/bin/activate && export FLASK_APP=run.py && python3 run.py"
 
-# Frontend setup and run  
+# Frontend setup and run
 alias frontend="cd ~/projects/InternalAI/frontend && npm start"
 
 # Project navigation
@@ -343,27 +310,18 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
         source .venv/bin/activate
         ```
     * You must see `(venv)` at the start of your terminal prompt before proceeding.
-
-2.  **Install testing dependencies (first-time only):**
-    ```bash
-    pip install pytest pytest-cov pytest-flask
-    ```
-
-3.  **Navigate to the `backend` directory:**
-    ```bash
-    cd backend
-    ```
-
-4.  **Run the tests:**
+    
+2.  **Run the tests (from the project root):**
+    All `pytest` commands **must** be run from the project's root directory (e.g., `d:/Dev/InternalAI/`), not from within the `backend` folder.
     ```bash
     # Run all backend tests
-    pytest
+    pytest backend/
     
     # Run with verbose output to see each test name as it runs
-    pytest -v
+    pytest --verbose backend/
     
     # Run with a coverage report (matches the CI/CD pipeline)
-    pytest --cov=. --cov-report=xml --cov-report=term-missing
+    pytest --cov=backend --cov-report=xml --cov-report=term-missing backend/
     ```
     * `pytest` automatically finds and runs any file in the directory named `test_*.py`.
 
@@ -461,11 +419,16 @@ To ensure our E2E tests are reliable, fast, and easy to maintain, please follow 
     Your tests should be independent of the backend. Use `page.route()` to intercept network requests and provide mock data. This makes tests faster and more reliable.
 
     ```javascript
-    // Example from team_page.spec.js
-    await page.route('/team.json', async (route) => {
+    // Example from team_page.spec.js for mocking the team API
+    await page.route('/api/team', async (route) => {
       await route.fulfill({
         status: 200,
-        body: JSON.stringify(mockTeamData),
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'success',
+          data: mockActiveMembers,
+          count: mockActiveMembers.length,
+        }),
       });
     });
     ```
@@ -605,15 +568,16 @@ This is the traditional way to set up your development environment directly on W
 
 7.  **Install Project Dependencies (Backend):**
     "Dependencies" are other Python tools or libraries that our InternalAI project needs to run.
-    1.  **Install Them:** While your `(venv)` is active and you're in your `InternalAI` project folder (e.g., `(venv) PS D:\Projects\InternalAI>`), type:
+    1.  **Install Them:** While your `(venv)` is active and you're in the `InternalAI` project root, type:
         ```powershell
         pip install -r backend/requirements.txt
         ```
-        This command reads the `requirements.txt` file in the `backend` folder which lists all the necessary tools, and `pip` (Python's package installer) will download and install them into your `venv`. This might take a few moments.
+        This command reads the `backend/requirements.txt` file and installs all the necessary Python tools and libraries into your virtual environment. This might take a few moments.
+
 
 8.  **Install Frontend Dependencies (React):**
     The frontend also has its own set of dependencies. You'll need Node.js and npm installed globally for this.
-    1.  **Download Node.js:** Go to the official Node.js website: [https://nodejs.org/en/download](https://nodejs.org/en/download)
+    1.  **Download Node.js:** Go to the official Node.js website: https://nodejs.org/en/download
     2.  **Choose the LTS Version:** Download the "LTS" (Long Term Support) Windows Installer.
     3.  **Run the Installer:** Double-click the downloaded `.msi` file. You can usually click "Next" through most options, accepting the defaults. This will install Node.js and npm.
     4.  **Verify Node.js and npm:** Open a **NEW** PowerShell window. Type:
@@ -640,6 +604,38 @@ This is the traditional way to set up your development environment directly on W
         npx playwright install
         ```
     This command downloads the browsers (like Chromium, Firefox, and WebKit) that Playwright uses to simulate user interactions.
+
+10. **Set Up the Database:**
+    The backend now uses a database. These commands will create the database file and populate it with the initial team data.
+    1.  **(Step 1) Create Database Tables:** While your `(venv)` is active in the **project root**, run the database migration command. This is the most critical step and **must be done first**.
+        ```powershell
+        flask db upgrade
+        ```
+        This creates the `instance/app.db` (SQLite) file and sets up the necessary tables.
+    2.  **(Step 2) Add Initial Data:** After the tables are created, run the seed command.
+        ```powershell
+        flask seed-db
+        ```
+        This reads the data from `backend/data/team.json` and inserts it into your new database.
+
+    > **Important:** You must run `flask db upgrade` before `flask seed-db`. You only need to run these commands during the initial setup or when the database model changes. You do **not** need to run them every time you start the server.
+
+11. **Set the `FLASK_APP` Environment Variable:**
+    The `flask` command needs to know where your application is located. If you encounter an error like `Could not import 'app'`, you need to set this variable.
+
+    *   **Recommended Method:** Point it to the `run.py` file in the project root. This file is specifically designed to be the entry point for Flask commands.
+        ```powershell
+        $env:FLASK_APP = "run.py"
+        ```
+    *   **Alternative Method:** Point it directly to the app factory function.
+        ```powershell
+        $env:FLASK_APP = "backend.app:create_app"
+        ```
+
+    > **Tip:** You only need to set this once per terminal session. After setting it, you can re-run the `flask db upgrade` command.
+
+
+You are now ready to run the servers! See Running the Servers Locally.
 
 ### 3.2 Setup for Windows (with WSL)
 
@@ -684,14 +680,10 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         sudo apt install python3.11 python3.11-venv python3.11-dev -y
         ```
-    6.  **Make 'python' command point to Python 3.11:**
-        ```bash
-        sudo apt install python-is-python3 -y
-        ```
     7.  **Verify Python 3.11 installation:**
         ```bash
-        python3.11 --version
-        python --version
+        python3.11 --version # This should show 3.11.x
+        python --version     # This should also show 3.11.x if python-is-python3 is installed
         ```
         * You should see `Python 3.11.x` for both commands.
 
@@ -755,6 +747,8 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         python3.11 -m venv .venv
         ```
+        > **Note:** We use `python3.11` here to be explicit, as Linux systems (like WSL) can have multiple Python versions installed. This ensures the virtual environment uses the correct version for the project.
+
         * This creates a hidden folder named `.venv` inside your project.
     3.  **Activate the virtual environment:**
         ```bash
@@ -765,8 +759,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         pip install -r backend/requirements.txt
         ```
-        * This reads the `requirements.txt` file in the `backend` folder and installs all necessary Python libraries. This might take a few moments.
-
+        This command reads the `backend/requirements.txt` file and installs all the necessary Python libraries into your virtual environment. This might take a few moments.
  6.  **Configure Environment Variables:**
     Environment variables store sensitive settings like passwords that shouldn't be shared in code.
     1.  **Copy the example file:**
@@ -787,7 +780,6 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```
         * In nano: Use `Ctrl+X` to exit, press `Y` to save, then `Enter` to confirm.
     3.  **The `.env` file stays on your computer** and is never uploaded to GitHub.
-
 7.  **Set Up Frontend Dependencies:**
     * Your React frontend also needs its own tools.
     1.  **Go to the `frontend` folder:**
@@ -800,6 +792,46 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         npm install
         ```
         * This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
+
+8.  **Install Playwright Browsers:**
+    The project uses Playwright for end-to-end testing, which requires specific browser binaries to run.
+    1.  **Install the browsers:** While still in the `frontend` directory, run:
+        ```bash
+        npx playwright install
+        ```
+    This command downloads the browsers (like Chromium, Firefox, and WebKit) that Playwright uses to simulate user interactions.
+
+9.  **Set Up the Database:**
+    The backend now uses a database. These commands will create the database file and populate it with the initial team data.
+    1.  **(Step 1) Create Database Tables:** While your `(venv)` is active in the **project root**, run the database migration command. This is the most critical step and **must be done first**.
+        ```bash
+        flask db upgrade
+        ```
+        This creates the `instance/app.db` (SQLite) file and sets up the necessary tables.
+    2.  **(Step 2) Add Initial Data:** After the tables are created, run the seed command.
+        ```bash
+        flask seed-db
+        ```
+        This reads the data from `backend/data/team.json` and inserts it into your new database.
+
+    > **Important:** You must run `flask db upgrade` before `flask seed-db`. You only need to run these commands during the initial setup or when the database model changes. You do **not** need to run them every time you start the server.
+
+10. **Set the `FLASK_APP` Environment Variable:**
+    The `flask` command needs to know where your application is located. If you encounter an error like `Could not import 'app'`, you need to set this variable.
+
+    *   **Recommended Method:** Point it to the `run.py` file in the project root. This file is specifically designed to be the entry point for Flask commands.
+        ```bash
+        export FLASK_APP=run.py
+        ```
+    *   **Alternative Method:** Point it directly to the app factory function.
+        ```bash
+        export FLASK_APP="backend.app:create_app"
+        ```
+
+    > **Tip:** You only need to set this once per terminal session. After setting it, you can re-run the `flask db upgrade` command.
+
+You are now ready to run the servers! See Running the Servers Locally.
+
 ---
 
 ## 4. Making Changes & Contributing (Your First Steps with Git)
@@ -990,6 +1022,21 @@ ModuleNotFoundError: No module named 'requests'
 
 **Remember:** This workflow keeps everyone's changes organized and prevents conflicts. It might seem like extra steps at first, but it makes collaboration much smoother!
 
+### 🗄️ Making Database Changes (Alembic Migrations)
+
+When you change the database structure (e.g., add a column to `backend/models.py`), you must create a migration script.
+
+1.  **Make your changes** in `backend/models.py`.
+
+2.  **Generate a new migration script:**
+    ```bash
+    # Make sure your venv is active and you are in the project root
+    flask db migrate -m "A short description of your change"
+    ```
+    *   **Example:** `flask db migrate -m "add_phone_number_to_users"`
+    *   This creates a new file in `backend/migrations/versions/`.
+
+3.  **Commit the new migration file** along with your other changes. Your teammates will run `flask db upgrade` to apply it to their local databases.
 ---
 
 ## 5. Creating a New Release Tag
@@ -1041,7 +1088,7 @@ This project uses [Semantic Versioning](https://semver.org/) with the pattern `M
 
 **Project-Specific Examples:**
 - `v0.1.0` - Initial MVP with basic functionality
-- `v0.2.0` - Added team management features  
+- `v0.2.0` - Migrated team management to a database and API
 - `v0.2.1` - Fixed team page loading bug
 - `v1.0.0` - First production-ready release
 - `v1.1.0` - Added user authentication
@@ -1762,7 +1809,7 @@ When asking for help, run these commands and share the output:
 
 **Environment Check:**
 ```bash
-# System info
+# System info (use python3.11 for WSL if python is not aliased)
 python --version
 node --version
 npm --version

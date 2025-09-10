@@ -46,6 +46,7 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 30px;
   justify-content: center;
+  align-items: stretch;
 }
 
 .team-member-card {
@@ -58,7 +59,6 @@
   align-items: center;
   text-align: center;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  height: 400px;
 }
 
 .team-member-card:hover {
@@ -75,17 +75,36 @@
   border: 3px solid var(--accent-color);
 }
 
+.member-text-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;
+  justify-content: flex-start;
+}
+
+.name-role-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 .member-name {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: auto; /* Pushes all subsequent content to the bottom */
+  margin-bottom: 0.5rem;
+  height: 90px;
+  line-height: 1.2;
 }
 
 .member-role {
   font-size: 1em;
   color: var(--text-primary);
-  margin-bottom: 15px;
+  margin-top: 0;
 }
 
 .member-linkedin-link {
@@ -96,6 +115,7 @@
   text-decoration: none;
   font-weight: 500;
   transition: background-color 0.3s;
+  margin-top: auto;
 }
 
 .member-linkedin-link:hover {
@@ -112,10 +132,9 @@
 }
 
 .error-message {
-  color: #f87171; /* Red-400 for errors */
+  color: #f87171;
 }
 
-/* Responsive adjustments for team page content */
 @media (max-width: 767px) {
   .team-page-container {
     padding: 2rem 1rem;

@@ -3,6 +3,10 @@ import App from './App';
 import userEvent from '@testing-library/user-event';
 import * as AuthContext from './context/AuthContext';
 
+// Helper to create a standard mock fetch response
+const createMockResponse = (body) => {
+  return Promise.resolve({ ok: true, json: () => Promise.resolve(body) });
+};
 
 // Mock the fetch calls that our contexts will make.
 // This allows us to test the integration without making real network requests.
@@ -10,14 +14,9 @@ beforeEach(() => {
   // Use jest.spyOn for consistency and reliable restoration.
   jest.spyOn(global, 'fetch').mockImplementation((url) => {
     const urlString = url.toString();
-    if (urlString.endsWith('/api/admin/status')) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ isAuthenticated: false }) });
-    }
-    if (urlString.endsWith('/team.json')) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
-    }
-    // A default mock for any other unhandled fetch calls
-    return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    if (urlString.endsWith('/api/admin/status')) return createMockResponse({ isAuthenticated: false });
+    if (urlString.endsWith('/api/team')) return createMockResponse({ status: 'success', data: [{ id: 1, name: 'Mock Member', role: 'Tester', active: true }] });
+    return createMockResponse({}); // Default mock for any other unhandled fetch calls
   });
 });
 

@@ -2,73 +2,71 @@
 import pytest
 import sys
 import os
-import json
 from unittest.mock import patch, mock_open
 from io import BytesIO
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app import app
+from backend.app import create_app
+from backend.database import db
+from backend.models import TeamMember
 
 
 class TestAdminCRUDEndpoints:
     """Test suite for admin CRUD API endpoints (Issue #155)"""
     
     @pytest.fixture
-    def client(self):
-        """Create test client"""
-        app.config['TESTING'] = True
-        with app.test_client() as client:
-            yield client
-    
+    def app(self):
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+        app = create_app({
+            'TESTING': True,
+            'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+            'WTF_CSRF_ENABLED': False,
+            'ADMIN_PASSWORD': 'test_password'
+        })
+
+        with app.app_context():
+            db.create_all()
+            yield app
+            db.drop_all()
+
     @pytest.fixture
-    def admin_session(self, client):
-        """Create authenticated admin session"""
-        with patch.dict(os.environ, {'ADMIN_PASSWORD': 'test_password'}):
-            # Login as admin
-            client.post('/api/admin/login', 
-                json={'password': 'test_password'},
-                content_type='application/json'
-            )
-            yield client
-    
+    def client(self, app):
+        """A test client for the app."""
+        return app.test_client()
+
     @pytest.fixture
-    def sample_team_data(self):
-        """Sample team data for testing"""
-        return [
-            {
-                "name": "John Doe",
-                "role": "Developer",
-                "profilePicture": "/img/john-doe.jpg",
-                "linkedinUrl": "https://linkedin.com/in/johndoe",
-                "active": True
-            },
-            {
-                "name": "Jane Smith",
-                "role": "Designer",
-                "profilePicture": "/img/jane-smith.jpg", 
-                "linkedinUrl": "https://linkedin.com/in/janesmith",
-                "active": False
-            }
-        ]
+    def admin_session(self, client, app):
+        """An authenticated admin session."""
+        client.post('/api/admin/login', json={'password': 'test_password'})
+        return client
+
+    @pytest.fixture
+    def init_database(self, app):
+        """Pre-populate the database with sample data."""
+        with app.app_context():
+            member1 = TeamMember(id=1, name="John Doe", role="Developer", linkedinUrl="http://linkedin/johndoe", active=True)
+            member2 = TeamMember(id=2, name="Jane Smith", role="Designer", linkedinUrl="http://linkedin/janesmith", active=False)
+            db.session.add_all([member1, member2])
+            db.session.commit()
+            # Eagerly load the objects to prevent DetachedInstanceError
+            yield db.session.query(TeamMember).all()
 
     # ================================
     # GET /api/admin/team TESTS
     # ================================
     
-    @patch('app.get_team_data')
-    def test_get_admin_team_success(self, mock_get_team_data, admin_session, sample_team_data):
+    def test_get_admin_team_success(self, admin_session, init_database):
         """Test GET /api/admin/team - successful retrieval"""
-        mock_get_team_data.return_value = sample_team_data
-        
         response = admin_session.get('/api/admin/team')
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
         assert 'members' in data
-        assert len(data['members']) == 2
+        assert len(data['members']) == 2 # Should return all members (active and inactive)
         assert data['count'] == 2
         assert 'timestamp' in data
     
@@ -76,47 +74,43 @@ class TestAdminCRUDEndpoints:
         """Test GET /api/admin/team - unauthorized access"""
         response = client.get('/api/admin/team')
         assert response.status_code == 401
-    
-    @patch('app.get_team_data', side_effect=Exception("File error"))
-    def test_get_admin_team_error(self, mock_get_team_data, admin_session):
+
+    @patch('backend.app.TeamMember.query')
+    def test_get_admin_team_error(self, mock_query, admin_session):
         """Test GET /api/admin/team - error handling"""
+        mock_query.all.side_effect = Exception("Database connection failed")
         response = admin_session.get('/api/admin/team')
         assert response.status_code == 500
         data = response.get_json()
         assert 'error' in data
+        assert data['error'] == 'Failed to load team data'
 
     # ================================
     # POST /api/admin/team/add TESTS
     # ================================
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_add_team_member_success(self, mock_save, mock_get, admin_session, sample_team_data):
+    def test_add_team_member_success(self, admin_session, app):
         """Test POST /api/admin/team/add - successful addition"""
-        mock_get.return_value = sample_team_data
-        mock_save.return_value = True
-        
         new_member_data = {
             'name': 'Bob Wilson',
             'role': 'Manager',
             'linkedinUrl': 'https://linkedin.com/in/bobwilson',
             'active': 'true'
         }
-        
         response = admin_session.post('/api/admin/team/add', data=new_member_data)
         
-        assert response.status_code == 200
+        assert response.status_code == 201
         data = response.get_json()
         assert data['success'] is True
         assert 'Successfully added Bob Wilson' in data['message']
         assert 'member' in data
         assert data['member']['name'] == 'Bob Wilson'
+
+        with app.app_context():
+            assert TeamMember.query.count() == 1
     
-    @patch('app.get_team_data')
-    def test_add_team_member_duplicate_name(self, mock_get, admin_session, sample_team_data):
+    def test_add_team_member_duplicate_name(self, admin_session, init_database):
         """Test POST /api/admin/team/add - duplicate name"""
-        mock_get.return_value = sample_team_data
-        
         duplicate_data = {
             'name': 'John Doe',  # Already exists
             'role': 'Tester',
@@ -126,10 +120,10 @@ class TestAdminCRUDEndpoints:
         
         response = admin_session.post('/api/admin/team/add', data=duplicate_data)
         
-        assert response.status_code == 400
+        assert response.status_code == 409
         data = response.get_json()
-        assert 'already exists' in data['error']
-    
+        assert 'already exists' in data['message']
+
     def test_add_team_member_missing_fields(self, admin_session):
         """Test POST /api/admin/team/add - missing required fields"""
         incomplete_data = {
@@ -141,75 +135,70 @@ class TestAdminCRUDEndpoints:
         
         assert response.status_code == 400
         data = response.get_json()
-        assert 'required' in data['error']
+        assert 'required' in data['message']
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_add_team_member_with_image(self, mock_save, mock_get, admin_session, sample_team_data):
+    @patch('backend.app.secure_filename', return_value='test-image.jpg')
+    def test_add_team_member_with_image(self, mock_secure_filename, admin_session):
         """Test POST /api/admin/team/add - with image upload"""
-        mock_get.return_value = sample_team_data
-        mock_save.return_value = True
-        
         # Create mock image file
         image_data = BytesIO(b'fake image data')
         image_data.name = 'test.jpg'
         
         with patch('builtins.open', mock_open()):
             with patch('os.path.join', return_value='/fake/path/test.jpg'):
-                with patch('app.generate_safe_filename', return_value='test-image.jpg'):
-                    data = {
+                with patch('backend.app.generate_safe_filename', return_value='test-image.jpg'):
+                    form_data = {
                         'name': 'Test User',
                         'role': 'Developer',
                         'linkedinUrl': 'https://linkedin.com/in/testuser',
-                        'active': 'true'
+                        'active': 'true',
+                        'image': (image_data, 'test.jpg')
                     }
                     
                     response = admin_session.post('/api/admin/team/add', 
-                        data=data,
+                        data=form_data,
                         content_type='multipart/form-data'
                     )
                     
-                    assert response.status_code == 200
+                    assert response.status_code == 201
+                    data = response.get_json()
+                    assert data['member']['profilePicture'] == '/img/test-image.jpg'
 
     # ================================
-    # POST /api/admin/team/<int:index>/update TESTS
+    # POST /api/admin/team/<int:id>/update TESTS
     # ================================
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_update_team_member_success(self, mock_save, mock_get, admin_session, sample_team_data):
-        """Test POST /api/admin/team/<int:index>/update - successful update"""
-        mock_get.return_value = sample_team_data.copy()
-        mock_save.return_value = True
-        
+    def test_update_team_member_success(self, admin_session, init_database, app):
+        """Test POST /api/admin/team/<int:id>/update - successful update"""
+        member_to_update = init_database[0]
         update_data = {
             'name': 'John Doe Updated',
             'role': 'Senior Developer',
             'linkedinUrl': 'https://linkedin.com/in/johndoe-updated',
             'active': 'false'
         }
-        
-        response = admin_session.post('/api/admin/team/0/update', data=update_data)
+        response = admin_session.post(f'/api/admin/team/{member_to_update.id}/update', data=update_data)
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
         assert 'Successfully updated' in data['message']
         assert data['member']['name'] == 'John Doe Updated'
+        assert data['member']['id'] == member_to_update.id
         assert data['member']['active'] is False
+
+        with app.app_context():
+            updated_member = db.session.get(TeamMember, member_to_update.id)
+            assert updated_member.name == 'John Doe Updated'
     
-    @patch('app.get_team_data')
-    def test_update_team_member_not_found(self, mock_get, admin_session, sample_team_data):
-        """Test POST /api/admin/team/<int:index>/update - member not found"""
-        mock_get.return_value = sample_team_data
-        
+    def test_update_team_member_not_found(self, admin_session):
+        """Test POST /api/admin/team/<int:id>/update - member not found"""
         update_data = {
             'name': 'Updated Name',
             'role': 'Updated Role',
             'linkedinUrl': 'https://linkedin.com/in/updated',
             'active': 'true'
         }
-        
         response = admin_session.post('/api/admin/team/999/update', data=update_data)
         
         assert response.status_code == 404
@@ -217,94 +206,79 @@ class TestAdminCRUDEndpoints:
         assert 'not found' in data['error']
 
     # ================================
-    # DELETE /api/admin/team/<int:index> TESTS
+    # DELETE /api/admin/team/<int:id> TESTS
     # ================================
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_delete_team_member_success(self, mock_save, mock_get, admin_session, sample_team_data):
-        """Test DELETE /api/admin/team/<int:index> - successful deletion"""
-        mock_get.return_value = sample_team_data.copy()
-        mock_save.return_value = True
-        
-        response = admin_session.delete('/api/admin/team/0')
+    def test_delete_team_member_success(self, admin_session, init_database, app):
+        """Test DELETE /api/admin/team/<int:id> - successful deletion"""
+        member_to_delete = init_database[0]
+        response = admin_session.delete(f'/api/admin/team/{member_to_delete.id}')
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
         assert 'Successfully deleted' in data['message']
         assert 'John Doe' in data['message']
+
+        with app.app_context():
+            assert db.session.get(TeamMember, member_to_delete.id) is None
+            assert TeamMember.query.count() == 1
     
-    @patch('app.get_team_data')
-    def test_delete_team_member_not_found(self, mock_get, admin_session, sample_team_data):
-        """Test DELETE /api/admin/team/<int:index> - member not found"""
-        mock_get.return_value = sample_team_data
-        
+    def test_delete_team_member_not_found(self, admin_session):
+        """Test DELETE /api/admin/team/<int:id> - member not found"""
         response = admin_session.delete('/api/admin/team/999')
         
         assert response.status_code == 404
         data = response.get_json()
         assert 'not found' in data['error']
-    
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_delete_team_member_save_failure(self, mock_save, mock_get, admin_session, sample_team_data):
-        """Test DELETE /api/admin/team/<int:index> - save failure"""
-        mock_get.return_value = sample_team_data.copy()
-        mock_save.return_value = False
-        
-        response = admin_session.delete('/api/admin/team/0')
-        
+
+    @patch('backend.database.db.session.commit')
+    def test_delete_team_member_db_failure(self, mock_commit, admin_session, init_database):
+        """Test DELETE /api/admin/team/<int:id> - database failure"""
+        mock_commit.side_effect = Exception("DB commit failed")
+        member_to_delete = init_database[0]
+        response = admin_session.delete(f'/api/admin/team/{member_to_delete.id}')
+
         assert response.status_code == 500
         data = response.get_json()
-        assert 'Failed to save' in data['error']
+        assert 'DB commit failed' in str(data['error'])
 
     # ================================
-    # POST /api/admin/team/<int:index>/toggle TESTS
+    # POST /api/admin/team/<int:id>/toggle TESTS
     # ================================
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_toggle_team_member_activate(self, mock_save, mock_get, admin_session, sample_team_data):
-        """Test POST /api/admin/team/<int:index>/toggle - activate member"""
-        mock_get.return_value = sample_team_data.copy()
-        mock_save.return_value = True
+    def test_toggle_team_member_activate(self, admin_session, init_database):
+        """Test POST /api/admin/team/<int:id>/toggle - activate member"""
+        inactive_member = init_database[1] # Jane Smith is inactive
+        assert inactive_member.active is False
         
-        # Toggle inactive member (index 1) to active
-        response = admin_session.post('/api/admin/team/1/toggle')
+        response = admin_session.post(f'/api/admin/team/{inactive_member.id}/toggle')
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
         assert 'activated' in data['message']
         assert 'Jane Smith' in data['message']
+        assert data['member']['id'] == inactive_member.id
         assert data['member']['active'] is True
     
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_toggle_team_member_deactivate(self, mock_save, mock_get, admin_session, sample_team_data):
-        """Test POST /api/admin/team/<int:index>/toggle - deactivate member"""
-        mock_get.return_value = sample_team_data.copy()
-        mock_save.return_value = True
-        
-        # Toggle active member (index 0) to inactive
-        response = admin_session.post('/api/admin/team/0/toggle')
+    def test_toggle_team_member_deactivate(self, admin_session, init_database):
+        """Test POST /api/admin/team/<int:id>/toggle - deactivate member"""
+        active_member = init_database[0] # John Doe is active
+        assert active_member.active is True
+
+        response = admin_session.post(f'/api/admin/team/{active_member.id}/toggle')
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
         assert 'deactivated' in data['message']
         assert 'John Doe' in data['message']
+        assert data['member']['id'] == active_member.id
         assert data['member']['active'] is False
-        # Verify the returned member includes the index
-        assert 'index' in data['member']  
-        assert data['member']['index'] == 0
     
-    @patch('app.get_team_data')
-    def test_toggle_team_member_not_found(self, mock_get, admin_session, sample_team_data):
-        """Test POST /api/admin/team/<int:index>/toggle - member not found"""
-        mock_get.return_value = sample_team_data
-        
+    def test_toggle_team_member_not_found(self, admin_session):
+        """Test POST /api/admin/team/<int:id>/toggle - member not found"""
         response = admin_session.post('/api/admin/team/999/toggle')
         
         assert response.status_code == 404
@@ -320,9 +294,9 @@ class TestAdminCRUDEndpoints:
         endpoints = [
             ('GET', '/api/admin/team'),
             ('POST', '/api/admin/team/add'),
-            ('POST', '/api/admin/team/0/update'),
-            ('DELETE', '/api/admin/team/0'),
-            ('POST', '/api/admin/team/0/toggle')
+            ('POST', '/api/admin/team/1/update'),
+            ('DELETE', '/api/admin/team/1'),
+            ('POST', '/api/admin/team/1/toggle')
         ]
         
         for method, endpoint in endpoints:
@@ -334,33 +308,3 @@ class TestAdminCRUDEndpoints:
                 response = client.delete(endpoint)
             
             assert response.status_code == 401, f"Endpoint {method} {endpoint} should require auth"
-
-    # ================================
-    # DATA VALIDATION TESTS
-    # ================================
-    
-    @patch('app.get_team_data')
-    @patch('app.save_team_data')
-    def test_data_sorting_after_modifications(self, mock_save, mock_get, admin_session):
-        """Test that team data is sorted after modifications"""
-        unsorted_data = [
-            {"name": "Zoe", "role": "Dev", "linkedinUrl": "https://linkedin.com/in/zoe", "active": True},
-            {"name": "Alice", "role": "Designer", "linkedinUrl": "https://linkedin.com/in/alice", "active": True}
-        ]
-        mock_get.return_value = unsorted_data
-        mock_save.return_value = True
-        
-        # Add a new member
-        new_member_data = {
-            'name': 'Bob',
-            'role': 'Manager', 
-            'linkedinUrl': 'https://linkedin.com/in/bob',
-            'active': 'true'
-        }
-        
-        with patch('app.sort_team_data') as mock_sort:
-            mock_sort.return_value = unsorted_data  # Assume sorting function works
-            response = admin_session.post('/api/admin/team/add', data=new_member_data)
-            
-            assert response.status_code == 200
-            mock_sort.assert_called_once()  # Verify sorting was called

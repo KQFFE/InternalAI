@@ -201,6 +201,7 @@ jobs:
         echo "🔍 Checking if run.py exists:"
         ls -la run.py || echo "❌ run.py not found!"
 
+
         # Ensure run.py is in root (it should be already)
         echo "📄 Verifying run.py is in repository root for Azure deployment..."
         ls -la run.py && echo "✅ run.py found in root"
@@ -240,6 +241,20 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: '.'
+        restart: false
+
+    - name: ⏳ Wait for deployment to complete
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+          echo "Waiting for Azure to finish processing deployment..."
+          sleep 60
+
+    - name: 🔄 Restart App Service
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
+        echo "✅ App restarted after full deployment"
+
         
     # ================================
     # STEP 14.5: VERIFY DEPLOYMENT

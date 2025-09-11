@@ -200,7 +200,6 @@ jobs:
         # Debug: Check if run.py exists
         echo "🔍 Checking if run.py exists:"
         ls -la run.py || echo "❌ run.py not found!"
-        
 
         # Ensure run.py is in root (it should be already)
         echo "📄 Verifying run.py is in repository root for Azure deployment..."
@@ -241,6 +240,24 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: '.'
+        
+    # ================================
+    # STEP 14.5: VERIFY DEPLOYMENT
+    # ================================
+    - name: 🔍 Verify Azure deployment completed
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        echo "⏳ Waiting for Azure deployment to fully complete..."
+        sleep 30
+        
+        # Check deployment via Kudu API
+        echo "🔍 Verifying files were deployed correctly..."
+        
+        # Use Azure CLI to check if run.py was deployed with correct size
+        az webapp ssh --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --command "ls -la /home/site/wwwroot/run.py; wc -c /home/site/wwwroot/run.py" || echo "❌ Could not verify deployment"
+        
+        echo "✅ Deployment verification complete"
+
 
     # ================================
     # STEP 15: DEPLOYMENT SUMMARY

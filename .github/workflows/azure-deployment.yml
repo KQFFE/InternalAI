@@ -252,6 +252,14 @@ jobs:
     
         echo "Deployment package contents:"
         find deployment -type f | head -20
+        
+        # Debug: Check run.py in deployment package
+        echo "🔍 Verifying run.py in deployment package:"
+        ls -la deployment/run.py
+        echo "📏 Size: $(wc -c < deployment/run.py) bytes"
+        echo "🔍 First 5 lines of deployment/run.py:"
+        head -5 deployment/run.py
+        
         echo "✅ Deployment package ready"
     
     # ================================

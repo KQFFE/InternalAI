@@ -196,9 +196,16 @@ jobs:
         echo "Creating deployment package..."
         mkdir -p deployment
     
+        # Debug: Check if run.py exists
+        echo "🔍 Checking if run.py exists:"
+        ls -la run.py || echo "❌ run.py not found!"
+        
         # Copy Flask app files
-        cp run.py deployment/
-        cp backend/requirements.txt deployment/
+        echo "📄 Copying run.py to deployment..."
+        cp run.py deployment/ && echo "✅ run.py copied successfully" || echo "❌ Failed to copy run.py"
+        
+        echo "📄 Copying requirements.txt..."
+        cp backend/requirements.txt deployment/ && echo "✅ requirements.txt copied successfully"
     
         # Copy entire backend directory for database functionality
         cp -r backend deployment/

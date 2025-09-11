@@ -199,8 +199,7 @@ jobs:
         # Azure's Oryx will build from the repository root, so files need to be there
         # Debug: Check if run.py exists
         echo "🔍 Checking if run.py exists:"
-        ls -la run.py || echo "❌ run.py not found!"
-
+        ls -la run.py || echo "❌ run.py not found!"      
 
         # Ensure run.py is in root (it should be already)
         echo "📄 Verifying run.py is in repository root for Azure deployment..."
@@ -243,6 +242,7 @@ jobs:
         package: '.'
         restart: false
 
+
     - name: ⏳ Wait for deployment to complete
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
@@ -254,7 +254,6 @@ jobs:
       run: |
         az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
         echo "✅ App restarted after full deployment"
-
         
     # ================================
     # STEP 14.5: VERIFY DEPLOYMENT
@@ -272,7 +271,6 @@ jobs:
         az webapp ssh --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --command "ls -la /home/site/wwwroot/run.py; wc -c /home/site/wwwroot/run.py" || echo "❌ Could not verify deployment"
         
         echo "✅ Deployment verification complete"
-
 
     # ================================
     # STEP 15: DEPLOYMENT SUMMARY

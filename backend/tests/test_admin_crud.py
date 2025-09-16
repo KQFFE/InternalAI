@@ -164,10 +164,75 @@ class TestAdminCRUDEndpoints:
                     data = response.get_json()
                     assert data['member']['profilePicture'] == '/img/test-image.jpg'
 
+    def test_add_team_member_with_invalid_file_type(self, admin_session):
+        """Test POST /api/admin/team/add - with invalid file type"""
+        image_data = BytesIO(b'fake image data')
+        form_data = {
+            'name': 'Test User',
+            'role': 'Developer',
+            'linkedinUrl': 'https://linkedin.com/in/testuser',
+            'active': 'true',
+            'image': (image_data, 'test.txt')
+        }
+        
+        response = admin_session.post('/api/admin/team/add', 
+            data=form_data,
+            content_type='multipart/form-data'
+        )
+        
+        assert response.status_code == 201 # The backend defaults to a fallback image
+        data = response.get_json()
+        assert data['member']['profilePicture'] == '/img/fallback-knowit.png'
+
+    def test_add_team_member_with_image_too_large(self, admin_session, app):
+        """Test POST /api/admin/team/add - with image too large"""
+        app.config['MAX_CONTENT_LENGTH'] = 1 * 1024  # 1 KB
+        image_data = BytesIO(b'a' * 2048) # 2 KB
+        form_data = {
+            'name': 'Test User',
+            'role': 'Developer',
+            'linkedinUrl': 'https://linkedin.com/in/testuser',
+            'active': 'true',
+            'image': (image_data, 'test.jpg')
+        }
+        
+        response = admin_session.post('/api/admin/team/add',
+            data=form_data,
+            content_type='multipart/form-data'
+        )
+        
+        assert response.status_code == 413
+
     # ================================
     # POST /api/admin/team/<int:id>/update TESTS
     # ================================
     
+    def test_update_team_member_with_image(self, admin_session, init_database, app):
+        """Test POST /api/admin/team/<int:id>/update - with image upload"""
+        member_to_update = init_database[0]
+        image_data = BytesIO(b'new fake image data')
+        
+        with patch('builtins.open', mock_open()):
+            with patch('os.path.join', return_value='/fake/path/new-test-image.jpg'):
+                with patch('backend.app.generate_safe_filename', return_value='new-test-image.jpg'):
+                    form_data = {
+                        'name': 'John Doe Updated',
+                        'role': 'Senior Developer',
+                        'linkedinUrl': 'https://linkedin.com/in/johndoe-updated',
+                        'active': 'true',
+                        'image': (image_data, 'new_test.jpg')
+                    }
+                    
+                    response = admin_session.post(f'/api/admin/team/{member_to_update.id}/update',
+                        data=form_data,
+                        content_type='multipart/form-data'
+                    )
+                    
+                    assert response.status_code == 200
+                    data = response.get_json()
+                    assert data['success'] is True
+                    assert data['member']['profilePicture'] == '/img/new-test-image.jpg'
+
     def test_update_team_member_success(self, admin_session, init_database, app):
         """Test POST /api/admin/team/<int:id>/update - successful update"""
         member_to_update = init_database[0]

@@ -158,8 +158,8 @@ def log_startup_info(app_instance):
     logger.info(f"📁 Working directory: {os.getcwd()}")
     logger.info(f"📊 Template folder: {app_instance.template_folder}")
     logger.info(f"📊 Static folder: {app_instance.static_folder}")
-    logger.info(f"⚛️  Frontend: React SPA with routing")
-    logger.info(f"🔗 Backend: Flask REST API")
+    logger.info("⚛️  Frontend: React SPA with routing")
+    logger.info("🔗 Backend: Flask REST API")
     logger.info("="*60)
 
 def register_cli_commands(app):
@@ -270,7 +270,7 @@ def register_routes(app):
                 'path': path,
                 'available_endpoints': [
                     '/api/health',
-                    '/api/info', 
+                    '/api/info',
                     '/api/team',
                     '/api/contact'
                 ]
@@ -375,10 +375,10 @@ def register_routes(app):
         try:
             member = db.session.get(TeamMember, member_id)
             
-            if not member:
+            if not member or not member.active:
                 return jsonify({
                     'status': 'error',
-                    'message': 'Team member not found',
+                    'message': 'Team member not found or is not active',
                     'timestamp': datetime.now().isoformat()
                 }), 404
             
@@ -667,7 +667,8 @@ def register_routes(app):
                 'message': f'Successfully added {name} to the team',
                 'member': new_member.to_dict()
             }), 201
-                
+        except werkzeug.exceptions.RequestEntityTooLarge as e:
+            raise e # Re-raise the exception to be handled by the specific error handler
         except Exception as e:
             db.session.rollback()
             logger.error(f"Failed to add team member: {e}")
@@ -846,6 +847,16 @@ def register_error_handlers(app):
         except Exception as e:
             logger.error(f"Error serving React app for 404: {e}")
             return jsonify({'error': 'Application error'}), 500
+
+    @app.errorhandler(werkzeug.exceptions.RequestEntityTooLarge)
+    def handle_request_entity_too_large(e):
+        """Handle request entity too large errors"""
+        logger.error(f"Request entity too large: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'File size exceeds the limit',
+            'timestamp': datetime.now().isoformat()
+        }), 413
 
     @app.errorhandler(500)
     def internal_error(error):

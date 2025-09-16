@@ -157,35 +157,35 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
 ### 1.2 Running on Windows (with WSL)
 
 1.  **Open VS Code and connect to WSL:**
-    * Launch VS Code.
-    * Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the Command Palette.
-    * Type `WSL` and select **"Remote-WSL: New WSL Window"**.
-    * Once the new VS Code window opens and connects to your WSL distro, go to "File" > "Open Folder..." and navigate to your project within the WSL file system (e.g., `/home/your_username/projects/InternalAI/`).
+    *   Launch VS Code.
+    *   Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the Command Palette.
+    *   Type `WSL` and select **"Remote-WSL: New WSL Window"**.
+    *   Once the new VS Code window opens and connects to your WSL distro, go to "File" > "Open Folder..." and navigate to your project within the WSL file system (e.g., `/home/your_username/projects/InternalAI/`).
 2.  **Open your first WSL terminal (for Backend):**
-    * In VS Code, open a new terminal: `Ctrl+`` (backtick) or go to "Terminal" > "New Terminal".
+    *   In VS Code, open a new terminal: `Ctrl+`` (backtick) or go to "Terminal" > "New Terminal".
 3.  **Activate your Python virtual environment (from the project root):**
     ```bash
     source .venv/bin/activate
     ```
-    * You should see `(venv)` at the beginning of your terminal prompt, like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI$`
+    *   You should see `(venv)` at the beginning of your terminal prompt, like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI
 4.  **Run the Flask server (from the project root):**
     ```bash
     python3.11 run.py
     ```
-    * You should see messages like `Running on http://127.0.0.1:5000`. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
+    *   You should see messages like `Running on http://127.0.0.1:5000`. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
 
 5.  **Open your second WSL terminal (for Frontend):**
-    * In VS Code, click the `+` icon next to your current terminal tab to open a new one, or go to "Terminal" > "New Terminal".
+    *   In VS Code, click the `+` icon next to your current terminal tab to open a new one, or go to "Terminal" > "New Terminal".
 6.  **Navigate to the `frontend` folder:**
     ```bash
     cd frontend
     ```
-    * Your prompt should look like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend$`
+    *   Your prompt should look like: `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend
 7.  **Ensure correct Node.js version (if using NVM):**
     ```bash
     nvm use --lts
     ```
-    * This ensures your terminal is using the recommended Node.js version.
+    *   This ensures your terminal is using the recommended Node.js version.
 8.  **Install frontend dependencies (if not already done):**
     ```bash
     npm install
@@ -194,7 +194,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```bash
     npm start
     ```
-    * This will usually automatically open your web browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
+    *   This will usually automatically open your web browser to `http://localhost:3000` (or another port if 3000 is taken) and show your React application. Keep this terminal tab open and running. To stop the server, press `Ctrl + C`.
 10. **Alternative super lazy start using aliases**
     In your environment there is .bashrc file that you find on the same level as your username. Open it in any editor (or write: nano ~/.bashrc) and add these lines at the bottom of the file, save and close:
  ```   
@@ -253,11 +253,11 @@ You can run tests for the frontend and backend separately.
 All frontend test commands should be run from within the `frontend` directory.
 
 1.  **Navigate to the `frontend` directory:**
-    * **For Windows:**
+    *   **For Windows:**
         ```powershell
         cd C:\Path\To\Your\InternalAI\Project\frontend
         ```
-    * **For Windows (with WSL):**
+    *   **For Windows (with WSL):**
         ```bash
         cd ~/projects/InternalAI/frontend
         ```
@@ -266,13 +266,13 @@ All frontend test commands should be run from within the `frontend` directory.
     ```bash
     npm test
     ```
-    * This command starts Jest in **watch mode**, which intelligently runs tests related to files you've changed.
-    * If you see a message like "No tests found...", just **press `a`** to run all tests.
-    * To run all tests once **without watch mode** (useful for CI/CD):
+    *   This command starts Jest in **watch mode**, which intelligently runs tests related to files you've changed.
+    *   If you see a message like "No tests found...", just **press `a`** to run all tests.
+    *   To run all tests once **without watch mode** (useful for CI/CD):
         ```bash
         npm run test:all
         ```
-    * To generate a **test coverage report**:
+    *   To generate a **test coverage report**:
         ```bash
         npm test -- --coverage --watchAll=false
         ```
@@ -281,15 +281,15 @@ All frontend test commands should be run from within the `frontend` directory.
     ```bash
     npm run test:e2e
     ```
-    * This command runs Playwright tests that **simulate a real user** interacting with your application in a headless browser (a browser without a visible UI). It tests the full application flow from start to finish.
+    *   This command runs Playwright tests that **simulate a real user** interacting with your application in a headless browser (a browser without a visible UI). It tests the full application flow from start to finish.
 
 4.  **Run Code Quality Checks (ESLint):**
     ```bash
     npx eslint src/ --format=compact --max-warnings=0
     ```
-    * This command checks your code for quality issues, potential bugs, and style consistency. It includes the `eslint-plugin-jsx-a11y` plugin to catch common accessibility issues directly in your JSX.
-    * **No output means no errors were found ✅**.
-    * For a more **detailed, human-readable report**, use the `stylish` format:
+    *   This command checks your code for quality issues, potential bugs, and style consistency. It includes the `eslint-plugin-jsx-a11y` plugin to catch common accessibility issues directly in your JSX.
+    *   **No output means no errors were found ✅**.
+    *   For a more **detailed, human-readable report**, use the `stylish` format:
         ```bash
         npx eslint src/ --format=stylish
         ```
@@ -299,17 +299,17 @@ All frontend test commands should be run from within the `frontend` directory.
 Backend tests verify that the Flask API endpoints and server-side logic are working correctly.
 
 1.  **Navigate to the project root and activate the virtual environment:**
-    * **For Windows:**
+    *   **For Windows:**
         ```powershell
         cd C:\Path\To\Your\InternalAI\Project
         .\venv\Scripts\Activate.ps1
         ```
-    * **For Windows (with WSL):**
+    *   **For Windows (with WSL):**
         ```bash
         cd ~/projects/InternalAI
         source .venv/bin/activate
         ```
-    * You must see `(venv)` at the start of your terminal prompt before proceeding.
+    *   You must see `(venv)` at the start of your terminal prompt before proceeding.
     
 2.  **Run the tests (from the project root):**
     All `pytest` commands **must** be run from the project's root directory (e.g., `d:/Dev/InternalAI/`), not from within the `backend` folder.
@@ -323,7 +323,7 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
     # Run with a coverage report (matches the CI/CD pipeline)
     pytest --cov=backend --cov-report=xml --cov-report=term-missing backend/
     ```
-    * `pytest` automatically finds and runs any file in the directory named `test_*.py`.
+    *   `pytest` automatically finds and runs any file in the directory named `test_*.py`.
 
 ### 2.3 Where to Add New Tests
 
@@ -456,9 +456,13 @@ To ensure our E2E tests are reliable, fast, and easy to maintain, please follow 
         ```
         backend/
         ├── tests/
-        │   └── test_app.py     # Tests for Flask routes and API endpoints
-        ├── app.py              # Main Flask application
-        └── requirements.txt    # Python dependencies
+        │   ├── test_admin_auth.py  # Tests for admin authentication
+        │   ├── test_admin_crud.py  # Tests for admin CRUD operations
+        │   ├── test_app.py         # Tests for Flask routes and API endpoints
+        │   ├── test_integration.py # Integration tests for backend components
+        │   └── test_public_api.py  # Tests for public API endpoints
+        ├── app.py                  # Main Flask application
+        └── requirements.txt        # Python dependencies
         ```
     * `pytest` automatically finds files with `test_*.py` pattern within the `backend` directory and its subdirectories.
 
@@ -488,16 +492,16 @@ This is the traditional way to set up your development environment directly on W
 1.  **What is the Command Prompt (PowerShell)?**
     Think of the Command Prompt (or PowerShell on Windows) as a way to type commands directly to your computer instead of clicking on icons. We'll use it to run Python programs and Git commands.
     * **How to Open PowerShell:**
-        * Click the Windows Start button.
-        * Type `powershell` and press Enter. A blue window will appear. This is your terminal.
+        *   Click the Windows Start button.
+        *   Type `powershell` and press Enter. A blue window will appear. This is your terminal.
 
 2.  **Install Python:**
     Python is the programming language this project uses.
     1.  **Download Python:** Go to the official Python website: [https://www.python.org/downloads/](https://www.python.org/downloads/)
     2.  **Choose the Latest Version:** Download the latest "Windows installer" (usually a `.exe` file).
     3.  **Run the Installer:** Double-click the downloaded `.exe` file.
-        * **VERY IMPORTANT:** On the first screen of the installer, make sure to check the box that says **"Add Python.exe to PATH"**. This makes it easy for your computer to find Python.
-        * Then, click "Install Now" and follow the prompts.
+        *   **VERY IMPORTANT:** On the first screen of the installer, make sure to check the box that says **"Add Python.exe to PATH"**. This makes it easy for your computer to find Python.
+        *   Then, click "Install Now" and follow the prompts.
     4.  **Verify Python Installation:** Open a **NEW** PowerShell window (close any old ones first). Type:
         ```powershell
         python --version
@@ -508,7 +512,7 @@ This is the traditional way to set up your development environment directly on W
     Git is a tool that helps us manage changes to our code and collaborate with others. GitHub is a website that uses Git.
     1.  **Download Git:** Go to the official Git website: [https://git-scm.com/download/win](https://git-scm.com/download/win)
     2.  **Run the Installer:** Double-click the downloaded `.exe` file.
-        * You can generally click "Next" through most of the options, accepting the defaults. The default options are usually fine for beginners.
+        *   You can generally click "Next" through most of the options, accepting the defaults. The default options are usually fine for beginners.
     3.  **Verify Git Installation:** Open a **NEW** PowerShell window. Type:
         ```powershell
         git --version
@@ -518,9 +522,9 @@ This is the traditional way to set up your development environment directly on W
 4.  **Get the Project Files (Clone the Repository):**
     "Cloning" means making a copy of the entire project from GitHub to your computer.
     1.  **Choose a Location:** Decide where on your computer you want to store the project. A good place might be a new folder called `Projects` directly on your `C:` or `D:` drive (e.g., `C:\Users\YourUser\Projects` or `D:\Projects`).
-        * In PowerShell, use `cd` to navigate to your chosen drive (e.g., `D:` then `cd D:\`)
-        * Then, `mkdir YourChosenFolderName` (e.g., `mkdir Projects`) and press Enter to create a new folder.
-        * Then `cd YourChosenFolderName` (e.g., `cd Projects`) and press Enter to go inside that folder. Your prompt will show your current location.
+        *   In PowerShell, use `cd` to navigate to your chosen drive (e.g., `D:` then `cd D:\`)
+        *   Then, `mkdir YourChosenFolderName` (e.g., `mkdir Projects`) and press Enter to create a new folder.
+        *   Then `cd YourChosenFolderName` (e.g., `cd Projects`) and press Enter to go inside that folder. Your prompt will show your current location.
     2.  **Clone the Project:** In your PowerShell window, inside your chosen folder (e.g., `PS D:\Projects>`), type this command:
         ```powershell
         git clone https://github.com/KnowitQSS/InternalAI.git
@@ -548,7 +552,7 @@ This is the traditional way to set up your development environment directly on W
         .\venv\Scripts\Activate.ps1
         ```
         You'll know it worked because your PowerShell prompt will change to include `(venv)` at the beginning, like this: `(venv) PS D:\Projects\InternalAI>`.
-        * **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
+        *   **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
 
 6.  **Configure Environment Variables:**
     Environment variables store sensitive settings like passwords that shouldn't be shared in code.
@@ -642,36 +646,36 @@ You are now ready to run the servers! See Running the Servers Locally.
 This method involves setting up a Linux environment within Windows using WSL. This can be more streamlined for some development workflows.
 
 1.  **Install WSL (Windows Subsystem for Linux):**
-    * WSL lets you run a Linux environment directly on Windows, which is great for development.
+    *   WSL lets you run a Linux environment directly on Windows, which is great for development.
     1.  **Open PowerShell as Administrator:**
-        * Click the Windows Start button.
-        * Type `powershell`.
-        * Right-click on "Windows PowerShell" or "PowerShell" in the search results and select "Run as administrator". Confirm if prompted.
+        *   Click the Windows Start button.
+        *   Type `powershell`.
+        *   Right-click on "Windows PowerShell" or "PowerShell" in the search results and select "Run as administrator". Confirm if prompted.
     2.  **Install WSL and Ubuntu:**
-        * In the Administrator PowerShell window, type:
+        *   In the Administrator PowerShell window, type:
             ```powershell
             wsl --install
             ```
-            * This command will install WSL and set up Ubuntu (a popular Linux distribution) as its default. This might take a few minutes.
-            * If it asks you to restart your computer, do so.
+            *   This command will install WSL and set up Ubuntu (a popular Linux distribution) as its default. This might take a few minutes.
+            *   If it asks you to restart your computer, do so.
     3.  **Set up your Linux username and password:**
-        * After restarting, a new Linux terminal window will usually open automatically. It will prompt you to create a username and password for your Linux user. **Remember these!**
+        *   After restarting, a new Linux terminal window will usually open automatically. It will prompt you to create a username and password for your Linux user. **Remember these!**
     4.  **Install VS Code:**
-        * If you don't have it, download and install Visual Studio Code from [https://code.visualstudio.com/](https://code.visualstudio.com/).
+        *   If you don't have it, download and install Visual Studio Code from [https://code.visualstudio.com/](https://code.visualstudio.com/).
     5.  **Install the WSL Extension for VS Code:**
-        * Open VS Code.
-        * Go to the Extensions view (Ctrl+Shift+X).
-        * Search for `WSL` and install the "WSL" extension by Microsoft.
+        *   Open VS Code.
+        *   Go to the Extensions view (Ctrl+Shift+X).
+        *   Search for `WSL` and install the "WSL" extension by Microsoft.
 
 2.  **Set Up Python 3.11 in WSL:**
-    * Your backend uses Python 3.11 (to match the production environment). We'll install this specific version in your WSL environment.
+    *   Your backend uses Python 3.11 (to match the production environment). We'll install this specific version in your WSL environment.
     1.  **Open VS Code and connect to WSL:** (Follow section 1.2, step 1)
     2.  **Open a WSL terminal:** (Follow section 1.2, step 2)
     3.  **Add the Python repository (PPA):** This gives us access to newer Python versions.
         ```bash
         sudo add-apt-repository ppa:deadsnakes/ppa -y
         ```
-        * `sudo` means "run as administrator". You'll be prompted for your Linux password.
+        *   `sudo` means "run as administrator". You'll be prompted for your Linux password.
     4.  **Update your package list:**
         ```bash
         sudo apt update
@@ -685,36 +689,36 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         python3.11 --version # This should show 3.11.x
         python --version     # This should also show 3.11.x if python-is-python3 is installed
         ```
-        * You should see `Python 3.11.x` for both commands.
+        *   You should see `Python 3.11.x` for both commands.
 
 3.  **Install Node.js and npm in WSL:**
-    * Your frontend uses Node.js and npm (Node Package Manager). We'll use `nvm` (Node Version Manager) to install them.
+    *   Your frontend uses Node.js and npm (Node Package Manager). We'll use `nvm` (Node Version Manager) to install them.
     1.  **In your WSL terminal (the same one or a new one):**
     2.  **Install `nvm`:**
         ```bash
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
         ```
-        * After this, **close and then re-open your WSL terminal tab in VS Code** to make sure `nvm` starts correctly.
+        *   After this, **close and then re-open your WSL terminal tab in VS Code** to make sure `nvm` starts correctly.
     3.  **Install a stable Node.js version using `nvm`:**
-        * In the *newly opened* WSL terminal:
-        ```bash
-        nvm install --lts # This installs the latest Long Term Support (LTS) version of Node.js
-        nvm use --lts     # This sets that LTS version as the default for your current shell
-        ```
+        *   In the *newly opened* WSL terminal:
+            ```bash
+            nvm install --lts # This installs the latest Long Term Support (LTS) version of Node.js
+            nvm use --lts     # This sets that LTS version as the default for your current shell
+            ```
     4.  **Verify Node.js and npm installation:**
         ```bash
         node --version
         npm --version
         ```
-        * You should see version numbers for both.
+        *   You should see version numbers for both.
 
 4.  **Get the Project Files into WSL:**
-    * Now we'll get the project code from GitHub into your WSL environment.
+    *   Now we'll get the project code from GitHub into your WSL environment.
     1.  **Navigate to your home directory in WSL:**
         ```bash
         cd ~
         ```
-        * Your prompt should look like `your_username@your_wsl_distro_name:~$`.
+        *   Your prompt should look like `your_username@your_wsl_distro_name:~.
     2.  **Create a dedicated folder for your projects:**
         ```bash
         mkdir -p ~/projects
@@ -723,38 +727,38 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         cd ~/projects
         ```
-        * Your prompt should now be `your_username@your_wsl_distro_name:~/projects$`.
+        *   Your prompt should now be `your_username@your_wsl_distro_name:~/projects$ `.
     4.  **Clone the project from GitHub:** This will download all the project files into a new folder named `InternalAI` inside `~/projects`.
         ```bash
         git clone https://github.com/KnowitQSS/InternalAI.git
         ```
-        * This command creates the `InternalAI` folder automatically.
+        *   This command creates the `InternalAI` folder automatically.
     5.  **Go into the project folder:**
         ```bash
         cd InternalAI
         ```
-        * Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI$`. This is your main project folder!
+        *   Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI. This is your main project folder!
     6.  **Configure Git for line endings:**
         ```bash
         git config --global core.autocrlf input
         ```
 
 5.  **Set Up Python Backend Dependencies:**
-    * Your Python backend needs some additional tools to run. We'll install them into a special "virtual environment" for this project.
+    *   Your Python backend needs some additional tools to run. We'll install them into a special "virtual environment" for this project.
     1.  **Ensure you are in the `InternalAI` project folder:**
-        * Your prompt should be `your_username@your_wsl_distro_name:~/projects/InternalAI$`.
+        *   Your prompt should be `your_username@your_wsl_distro_name:~/projects/InternalAI$ `.
     2.  **Create the Python virtual environment:**
         ```bash
         python3.11 -m venv .venv
         ```
         > **Note:** We use `python3.11` here to be explicit, as Linux systems (like WSL) can have multiple Python versions installed. This ensures the virtual environment uses the correct version for the project.
 
-        * This creates a hidden folder named `.venv` inside your project.
+        *   This creates a hidden folder named `.venv` inside your project.
     3.  **Activate the virtual environment:**
         ```bash
         source .venv/bin/activate
         ```
-        * Your prompt will change to `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI$`, showing it's active.
+        *   Your prompt will change to `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI, showing it's active.
     4.  **Install backend dependencies:**
         ```bash
         pip install -r backend/requirements.txt
@@ -778,20 +782,20 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         # Keep as development for local work  
         FLASK_ENV=development
         ```
-        * In nano: Use `Ctrl+X` to exit, press `Y` to save, then `Enter` to confirm.
+        *   In nano: Use `Ctrl+X` to exit, press `Y` to save, then `Enter` to confirm.
     3.  **The `.env` file stays on your computer** and is never uploaded to GitHub.
 7.  **Set Up Frontend Dependencies:**
-    * Your React frontend also needs its own tools.
+    *   Your React frontend also needs its own tools.
     1.  **Go to the `frontend` folder:**
         ```bash
         cd frontend
         ```
-        * Your prompt should now be `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend$`.
+        *   Your prompt should now be `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI/frontend$ `.
     2.  **Install frontend dependencies:**
         ```bash
         npm install
         ```
-        * This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
+        *   This command reads the `package.json` file in the `frontend` folder and installs all required JavaScript libraries into a `node_modules` folder. This might take a few moments.
 
 8.  **Install Playwright Browsers:**
     The project uses Playwright for end-to-end testing, which requires specific browser binaries to run.
@@ -852,13 +856,13 @@ Before creating a new branch, always make sure you have the latest version of th
     ```bash
     git branch
     ```
-    * You should see `* main` (the asterisk shows your current branch). If not, switch to main: `git checkout main`
+    *   You should see `* main` (the asterisk shows your current branch). If not, switch to main: `git checkout main`
 
 3.  **Get the latest changes from GitHub:**
     ```bash
     git pull origin main
     ```
-    * This downloads any new changes that others have made since you last updated.
+    *   This downloads any new changes that others have made since you last updated.
 
 ### Step B: Start Your Own Workspace (Create a New Branch)
 
@@ -868,26 +872,26 @@ Now create your personal workspace for the changes you want to make.
     ```bash
     git checkout -b your-feature-name
     ```
-    * Replace `your-feature-name` with a short, descriptive name for what you're working on:
-        * **Good examples:** `add-user-auth`, `fix-login-bug`, `update-readme`, `team-page-design`
-        * **Bad examples:** `test`, `stuff`, `branch1`
-    * You'll see a message like "Switched to a new branch 'your-feature-name'".
+    *   Replace `your-feature-name` with a short, descriptive name for what you're working on:
+        *   **Good examples:** `add-user-auth`, `fix-login-bug`, `update-readme`, `team-page-design`
+        *   **Bad examples:** `test`, `stuff`, `branch1`
+    *   You'll see a message like "Switched to a new branch 'your-feature-name'".
 
 2.  **Verify you're on the right branch:**
     ```bash
     git branch
     ```
-    * You should now see `* your-feature-name` (with the asterisk).
+    *   You should now see `* your-feature-name` (with the asterisk).
 
 ### Step C: Make Your Code Changes
 
-* Now, use your code editor (like VS Code) to open the project files and make your changes.
-* **Examples of files you might edit:**
-    * `backend/app.py` - For backend/API changes
-    * `frontend/src/App.js` - For frontend/React changes
-    * `README.md` - For documentation updates
-* Make the changes you want.
-* **Save your files** normally.
+*   Now, use your code editor (like VS Code) to open the project files and make your changes.
+*   **Examples of files you might edit:**
+    *   `backend/app.py` - For backend/API changes
+    *   `frontend/src/App.js` - For frontend/React changes
+    *   `README.md` - For documentation updates
+*   Make the changes you want.
+*   **Save your files** normally.
 
 ### Step D: Save Your Changes (Commit)
 
@@ -898,16 +902,16 @@ After you've made some changes and saved your files, you need to tell Git about 
     git status
     ```
     This command shows you:
-    * Files you've changed (in red)
-    * Files that are "staged" and ready to commit (in green)
+    *   Files you've changed (in red)
+    *   Files that are "staged" and ready to commit (in green)
 
 2.  **Stage Your Changes (Prepare for the Snapshot):**
     This tells Git which changes to include in your next save.
     ```bash
     git add .
     ```
-    * The `.` (dot) means "add all changes in the current folder and its subfolders."
-    * **Alternative:** To add specific files only: `git add filename.txt`
+    *   The `.` (dot) means "add all changes in the current folder and its subfolders."
+    *   **Alternative:** To add specific files only: `git add filename.txt`
 
     Run `git status` again. Now your changes should be listed in green under "Changes to be committed."
 
@@ -916,11 +920,11 @@ After you've made some changes and saved your files, you need to tell Git about 
     ```bash
     git commit -m "Brief description of what you changed"
     ```
-    * **Good commit message examples:**
-        * `"feat: Add user registration form"`
-        * `"fix: Correct login button alignment"`
-        * `"docs: Update setup instructions in README"`
-    * **Bad commit message examples:** `"stuff"`, `"changes"`, `"oops"`
+    *   **Good commit message examples:**
+        *   `"feat: Add user registration form"`
+        *   `"fix: Correct login button alignment"`
+        *   `"docs: Update setup instructions in README"`
+    *   **Bad commit message examples:** `"stuff"`, `"changes"`, `"oops"`
 
 ### Step E: Share Your Changes (Push)
 
@@ -930,14 +934,14 @@ Committing saves changes to your local computer. To send them to GitHub, you nee
     ```bash
     git push --set-upstream origin your-branch-name
     ```
-    * **Important:** Replace `your-branch-name` with the exact same name you used when creating your branch in Step B.
-    * The first time you push a new branch, you need the `--set-upstream origin your-branch-name` part. This creates the branch on GitHub.
-    * After the first push, you can usually just use `git push`.
+    *   **Important:** Replace `your-branch-name` with the exact same name you used when creating your branch in Step B.
+    *   The first time you push a new branch, you need the `--set-upstream origin your-branch-name` part. This creates the branch on GitHub.
+    *   After the first push, you can usually just use `git push`.
 
 2.  **What if it's rejected? (`non-fast-forward` error)**
-    If `git push` fails with a message like `! [rejected] (non-fast-forward)`, it means someone else updated the main branch since you created your branch.
-    * **Solution 1:** Get their changes: `git pull origin main`
-    * **Solution 2:** If that doesn't work, ask for help - merge conflicts can be tricky for beginners!
+    If `git push` fails with a message like `! [rejected] main -> main (non-fast-forward)`, it means someone else updated the main branch since you created your branch.
+    *   **Solution 1:** Get their changes: `git pull origin main`
+    *   **Solution 2:** If that doesn't work, ask for help - merge conflicts can be tricky for beginners!
 
 ### Step F: Create a Pull Request & Check for Readiness
 
@@ -964,10 +968,10 @@ Once your changes are on GitHub, create a Pull Request (PR) to ask for your chan
         *   **Definition of Ready Checklist:** Go through this checklist and tick off each box by putting an `x` inside the brackets (`[x]`).
 
 5.  **What happens next:**
-    * Your PR will trigger automated tests via GitHub Actions.
-    * A team member will review your code.
-    * You might get feedback or requests for changes. Make them on the same branch and push again.
-    * Once approved and all checks pass, your PR will be merged into `main` and deployed automatically!
+    *   Your PR will trigger automated tests via GitHub Actions.
+    *   A team member will review your code.
+    *   You might get feedback or requests for changes. Make them on the same branch and push again.
+    *   Once approved and all checks pass, your PR will be merged into `main` and deployed automatically!
 
 ### 🔧 Helpful Git Commands for Daily Use
 
@@ -995,13 +999,13 @@ git push                        # After first push, this is all you need
 **If you add new tools (packages) to the project**, your teammates need to install them too!
 
 **For Frontend packages** (like `xlsx` or `papaparse`):
-* When you add: `npm install package-name`
-* Teammates need to run: `npm install` (in the `frontend` folder)
+*   When you add: `npm install package-name`
+*   Teammates need to run: `npm install` (in the `frontend` folder)
 
 **For Backend packages** (like `flask-cors` or `requests`):
-* When you add: `pip install package-name` 
-* Then update: `pip freeze > backend/requirements.txt`
-* Teammates need to run: `pip install -r backend/requirements.txt`
+*   When you add: `pip install package-name` 
+*   Then update: `pip freeze > backend/requirements.txt`
+*   Teammates need to run: `pip install -r backend/requirements.txt`
 
 **What happens if they don't update?**
 They'll see errors like:
@@ -1619,6 +1623,7 @@ npm install
 
 ---
 
+
 ### 🔧 Development Server Issues
 
 #### **Flask server won't start**
@@ -1687,6 +1692,7 @@ npm start
 
 ---
 
+
 ### 🌐 Git and GitHub Issues
 
 #### **`git push` rejected with "non-fast-forward"**
@@ -1737,6 +1743,7 @@ git stash pop  # Restore changes
 
 ---
 
+
 ### 🚀 Deployment and CI/CD Issues
 
 #### **GitHub Actions pipeline failing**
@@ -1766,6 +1773,7 @@ git stash pop  # Restore changes
 
 ---
 
+
 ### 🆘 VS Code and IDE Issues
 
 #### **VS Code can't find Python or Node**
@@ -1792,6 +1800,7 @@ git stash pop  # Restore changes
 3. **Open project in WSL:** File → Open Folder → Navigate to `~/projects/InternalAI`
 
 ---
+
 
 ### 💡 Getting Help
 

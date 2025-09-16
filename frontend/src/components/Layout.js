@@ -4,7 +4,7 @@ import Header from './Header';
 import './Layout.css';
 import Footer from './Footer';
 
-function Layout() {
+function Layout({ openCookiePolicy }) {
     return (
         // This div provides the consistent background for all pages
         <div className="hero-gradient-bg font-sans text-gray-300 min-h-screen flex flex-col">
@@ -14,7 +14,7 @@ function Layout() {
             <div className="flex-grow">
                 <Outlet />
             </div>
-            <Footer />
+            <Footer openCookiePolicy={openCookiePolicy} />
         </div>
     );
 }

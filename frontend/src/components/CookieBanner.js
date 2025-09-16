@@ -42,9 +42,10 @@ function CookieBanner({
     setStatisticsCookies,
     marketingCookies,
     setMarketingCookies,
+    showPolicy,
+    setShowPolicy,
 }) {
     const [showDetails, setShowDetails] = useState(false);
-    const [showPolicy, setShowPolicy] = useState(false);
     const [preferencesChanged, setPreferencesChanged] = useState(false);
     const [openCategory, setOpenCategory] = useState(null);
     const bannerRef = useRef(null);
@@ -265,15 +266,74 @@ function CookieBanner({
                 ) : (
                     <div id="coiPage-3" className="coi-banner__page">
                         <div className="coi-banner__cookiedeclaration">
-                            <h2 ref={policyHeadlineRef} tabIndex="-1" className="coi-banner__headline" id="coiPolicyHeadline">Policy för kakor</h2>
-                            {/* Header and policy text */}
+                            <div className="coi-banner__header">
+                                <img src="https://www.knowit.se/globalassets/logotype-svart.png" alt="logo" style={{width: '140px'}} />
+                                <span className="coi-banner__branding">powered by: <a className="coi-external-link" href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer">Cookie Information</a></span>
+                            </div>
+                            <div className="coi-banner__text">
+                                <h2 ref={policyHeadlineRef} tabIndex="-1" className="coi-banner__headline" id="coiPolicyHeadline">Policy för kakor</h2>
+                                <div className="coi-banner__maintext">
+                                    <strong className="top-column__bold-text">Ditt samtycke gäller för följande domäner:</strong>
+                                    <span className="top-column__website-domains">info.knowit.se, knowit.se, blogg.knowit.se</span>
+                                    <strong className="top-column__bold-text">Policyn för kakor senast uppdaterad 12.09.2025</strong>
+                                </div>
+                            </div>
                         </div>
                         <div className="coi-banner__page-footer" role="navigation" aria-label="third-menu">
-                            <button tabIndex="0" aria-label="Inställningar" className="coi-banner__lastpage" onClick={() => setShowPolicy(false)}>Inställningar</button>
-                            <button tabIndex="0" aria-label="Godkänn alla button" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                            <div className="coi-button-group">
+                                <button tabIndex="0" onClick={() => setShowPolicy(false)} aria-label="Inställningar" className="coi-banner__lastpage activeTab">Inställningar</button>
+                                <button tabIndex="0" onClick={onAcceptAll} aria-label="Godkänn alla button" className="coi-banner__accept">Godkänn alla</button>
+                            </div>
                         </div>
                         <div className="cookiedeclaration_wrapper">
-                            {/* Full policy details */}
+                            <div className="bottom-column__why-cookies">
+                                <h2>Var är en kaka (cookie)?</h2>
+                                <p>En kaka eller cookie är en liten datafil som lagras i din dator, surfplatta eller smartmobil. En kaka är inte ett program som kan innehålla skadlig programvara eller virus.</p>
+                                <h2>Hur webbplatsen använder kakor</h2>
+                                <p>Vissa kakor utför nödvändiga funktioner på webbplatsen. Kakor hjälper oss också förstå varför du besöker webbplatsen, så vi kontinuerligt kan optimera och målinrikta webbplatsen efter dina specifika behov och intressen. Kakor kommer t.ex. ihåg varor som lagts i en varukorg, om du har besökt webbplatsen tidigare, om du är inloggad och det språk och den valuta du föredrar att se på webbplatsen. Vi använder också kakor för att specifikt inrikta våra annonser mot dig på andra webbplatser. Oftast använder vi kakor som en del av vår tjänst för att visa dig innehåll som är så relevant för dig som möjligt.</p>
+                                <p>Du kan se de specifika tjänster som lagrar kakor och varför de gör det under de olika kategorierna:</p>
+                                <ol className="coi-purpose-list">
+                                    <li>Funktionella</li>
+                                    <li>Statistiska</li>
+                                    <li>Marketing</li>
+                                </ol>
+                                <h2>Hur länge lagras kakor?</h2>
+                                <p>Tiden som en kaka lagras i dina enheter och webbläsare varierar. En kakas livslängd beräknas utifrån ditt senaste besök på webbplatsen. När en kakas livslängd löper ut raderas den automatiskt. Alla våra kakors livslängd uppges i vår policy för kakor.</p>
+                                <h2>Hur du nekar eller tar bort kakor</h2>
+                                <p>Du kan när som helst neka alla kakor och/eller tredjepartskakor helt och hållet genom att ändra inställningarna i din webbläsare i din dator, surfplatta eller smartmobil. Var inställningarna finns beror på vilken webbläsare du använder. Du bör dock vara medveten om att om du nekar alla kakor och/eller tredjepartskakor kommer det finnas funktioner och tjänster som du inte kommer kunna använda på webbplatsen (eftersom de är beroende av kakor).<br />
+                                    <a rel="noopener noreferrer" href="https://tools.google.com/dlpage/gaoptout" target="_blank">Du kan välja bort kakor från Google Analytics här</a>.
+                                </p>
+                                <h2>Hur gör jag för att ta bort kakor?</h2>
+                                <p>Det är lätt att radera kakor som du tidigare godkänt. Tillvägagångssättet beror på vilken webbläsare (Chrome, Firefox, Safari, etc.) och vilken enhet du använder (smartmobil, surfplatta, PC, Mac). <br /> Ofta finns verktyg för borttagning under inställningar – Sekretess och säkerhet – men det kan variera mellan olika webbläsare. Ange vilken enhet/webbläsare du använder (klicka på den länk som stämmer):</p>
+                                <ul>
+                                    <li><a rel="noopener noreferrer" href="https://support.microsoft.com/en-us/help/17442/windows-internet-explorer-delete-manage-cookies#ie=ie-11" target="_blank">Internet Explorer</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.microsoft.com/en-us/help/4027947/microsoft-edge-delete-cookies" target="_blank">Microsoft Edge</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.mozilla.org/en-US/kb/delete-cookies-remove-info-websites-stored" target="_blank">Mozilla Firefox</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.google.com/chrome/answer/95647?hl=en" target="_blank">Google Chrome</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank">Opera</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.apple.com/en-us/HT201265" target="_blank">Safari</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager07.html" target="_blank">Flash cookies</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.apple.com/en-us/HT1677" target="_blank">Apple</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://timeread.hubpages.com/hub/How-to-delete-internet-cookies-on-your-Droid-or-any-Android-device" target="_blank">Android</a></li>
+                                    <li><a rel="noopener noreferrer" href="https://support.google.com/chrome/answer/95647?co=GENIE.Platform%3DAndroid&hl=en" target="_blank">Chrome, Android</a></li>
+                                </ul>
+                                <p></p>
+                                <h2>Ändra ditt samtycke</h2>
+                                <p>Du kan ändra ditt samtycke genom att antingen radera kakor från din webbläsare eller ändra ditt ursprungliga val genom att klicka på länken nedanför:</p>
+                                <button
+                                    className="coi-banner__policy coi-renew-link"
+                                    onClick={() => {
+                                        if (window.CookieConsent) {
+                                            window.CookieConsent.renew();
+                                        }
+                                    }}
+                                >
+                                    Klicka här för att ändra ditt samtycke
+                                </button>
+                                <p>OBS: Om du använder mer än en webbläsare måste du radera kakorna i alla.</p>
+                                <h2>Har du några frågor?</h2>
+                                <p>Ta gärna kontakt med oss om du har några kommentarer eller frågor gällande vår information och/ou behandling av personuppgifter. Vår policy för kakor uppdateras en gång i månaden av <a href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer">Cookie Information</a>. Om du har några frågor om vår policy för kakor är du välkommen att <a href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer">kontakta Cookie Information på deras webbplats</a></p>
+                            </div>
                         </div>
                     </div>
                 )}

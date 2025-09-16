@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import TeamPage from './pages/TeamPage';
@@ -23,6 +24,11 @@ function App() {
     marketingCookies,
     setMarketingCookies,
   } = useCookieConsent();
+  const [showPolicy, setShowPolicy] = useState(false);
+
+  const openCookiePolicy = () => {
+    setShowPolicy(true);
+  };
 
   return (
     <>
@@ -37,6 +43,8 @@ function App() {
         setStatisticsCookies={setStatisticsCookies}
         marketingCookies={marketingCookies}
         setMarketingCookies={setMarketingCookies}
+        showPolicy={showPolicy}
+        setShowPolicy={setShowPolicy}
       />
       {isLoginModalOpen && (
         <AdminLogin onLogin={handleLoginSuccess} onCancel={closeLoginModal} />
@@ -47,7 +55,7 @@ function App() {
             <Route path="/admin" element={<AdminPanel />} />
 
             {/* Regular pages with Layout wrapper */}
-            <Route element={<Layout />}>
+            <Route element={<Layout openCookiePolicy={openCookiePolicy} />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/team" element={<TeamPage />} />
                 <Route path="/license" element={<License />} />

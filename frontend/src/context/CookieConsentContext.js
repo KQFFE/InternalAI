@@ -6,6 +6,7 @@ export const useCookieConsent = () => useContext(CookieConsentContext);
 
 export const CookieConsentProvider = ({ children }) => {
     const [showCookieModal, setShowCookieModal] = useState(false);
+    const [showPolicyView, setShowPolicyView] = useState(false);
     const [functionalityCookies, setFunctionalityCookies] = useState(false);
     const [statisticsCookies, setStatisticsCookies] = useState(false);
     const [marketingCookies, setMarketingCookies] = useState(false);
@@ -52,7 +53,12 @@ export const CookieConsentProvider = ({ children }) => {
         setShowCookieModal(false);
     };
 
-    const value = { showCookieModal, functionalityCookies, setFunctionalityCookies, statisticsCookies, setStatisticsCookies, marketingCookies, setMarketingCookies, acceptAllCookies, declineAllCookies, savePreferences };
+    const openCookiePolicy = () => {
+        setShowCookieModal(true);
+        setShowPolicyView(true);
+    };
+
+    const value = { showCookieModal, showPolicyView, setShowPolicyView, functionalityCookies, setFunctionalityCookies, statisticsCookies, setStatisticsCookies, marketingCookies, setMarketingCookies, acceptAllCookies, declineAllCookies, savePreferences, openCookiePolicy };
 
     return <CookieConsentContext.Provider value={value}>{children}</CookieConsentContext.Provider>;
 };

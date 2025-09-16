@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom';
 import './Footer.css';
 
-function Footer() {
+function Footer({ openCookiePolicy }) {
     return (
         <footer className="site-footer">
             <div className="footer-content-grid">
@@ -45,7 +44,7 @@ function Footer() {
                 </div>
                 <div className="footer-bottom-section">
                     <div className="footer-bottom-links">
-                        <Link to="/cookie-policy" id="footer-cookies">Cookie policy</Link>
+                        <button onClick={openCookiePolicy} id="footer-cookies">Cookie policy</button>
                         <a href="https://www.knowit.se/misc/hantering-av-personuppgifter/" id="footer-privacy" target="_blank" rel="noopener noreferrer">Hantering av personuppgifter</a>
                         <a href="https://knowit.whistlelink.com/" id="footer-whistleblower" target="_blank" rel="noopener noreferrer">Whistleblower</a>
                         <span id="footer-copyright">© {new Date().getFullYear()} Knowit AB</span>

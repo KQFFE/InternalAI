@@ -483,6 +483,41 @@
     margin-top: 24px;
     font-size: 15px;
     color: #222;
+    padding: 0 40px 40px;
+}
+
+.cookiedeclaration_wrapper h2 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+
+.cookiedeclaration_wrapper p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+}
+
+.cookiedeclaration_wrapper a {
+    color: #222;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.cookiedeclaration_wrapper a:hover {
+    color: #000;
+}
+
+.cookiedeclaration_wrapper a[target="_blank"]::after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: 4px;
+    background-image: url('link-icon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
 }
 
 /* Responsive */

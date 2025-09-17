@@ -239,6 +239,11 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "Creating deployment zip to prevent race conditions..."
+
+        # Copy requirements.txt to root for Oryx
+        echo "📄 Copying requirements.txt to root for Oryx build..."
+        cp backend/requirements.txt requirements.txt
+        echo "✅ requirements.txt copied to root"
         
         # Create zip with all necessary files
         zip -r deployment.zip . \
@@ -253,27 +258,31 @@ jobs:
           -x "coverage.xml" \
           -x "bandit-report.json"
         
-        echo "✅ Atomic deployment zip created: $(du -h deployment.zip | cut -f1)"
+        echo "✅ Atomic deployment zip created: $(du -h deployment.zip | cut -f1)"       
+        # Verify zip contents include requirements.txt
+        echo "🔍 Verifying zip contents..."
+        unzip -l deployment.zip | grep -E "(run\.py|requirements\.txt|backend/)" | head -10
+
 
     - name: 🚀 Deploy to Azure using CLI (atomic)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "🛑 Stopping app service to prevent race conditions..."
         az webapp stop --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
-        
-        echo "📦 Deploying zip package atomically..."
-        az webapp deployment source config-zip \
+
+        echo "📦 Deploying zip package atomically using new az webapp deploy command..."
+        az webapp deploy \
           --name ${{ env.AZURE_WEBAPP_NAME }} \
           --resource-group rg-internalai-prod \
-          --src deployment.zip
+          --src-path deployment.zip \
+          --type zip \
+          --restart true \
+          --clean true
         
-        echo "⏳ Waiting for deployment to process..."
-        sleep 45
+        echo "⏳ Waiting for deployment and restart to complete..."
+        sleep 60
         
-        echo "🚀 Starting app service..."
-        az webapp start --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
-        
-        echo "✅ Atomic deployment completed"
+        echo "✅ Atomic deployment with restart completed"
         
     # ================================
     # STEP 14.5: VERIFY DEPLOYMENT

@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CookieConsentContext = createContext(null);
 
+const COOKIE_PREFERENCES_KEY = 'cookie_preferences'; // Define the key
+
 export const useCookieConsent = () => useContext(CookieConsentContext);
 
 export const CookieConsentProvider = ({ children }) => {
@@ -12,45 +14,56 @@ export const CookieConsentProvider = ({ children }) => {
     const [marketingCookies, setMarketingCookies] = useState(false);
 
     useEffect(() => {
-        const hasConsent = localStorage.getItem('cookieConsent');
-        if (!hasConsent) {
-            setShowCookieModal(true);
+        const savedPrefs = localStorage.getItem(COOKIE_PREFERENCES_KEY); // Use the key
+        if (savedPrefs) {
+            try {
+                const { functional, statistic, marketing } = JSON.parse(savedPrefs);
+                setFunctionalityCookies(functional);
+                setStatisticsCookies(statistic);
+                setMarketingCookies(marketing);
+                setShowCookieModal(false); // Preferences exist, so don't show the modal
+            } catch (e) {
+                console.error("Failed to parse cookie preferences from localStorage", e);
+                setShowCookieModal(true); // Show modal if parsing fails
+            }
         } else {
-            setFunctionalityCookies(localStorage.getItem('functionalityCookies') === 'true');
-            setStatisticsCookies(localStorage.getItem('statisticsCookies') === 'true');
-            setMarketingCookies(localStorage.getItem('marketingCookies') === 'true');
-            setShowCookieModal(false);
+            setShowCookieModal(true); // No preferences found, show the modal
         }
     }, []);
 
+    const persistPreferences = (prefs) => {
+        localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs)); // Use the key and stringify
+        setShowCookieModal(false);
+    };
+
     const acceptAllCookies = () => {
-        localStorage.setItem('cookieConsent', 'accepted');
-        localStorage.setItem('functionalityCookies', 'true');
-        localStorage.setItem('statisticsCookies', 'true');
-        localStorage.setItem('marketingCookies', 'true');
         setFunctionalityCookies(true);
         setStatisticsCookies(true);
         setMarketingCookies(true);
-        setShowCookieModal(false);
+        persistPreferences({
+            functional: true,
+            statistic: true,
+            marketing: true,
+        });
     };
 
     const declineAllCookies = () => {
-        localStorage.setItem('cookieConsent', 'denied');
-        localStorage.setItem('functionalityCookies', 'false');
-        localStorage.setItem('statisticsCookies', 'false');
-        localStorage.setItem('marketingCookies', 'false');
         setFunctionalityCookies(false);
         setStatisticsCookies(false);
         setMarketingCookies(false);
-        setShowCookieModal(false);
+        persistPreferences({
+            functional: false,
+            statistic: false,
+            marketing: false,
+        });
     };
 
     const savePreferences = () => {
-        localStorage.setItem('cookieConsent', 'custom');
-        localStorage.setItem('functionalityCookies', functionalityCookies.toString());
-        localStorage.setItem('statisticsCookies', statisticsCookies.toString());
-        localStorage.setItem('marketingCookies', marketingCookies.toString());
-        setShowCookieModal(false);
+        persistPreferences({
+            functional: functionalityCookies,
+            statistic: statisticsCookies,
+            marketing: marketingCookies,
+        });
     };
 
     const openCookiePolicy = () => {

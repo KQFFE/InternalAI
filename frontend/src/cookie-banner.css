@@ -393,6 +393,7 @@
 .coi-toggle-group {
     display: flex;
     gap: 12px;
+    justify-content: center;
 }
 
 .coi-toggle-group button {

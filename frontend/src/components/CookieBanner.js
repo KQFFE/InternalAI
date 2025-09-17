@@ -1,6 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
 import '../cookie-banner.css';
 
+const cookieCategories = [
+    {
+        name: 'necessary',
+        label: 'Nödvändiga',
+        description: 'Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.',
+        isMutable: false,
+    },
+    {
+        name: 'functional',
+        label: 'Funktionella',
+        description: 'Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.',
+        isMutable: true,
+    },
+    {
+        name: 'statistic',
+        label: 'Statistiska',
+        description: 'Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.',
+        isMutable: true,
+    },
+    { name: 'marketing', label: 'Marketing', description: 'Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.', isMutable: true },
+    { name: 'unclassified', label: 'Oklassificerade', description: 'Oklassificerade cookies håller vi på att klassificera tillsammans med leverantörerna av leverantörerna av dessa cookies.', isMutable: false }, // Assuming unclassified are not mutable by user
+];
+
 
 const CookieCategory = ({ name, label, description, isOpen, onToggle, children }) => {
     return (
@@ -33,9 +56,9 @@ const CookieCategory = ({ name, label, description, isOpen, onToggle, children }
 
 function CookieBanner({
     show,
-    onAcceptAll,
-    onDeclineAll,
-    onSavePreferences,
+    onAcceptAll: onAcceptAllProp,
+    onDeclineAll: onDeclineAllProp,
+    onSavePreferences: onSavePreferencesProp,
     functionalityCookies,
     setFunctionalityCookies,
     statisticsCookies,
@@ -113,6 +136,21 @@ function CookieBanner({
 
     if (!show) return null;
 
+    // In a test environment (like Playwright), window.playwright will be true.
+    // This allows the test to directly trigger the exposed functions without prop drilling.
+    // We check for a specific callbacks object installed by the test's init script.
+    const isTestEnv = !!window.playwrightCallbacks;
+    const onAcceptAll = isTestEnv ? window.playwrightCallbacks.onAcceptAll : onAcceptAllProp;
+    const onDeclineAll = isTestEnv ? window.playwrightCallbacks.onDeclineAll : onDeclineAllProp;
+    const onSavePreferences = isTestEnv ? window.playwrightCallbacks.onSavePreferences : onSavePreferencesProp;
+
+    const categoryStates = {
+        necessary: { value: true, setter: () => {} }, // Always true and not changeable
+        functional: { value: functionalityCookies, setter: setFunctionalityCookies },
+        statistic: { value: statisticsCookies, setter: setStatisticsCookies },
+        marketing: { value: marketingCookies, setter: setMarketingCookies },
+    };
+
     const handlePreferenceChange = (setter, value) => {
         setter(!value);
         setPreferencesChanged(true);
@@ -126,7 +164,7 @@ function CookieBanner({
     const showSaveButton = preferencesChanged && (functionalityCookies || statisticsCookies || marketingCookies);
 
     return (
-        <div id="coiOverlay" role="banner" aria-hidden="false" className="coi-overlay">
+        <div id="coiOverlay" role="banner" aria-hidden="false" className="coi-overlay" data-testid="cookie-banner-container">
             <div ref={bannerRef} role="dialog" tabIndex="-1" aria-modal="true" id="coi-banner-wrapper" className="coi-banner__wrapper"
                 aria-describedby="coiBannerHeadline" aria-labelledby="coi-banner-wrapper_label" lang="sv" dir="ltr" aria-hidden="false">
                 {!showPolicy ? (
@@ -160,107 +198,58 @@ function CookieBanner({
                         <div className="coi-banner__page-footer" role="navigation" aria-label="menu">
                             <div className="coi-button-group">
                                 {showSaveButton ? (
-                                    <button data-testid="save-cookie-preferences" tabIndex="0" aria-label="Spara inställningar" id="savePreferencesButton" className="coi-banner__decline" onClick={onSavePreferences}>Spara inställningar</button>
+                                    <button data-testid="save-cookie-preferences" tabIndex="0" aria-label="Spara inställningar" id="savePreferencesButton" className="coi-banner__decline" onClick={() => onSavePreferences()}>Spara inställningar</button>
                                 ) : (
-                                    <button data-testid="decline-all-cookies" tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={onDeclineAll}>Neka alla</button>
+                                    <button data-testid="decline-all-cookies" tabIndex="0" aria-label="Neka alla" id="declineButton" className="coi-banner__decline" onClick={() => onDeclineAll()}>Neka alla</button>
                                 )}
-                                <button data-testid="accept-all-cookies" tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={onAcceptAll}>Godkänn alla</button>
+                                <button data-testid="accept-all-cookies" tabIndex="0" aria-label="Godkänn alla" className="coi-banner__accept" onClick={() => onAcceptAll()}>Godkänn alla</button>
                             </div>
-                            <div className="coi-toggle-group">
-                                {!showDetails ? (
-                                    <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
-                                ) : (
-                                    <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
-                                )}
-                            </div>
+                        </div>
+                        
+                        <div className="coi-toggle-group">
+                            {!showDetails ? (
+                                <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
+                            ) : (
+                                <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
+                            )}
                         </div>
 
                         {showDetails && (
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
-                                <CookieCategory
-                                    name="necessary"
-                                    label="Nödvändiga"
-                                    description="Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies."
-                                    isOpen={openCategory === 'necessary'}
-                                    onToggle={() => toggleCategory('necessary')}
-                                >
-                                    {/* Details for Necessary cookies would go here if they could be expanded */}
-                                </CookieCategory>
-                                <CookieCategory
-                                    name="functional"
-                                    label="Funktionella"
-                                    description="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i."
-                                    isOpen={openCategory === 'functional'}
-                                    onToggle={() => toggleCategory('functional')}
-                                >
-                                    {/* Details for Functional cookies */}
-                                </CookieCategory>
-                                <CookieCategory
-                                    name="statistic"
-                                    label="Statistiska"
-                                    description="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter."
-                                    isOpen={openCategory === 'statistic'}
-                                    onToggle={() => toggleCategory('statistic')}
-                                >
-                                    {/* Details for Statistic cookies */}
-                                </CookieCategory>
-                                <CookieCategory
-                                    name="marketing"
-                                    label="Marketing"
-                                    description="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer."
-                                    isOpen={openCategory === 'marketing'}
-                                    onToggle={() => toggleCategory('marketing')}
-                                >
-                                    {/* Details for Marketing cookies */}
-                                </CookieCategory>
+                                {cookieCategories.map(cat => (
+                                    <CookieCategory key={cat.name} name={cat.name} label={cat.label} description={cat.description} isOpen={openCategory === cat.name} onToggle={() => toggleCategory(cat.name)} />
+                                ))}
                             </div>
                         )}
 
                         <div className="coi-banner-consent-group">
-                            <div className="coi-banner-consent-field">
-                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_necessary">
-                                    <label htmlFor="cookie_cat_necessary" className="coi-checkboxes" title="Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.">
-                                        <span className="coi-checkboxes-text">Nödvändiga</span>
-                                        <div className="coi-checkboxes-switch">
-                                            <input className="coi__checkbox" tabIndex="-1" data-index="-1" name="cookie_cat_necessary" id="cookie_cat_necessary" type="checkbox" disabled checked />
-                                            <span className="checkbox-toggle"></span>
+                            {cookieCategories.filter(c => c.name !== 'unclassified').map(cat => {
+                                const categoryState = categoryStates[cat.name];
+                                if (!categoryState) return null;
+
+                                return (
+                                    <div className="coi-banner-consent-field" key={cat.name}>
+                                        <div className="coi-consent-banner__switch-container" id={`switch-cookie_cat_${cat.name}`}>
+                                            <label htmlFor={`cookie_cat_${cat.name}`} className="coi-checkboxes" title={cat.description}>
+                                                <span className="coi-checkboxes-text">{cat.label}</span>
+                                                <div className="coi-checkboxes-switch">
+                                                    <input
+                                                        className="coi__checkbox"
+                                                        tabIndex={cat.isMutable ? 0 : -1}
+                                                        name={`cookie_cat_${cat.name}`}
+                                                        id={`cookie_cat_${cat.name}`}
+                                                        type="checkbox"
+                                                        disabled={!cat.isMutable}
+                                                        checked={categoryState.value}
+                                                        onChange={() => handlePreferenceChange(categoryState.setter, categoryState.value)}
+                                                    />
+                                                    <span className="checkbox-toggle"></span>
+                                                </div>
+                                            </label>
                                         </div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="coi-banner-consent-field">
-                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_functional">
-                                    <label htmlFor="cookie_cat_functional" className="coi-checkboxes" title="Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.">
-                                        <span className="coi-checkboxes-text">Funktionella</span>
-                                        <div className="coi-checkboxes-switch">
-                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_functional" id="cookie_cat_functional" type="checkbox" checked={functionalityCookies} onChange={() => handlePreferenceChange(setFunctionalityCookies, functionalityCookies)} />
-                                            <span className="checkbox-toggle"></span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="coi-banner-consent-field">
-                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_statistic">
-                                    <label htmlFor="cookie_cat_statistic" className="coi-checkboxes" title="Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.">
-                                        <span className="coi-checkboxes-text">Statistiska</span>
-                                        <div className="coi-checkboxes-switch">
-                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_statistic" id="cookie_cat_statistic" type="checkbox" checked={statisticsCookies} onChange={() => handlePreferenceChange(setStatisticsCookies, statisticsCookies)} />
-                                            <span className="checkbox-toggle"></span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="coi-banner-consent-field">
-                                <div className="coi-consent-banner__switch-container" id="switch-cookie_cat_marketing">
-                                    <label htmlFor="cookie_cat_marketing" className="coi-checkboxes" title="Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.">
-                                        <span className="coi-checkboxes-text">Marketing</span>
-                                        <div className="coi-checkboxes-switch">
-                                            <input className="coi__checkbox" tabIndex="0" data-index="0" name="cookie_cat_marketing" id="cookie_cat_marketing" type="checkbox" checked={marketingCookies} onChange={() => handlePreferenceChange(setMarketingCookies, marketingCookies)} />
-                                            <span className="checkbox-toggle"></span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 ) : (

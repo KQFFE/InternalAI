@@ -1554,6 +1554,31 @@ echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+#### **Playwright dependencies installation fails with Microsoft repository GPG key error**
+**Symptoms:** 
+W: GPG error: https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY EB3E94ADBE1229CF
+E: The repository 'https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease' is not signed.
+Failed to install browser dependencies
+Error: Installation process exited with code: 100
+
+**Solutions:**
+```bash
+**Root Cause:** Microsoft package repositories (often from SQL Server tools, .NET SDK, or other Microsoft software) have outdated or missing GPG signing keys in your WSL system.
+
+# Find the Microsoft repository file
+grep -r "packages.microsoft" /etc/apt/sources.list.d/ 2>/dev/null
+
+# Remove the problematic repository file (common examples)
+sudo rm -f /etc/apt/sources.list.d/mssql-release.list
+sudo rm -f /etc/apt/sources.list.d/packages-microsoft-prod.list
+
+# Update package list
+sudo apt update
+
+# Re-run the test script
+./run_all_tests.sh
+```
+
 ---
 
 ### 📦 Package Installation Issues

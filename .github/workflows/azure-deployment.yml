@@ -245,8 +245,18 @@ jobs:
         cp backend/requirements.txt requirements.txt
         echo "✅ requirements.txt copied to root"
         
-        # Create zip with all necessary files
+        # Verify requirements.txt exists before zipping
+        echo "🔍 Verifying requirements.txt exists in root..."
+        ls -la requirements.txt && echo "✅ requirements.txt confirmed in root"
+        
+        # Create zip with all necessary files, explicitly include requirements.txt
         zip -r deployment.zip . \
+          -i "run.py" \
+          -i "requirements.txt" \
+          -i "backend/*" \
+          -i "templates/*" \
+          -i "static/*" \
+          -i "web.config" \
           -x "frontend/node_modules/*" \
           -x "frontend/build/*" \
           -x "backend/__pycache__/*" \

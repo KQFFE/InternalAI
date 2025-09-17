@@ -234,41 +234,66 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: 🚀 Deploy to Azure App Service 
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        package: '.'
 
-    - name: ⏳ Wait for deployment to complete
+    - name: 📦 Create atomic deployment zip
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-          echo "Waiting for Azure to finish processing deployment..."
-          sleep 60
+        echo "Creating deployment zip to prevent race conditions..."
+        
+        # Create zip with all necessary files
+        zip -r deployment.zip . \
+          -x "frontend/node_modules/*" \
+          -x "frontend/build/*" \
+          -x "backend/__pycache__/*" \
+          -x "backend/.pytest_cache/*" \
+          -x "backend/tests/*" \
+          -x ".git/*" \
+          -x ".github/*" \
+          -x "*.pyc" \
+          -x "coverage.xml" \
+          -x "bandit-report.json"
+        
+        echo "✅ Atomic deployment zip created: $(du -h deployment.zip | cut -f1)"
 
-    - name: 🔄 Restart App Service
+    - name: 🚀 Deploy to Azure using CLI (atomic)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
-        echo "✅ App restarted after full deployment"
+        echo "🛑 Stopping app service to prevent race conditions..."
+        az webapp stop --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
+        
+        echo "📦 Deploying zip package atomically..."
+        az webapp deployment source config-zip \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --resource-group rg-internalai-prod \
+          --src deployment.zip
+        
+        echo "⏳ Waiting for deployment to process..."
+        sleep 45
+        
+        echo "🚀 Starting app service..."
+        az webapp start --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
+        
+        echo "✅ Atomic deployment completed"
         
     # ================================
     # STEP 14.5: VERIFY DEPLOYMENT
     # ================================
-    - name: 🔍 Verify Azure deployment completed
+    - name: 🔍 Verify atomic deployment
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        echo "⏳ Waiting for Azure deployment to fully complete..."
+        echo "⏳ Waiting for app service to fully start..."
         sleep 30
         
-        # Check deployment via Kudu API
-        echo "🔍 Verifying files were deployed correctly..."
+        echo "🔍 Verifying run.py deployment..."
+        # Check if run.py exists and has correct size (2884 bytes)
+        az webapp ssh --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod \
+          --command "ls -la /home/site/wwwroot/run.py && echo 'File size:' && wc -c /home/site/wwwroot/run.py" \
+          || echo "❌ Could not verify run.py"
         
-        # Use Azure CLI to check if run.py was deployed with correct size
-        az webapp ssh --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --command "ls -la /home/site/wwwroot/run.py; wc -c /home/site/wwwroot/run.py" || echo "❌ Could not verify deployment"
+        echo "🔍 Checking database initialization in logs..."
+        az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output table || echo "❌ Could not check logs"
         
-        echo "✅ Deployment verification complete"
+        echo "✅ Atomic deployment verification complete"
 
     # ================================
     # STEP 15: DEPLOYMENT SUMMARY

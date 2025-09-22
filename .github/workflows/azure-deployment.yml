@@ -273,7 +273,19 @@ jobs:
         echo "🔍 Verifying zip contents..."
         unzip -l deployment.zip | grep -E "(run\.py|requirements\.txt|backend/)" | head -10
 
-    - name: 🚀 Deploy to Azure Web App (bypass Oryx)
+    - name: 🛑 Disable Oryx build on Azure App Service
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        echo "🛑 Setting app settings to disable Oryx..."
+        az webapp config appsettings set \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --resource-group rg-internalai-prod \
+          --settings \
+            SCM_DO_BUILD_DURING_DEPLOYMENT=false \
+            ENABLE_ORYX_BUILD=false \
+            DISABLE_COLLECTSTATIC=1
+
+    - name: 🚀 Deploy to Azure Web App (no build)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: azure/webapps-deploy@v3
       with:
@@ -285,35 +297,16 @@ jobs:
     # ================================
     # STEP 14.5: VERIFY DEPLOYMENT
     # ================================
-    - name: 🔍 Verify atomic deployment
+    - name: 🔍 Verify deployment and check logs
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        echo "⏳ Waiting for app service to fully start..."
-        sleep 30
-        
-        echo "🔍 Verifying run.py deployment via Kudu API..."
-        # Get credentials again for verification
-        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --query "[?publishMethod=='MSDeploy']" --output json)
-        KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userName')
-        KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userPWD')
+        echo "⏳ Waiting for app service to restart..."
+        sleep 45
 
-        # Check if run.py exists and get its size via Kudu VFS API
-        RUN_PY_INFO=$(curl -s -u "$KUDU_USER:$KUDU_PASS" \
-          "https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/vfs/site/wwwroot/run.py" \
-          -I | grep -E "(Content-Length|HTTP)")
+        echo "🔍 Checking application logs for database initialization..."
+        az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output table --timeout 30 || echo "No logs available yet"
 
-        echo "run.py file info: $RUN_PY_INFO"
-
-        if echo "$RUN_PY_INFO" | grep -q "200 OK"; then
-          echo "✅ run.py deployed successfully"
-        else
-          echo "❌ run.py not found in deployment"
-        fi
-        
-        echo "🔍 Checking database initialization in logs..."
-        az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output table || echo "❌ Could not check logs"
-        
-        echo "✅ Atomic deployment verification complete"
+        echo "🌐 App should be available at: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
 
     # ================================
     # STEP 15: DEPLOYMENT SUMMARY

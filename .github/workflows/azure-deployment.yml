@@ -273,123 +273,17 @@ jobs:
         echo "🔍 Verifying zip contents..."
         unzip -l deployment.zip | grep -E "(run\.py|requirements\.txt|backend/)" | head -10
 
-    - name: 🚀 Deploy to Azure bypassing Oryx (direct Kudu)
+    - name: 🚀 Deploy to Azure Web App (bypass Oryx)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        echo "📦 Deploying directly via Kudu API (bypasses Oryx build)..."
-
-        # Get publish profile and extract credentials
-        echo "🔑 Getting deployment credentials..."
-
-        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output json)
-
-        echo "🔍 Debug: Publish profile structure..."
-        echo "$PUBLISH_PROFILE" | jq '.[0:2] | .[] | {publishMethod, userName}' || echo "No jq output"
-
-        # Try MSDeploy first, then FTP as fallback for credentials
-        KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="MSDeploy") | .userName // empty' | head -1)
-        KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="MSDeploy") | .userPWD // empty' | head -1)
-
-        # If MSDeploy not found, try FTP credentials for Kudu
-        if [ -z "$KUDU_USER" ] || [ "$KUDU_USER" = "null" ]; then
-          echo "⚠️ MSDeploy not found, trying FTP credentials..."
-          KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userName // empty' | head -1)
-          KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userPWD // empty' | head -1)
-        fi
-
-        echo "🔍 Credentials check: User=${KUDU_USER:0:10}... (${#KUDU_USER} chars)"
-
-        if [ -z "$KUDU_USER" ] || [ "$KUDU_USER" = "null" ] || [ -z "$KUDU_PASS" ] || [ "$KUDU_PASS" = "null" ]; then
-          echo "❌ Could not extract valid credentials"
-          exit 1
-        fi
-
-        KUDU_API="https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/zipdeploy"
-
-
-        echo "🧹 Clearing existing files via Kudu API..."
-        curl -X DELETE \
-          -u "$KUDU_USER:$KUDU_PASS" \
-          "https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/vfs/site/wwwroot/" \
-          -w "Clear Status: %{http_code}\n" || echo "⚠️ Could not clear files"
-
-        echo "🚀 Deploying zip directly to Kudu API..."
-        HTTP_STATUS=$(curl -X POST \
-
-          -u "$KUDU_USER:$KUDU_PASS" \
-          --data-binary @deployment.zip \
-          -H "Content-Type: application/zip" \
-          -H "Cache-Control: no-cache" \
-          "${KUDU_API}" \
-          -w "%{http_code}" \
-          -s -o /dev/null)
-
-        echo "HTTP Status: $HTTP_STATUS"
-
-        if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 202 ]; then
-          echo "✅ Deployment successful"
-        else
-          echo "❌ Deployment failed with status $HTTP_STATUS"
-          exit 1
-        fi
-
-        echo "⏳ Waiting for files to be extracted..."
-        sleep 45
-
-        echo "🔄 Restarting app service..."
-        az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
-
-        echo "✅ Direct Kudu deployment completed"
-
-
-    # ================================
-    # STEP 14.2: FALLBACK FTP DEPLOYMENT
-    # ================================
-    - name: 🔄 Fallback FTP Deployment (if Kudu fails)
-      if: failure() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        echo "🔄 Kudu deployment failed, trying FTP fallback..."
-
-        # Get FTP credentials
-        echo "🔑 Getting FTP credentials..."
-        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output json)
-
-        echo "🔍 Debug: Available publish methods..."
-        echo "$PUBLISH_PROFILE" | jq -r '.[] | .publishMethod' | sort | uniq
-
-        FTP_HOST=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .publishUrl // empty' | head -1 | sed 's|ftp://||')
-        FTP_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userName // empty' | head -1)
-        FTP_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userPWD // empty' | head -1)
-
-        echo "🔍 FTP details: Host=$FTP_HOST User=${FTP_USER:0:10}..."
-
-        if [ -z "$FTP_HOST" ] || [ -z "$FTP_USER" ] || [ -z "$FTP_PASS" ]; then
-          echo "❌ Could not extract FTP credentials"
-          exit 1
-        fi
-
-        echo "📦 Extracting deployment zip..."
-        mkdir -p ftp_deploy
-        cd ftp_deploy
-        unzip -q ../deployment.zip
-
-        echo "📤 Uploading files via FTP..."
-        # Install lftp for reliable FTP upload
-        sudo apt-get update && sudo apt-get install -y lftp
-
-        # Clear and upload files
-        lftp -c "
-        set ftp:ssl-allow no;
-        open -u $FTP_USER,$FTP_PASS $FTP_HOST;
-        lcd .;
-        cd /site/wwwroot;
-        mirror --reverse --delete --verbose ./ ./;
-        bye"
-
-        echo "🔄 Restarting app service..."
-        az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
-
-        echo "✅ FTP fallback deployment completed"
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: deployment.zip
+        clean: true
+        restart: true
+        type: zip
+        startup-command: 'python run.py'
 
 
     # ================================

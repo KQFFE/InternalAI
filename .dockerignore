@@ -1,0 +1,48 @@
+# Git and version control
+.git/
+.gitignore
+.github/
+
+# Documentation
+*.md
+DEPLOYMENT_INVESTIGATION_STATUS.md
+
+# Frontend development files
+frontend/
+node_modules/
+npm-debug.log*
+
+# Python development files
+backend/__pycache__/
+backend/.pytest_cache/
+backend/tests/
+backend/htmlcov/
+backend/.coverage
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Build artifacts
+coverage.xml
+bandit-report.json
+eslint-report.sarif
+
+# Deployment files
+deployment.zip
+output.tar.gz

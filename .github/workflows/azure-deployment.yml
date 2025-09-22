@@ -273,25 +273,61 @@ jobs:
         echo "🔍 Verifying zip contents..."
         unzip -l deployment.zip | grep -E "(run\.py|requirements\.txt|backend/)" | head -10
 
-    - name: 🛑 Disable Oryx build on Azure App Service
+    # ================================
+    # STEP 14: CONTAINER DEPLOYMENT (BYPASS ORYX)
+    # ================================
+    - name: 🔧 Set up Docker Buildx
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: docker/setup-buildx-action@v3
+
+    - name: 🔑 Log in to Azure Container Registry
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: docker/login-action@v3
+      with:
+        registry: rginternalai.azurecr.io
+        username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+        password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+    - name: 🏗️ Build and push container image
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          rginternalai.azurecr.io/internalai:latest
+          rginternalai.azurecr.io/internalai:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: 🚀 Deploy container to Azure App Service
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        echo "🛑 Setting app settings to disable Oryx..."
+        echo "🚀 Deploying container to Azure App Service..."
+
+        # Configure App Service to use container
+        az webapp config container set \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --resource-group rg-internalai-prod \
+          --docker-custom-image-name rginternalai.azurecr.io/internalai:latest \
+          --docker-registry-server-url https://rginternalai.azurecr.io
+
+        # Set environment variables for database
         az webapp config appsettings set \
           --name ${{ env.AZURE_WEBAPP_NAME }} \
           --resource-group rg-internalai-prod \
           --settings \
-            SCM_DO_BUILD_DURING_DEPLOYMENT=false \
-            ENABLE_ORYX_BUILD=false \
-            DISABLE_COLLECTSTATIC=1
+            DATABASE_URL="${{ secrets.DATABASE_CONNECTION_STRING }}" \
+            FLASK_ENV=production
 
-    - name: 🚀 Deploy to Azure Web App (no build)
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        resource-group-name: rg-internalai-prod
-        package: deployment.zip
+        echo "⏳ Waiting for container deployment..."
+        sleep 60
+
+        echo "🔄 Restarting app service..."
+        az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod
+
+        echo "✅ Container deployment completed"
+
 
 
     # ================================
@@ -302,10 +338,10 @@ jobs:
       run: |
         echo "⏳ Waiting for app service to restart..."
         sleep 45
-
+        
         echo "🔍 Checking application logs for database initialization..."
         az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output table --timeout 30 || echo "No logs available yet"
-
+        
         echo "🌐 App should be available at: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
 
     # ================================

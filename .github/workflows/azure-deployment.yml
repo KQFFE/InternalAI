@@ -280,11 +280,32 @@ jobs:
 
         # Get publish profile and extract credentials
         echo "🔑 Getting deployment credentials..."
-        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --query "[?publishMethod=='MSDeploy']" --output json)
 
-        KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userName')
-        KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userPWD')
+        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output json)
+
+        echo "🔍 Debug: Publish profile structure..."
+        echo "$PUBLISH_PROFILE" | jq '.[0:2] | .[] | {publishMethod, userName}' || echo "No jq output"
+
+        # Try MSDeploy first, then FTP as fallback for credentials
+        KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="MSDeploy") | .userName // empty' | head -1)
+        KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="MSDeploy") | .userPWD // empty' | head -1)
+
+        # If MSDeploy not found, try FTP credentials for Kudu
+        if [ -z "$KUDU_USER" ] || [ "$KUDU_USER" = "null" ]; then
+          echo "⚠️ MSDeploy not found, trying FTP credentials..."
+          KUDU_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userName // empty' | head -1)
+          KUDU_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userPWD // empty' | head -1)
+        fi
+
+        echo "🔍 Credentials check: User=${KUDU_USER:0:10}... (${#KUDU_USER} chars)"
+
+        if [ -z "$KUDU_USER" ] || [ "$KUDU_USER" = "null" ] || [ -z "$KUDU_PASS" ] || [ "$KUDU_PASS" = "null" ]; then
+          echo "❌ Could not extract valid credentials"
+          exit 1
+        fi
+
         KUDU_API="https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/zipdeploy"
+
 
         echo "🧹 Clearing existing files via Kudu API..."
         curl -X DELETE \
@@ -299,7 +320,7 @@ jobs:
           --data-binary @deployment.zip \
           -H "Content-Type: application/zip" \
           -H "Cache-Control: no-cache" \
-          "$KUDU_API" \
+          "${KUDU_API}" \
           -w "%{http_code}" \
           -s -o /dev/null)
 
@@ -330,10 +351,22 @@ jobs:
         echo "🔄 Kudu deployment failed, trying FTP fallback..."
 
         # Get FTP credentials
-        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --query "[?publishMethod=='FTP']" --output json)
-        FTP_HOST=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].publishUrl' | sed 's|ftp://||')
-        FTP_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userName')
-        FTP_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[0].userPWD')
+        echo "🔑 Getting FTP credentials..."
+        PUBLISH_PROFILE=$(az webapp deployment list-publishing-profiles --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output json)
+
+        echo "🔍 Debug: Available publish methods..."
+        echo "$PUBLISH_PROFILE" | jq -r '.[] | .publishMethod' | sort | uniq
+
+        FTP_HOST=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .publishUrl // empty' | head -1 | sed 's|ftp://||')
+        FTP_USER=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userName // empty' | head -1)
+        FTP_PASS=$(echo "$PUBLISH_PROFILE" | jq -r '.[] | select(.publishMethod=="FTP") | .userPWD // empty' | head -1)
+
+        echo "🔍 FTP details: Host=$FTP_HOST User=${FTP_USER:0:10}..."
+
+        if [ -z "$FTP_HOST" ] || [ -z "$FTP_USER" ] || [ -z "$FTP_PASS" ]; then
+          echo "❌ Could not extract FTP credentials"
+          exit 1
+        fi
 
         echo "📦 Extracting deployment zip..."
         mkdir -p ftp_deploy

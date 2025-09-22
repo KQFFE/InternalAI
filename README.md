@@ -228,6 +228,7 @@ The InternalAI frontend uses two types of tests for comprehensive coverage:
 - **Jest Unit Tests** for component testing (using React Testing Library)
 - **Playwright E2E Tests** for end-to-end testing
 
+
 ### 2.1 The All-in-One Test Script (Recommended)
 
 The most convenient way to run the entire test suite is by using the `run_all_tests.sh` script located in the project root. This script is designed to replicate the CI/CD pipeline, ensuring your changes will pass before you push them.
@@ -243,6 +244,23 @@ chmod +x run_all_tests.sh
 ```
 
 This script runs frontend unit tests, E2E tests, backend tests, and code quality checks in sequence.
+
+## Note on running e2e tests locally on lower-performance machines
+
+By default, Playwright runs tests in full parallel mode using all available CPU cores.  
+This improves speed on powerful machines but can cause instability or failures on low-performance laptops. If you experience a lot of failures try to limit parallelization.
+
+You can disable/limit this by setting the environment variables PW_FULLY_PARALLEL and PW_WORKERS
+
+### ✅ Recommended settings for local runs
+
+If you have issues start with setting PW_FULLY_PARALLEL to false. If you still experience instability limit the amount of workers to 4, 2 or 1. You can set either variable or both. 
+
+Example:
+
+```bash
+PW_WORKERS=4 PW_FULLY_PARALLEL=false ./run_all_tests.sh
+```
 
 ### 2.2 Individual Test Commands
 

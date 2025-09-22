@@ -9,14 +9,21 @@ module.exports = defineConfig({
   // ADDED: This timeout covers the entire test, including page navigation.
   timeout: 10 * 1000, // Increased to 60 seconds (1 minute)
 
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  /* Run tests in files in parallel with option to override using environment variable */
+  fullyParallel: process.env.PW_FULLY_PARALLEL
+  ? process.env.PW_FULLY_PARALLEL === 'true'
+  : true, // default is true
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Opt out of parallel tests on CI with option to override local using environment variable */
+  workers: process.env.CI
+  ? 1 // CI always serial
+  : process.env.PW_WORKERS // allow local override
+    ? parseInt(process.env.PW_WORKERS)
+    : undefined, // default = max cores
+    
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

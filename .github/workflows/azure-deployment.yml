@@ -18,6 +18,8 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     # ================================
@@ -25,6 +27,9 @@ jobs:
     # ================================
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
       
     # ================================
     # STEP 2: SETUP NODE.JS FOR REACT
@@ -182,6 +187,10 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
+        echo "Setting up branch for commit..."
+        git fetch origin
+        git checkout -B ${{ github.head_ref || github.ref_name }}
+
         echo "Adding built files to git..."
         git add -f templates/ static/
 
@@ -190,12 +199,10 @@ jobs:
           echo "No changes to commit"
         else
           echo "Committing built frontend files..."
-          git commit -m "Auto-build: Update frontend build files
-
-Built from commit ${{ github.sha }}"
+          git commit -m "Auto-build: Update frontend build files - Built from commit ${{ github.sha }}"
 
           echo "Pushing changes..."
-          git push
+          git push origin ${{ github.head_ref || github.ref_name }}
         fi
     
     # ================================

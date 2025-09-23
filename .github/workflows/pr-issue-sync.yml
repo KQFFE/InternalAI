@@ -1,6 +1,5 @@
 name: Sync PR Body with Linked Issue
 
-# This workflow runs whenever a pull request is opened, reopened, or synchronized.
 on:
   pull_request:
     types:
@@ -8,37 +7,29 @@ on:
       - reopened
       - synchronize
 
-# A single job to perform the sync.
 jobs:
   sync:
     permissions:
-      # Grant read permission for issues to fetch issue details
       issues: read
-      # Grant write permission for pull-requests to update the PR body
       pull-requests: write
-    # Runs on the latest version of Ubuntu.
     runs-on: ubuntu-latest
     
     steps:
-      # Step 1: Use the issues-helper action to find the linked issue and get its body.
-      # The `github-token` is required to interact with the GitHub API.
-      - name: 🔍 Get linked issue body and number
+      - name: ✍️ Sync PR Body from Linked Issue
         uses: actions/github-script@v6
-        id: issues-helper
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
           script: |
-            const body = context.payload.pull_request.body;
-            console.log(`Searching for linked issue in PR body:\n---\n${body}\n---`);
-            if (!body) {
+            // Part 1: Get Linked Issue
+            const prBody = context.payload.pull_request.body;
+            console.log(`Searching for linked issue in PR body:\n---\n${prBody}\n---`);
+            if (!prBody) {
               core.setFailed('PR body is empty. Cannot find linked issue.');
               return;
             }
 
-            // Regex to find keywords like "resolves #123", "closes #123", "fixes #123"
             const regex = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/i;
-            const match = body.match(regex);
+            const match = prBody.match(regex);
 
             if (!match) {
               core.setFailed('Could not find a linked issue in the PR body. Use keywords like "resolves #123".');
@@ -55,26 +46,14 @@ jobs:
             });
 
             const issueBody = issue.data.body || '';
-            core.setOutput('issue-body', issueBody);
-            core.setOutput('issue-number', issueNumber);
+            console.log(`Parsing issue #${issueNumber} body:\n---\n${issueBody}\n---`);
 
-      # Step 2: Use github-script to update the PR body with the template.
-      # This step uses the output from the previous step.
-      - name: ✍️ Update PR body with issue details
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const currentBody = context.payload.pull_request.body || '';
-
+            // Part 2: Construct and Update PR Body
             function getSection(body, title) {
-              const regex = new RegExp(`###\s+${title}:?\s*\n([\s\S]*?)(?=\n###|$)`, 'i');
+              const regex = new RegExp(`###\s+${title}:?\s*\n([\s\S]*?)(?=\n###|\n---|\n\s*$)`, 'i');
               const match = body.match(regex);
               return match ? match[1].trim() : null;
             }
-
-            const issueBody = `${{ steps.issues-helper.outputs.issue-body }}`;
-            const issueNumber = `${{ steps.issues-helper.outputs.issue-number }}`;
-            console.log(`Parsing issue #${issueNumber} body:\n---\n${issueBody}\n---`);
 
             const description = getSection(issueBody, 'Description');
             const acceptanceCriteria = getSection(issueBody, 'Acceptance Criteria');
@@ -83,14 +62,24 @@ jobs:
             const finalAcceptanceCriteria = acceptanceCriteria || '*(No acceptance criteria found in issue)*';
 
             // --- PRESERVE EXISTING CONTENT ---
-            const existingHowToTest = getSection(currentBody, 'How to Test');
-            const existingReadyChecklist = getSection(currentBody, 'Definition of Ready Checklist');
+            const existingHowToTest = getSection(prBody, 'How to Test');
+            const existingReadyChecklist = getSection(prBody, 'Definition of Ready Checklist');
 
             const preservedHowToTest = existingHowToTest || '*(Please provide clear, step-by-step instructions on how to test this PR.)*\n1. \n2. \n3. ';
 
-            // Preserve checkbox state by finding all lines that start with '- ['
-            const preservedReadyChecklist = existingReadyChecklist ? existingReadyChecklist.split('\n').filter(line => line.trim().startsWith('- [')).join('\n') : '- [ ] Code is documented and commented where needed.\n- [ ] All new and existing tests pass.\n- [ ] A review has been requested from at least one other team member.\n- [ ] All code has been reviewed by the developer for logic and formatting.\n- [ ] All new code has been linted and is free of formatting errors.';
-
+            // Preserve checkbox state and ensure all default items are present
+            const defaultChecklistItems = [
+                '- [ ] Code is documented and commented where needed.',
+                '- [ ] All new and existing tests pass.',
+                '- [ ] A review has been requested from at least one other team member.',
+                '- [ ] All code has been reviewed by the developer for logic and formatting.',
+                '- [ ] All new code has been linted and is free of formatting errors.'
+            ];
+            
+            const preservedReadyChecklist = defaultChecklistItems.map(defaultItem => {
+                const existingItem = existingReadyChecklist && existingReadyChecklist.split('\n').find(line => line.trim().endsWith(defaultItem.substring(4)));
+                return existingItem || defaultItem;
+            }).join('\n');
 
             const template = [
               `### Linked Issue`,

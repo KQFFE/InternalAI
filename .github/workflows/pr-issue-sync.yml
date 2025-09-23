@@ -64,28 +64,34 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            // Helper function to extract a section from the issue body by its heading.
-            // This is now more robust: handles optional colons and is case-insensitive.
+            const currentBody = context.payload.pull_request.body || '';
+
             function getSection(body, title) {
-              const regex = new RegExp(`###\\s+${title}:?\\s*\\n([\\s\\S]*?)(?=\\n###|$)`, 'i');
+              const regex = new RegExp(`###\s+${title}:?\s*\n([\s\S]*?)(?=\n###|$)`, 'i');
               const match = body.match(regex);
               return match ? match[1].trim() : null;
             }
 
-            // Access the issue body from the previous step's output.
             const issueBody = `${{ steps.issues-helper.outputs.issue-body }}`;
             const issueNumber = `${{ steps.issues-helper.outputs.issue-number }}`;
             console.log(`Parsing issue #${issueNumber} body:\n---\n${issueBody}\n---`);
 
-            // Extract Description and Acceptance Criteria from the issue body.
             const description = getSection(issueBody, 'Description');
             const acceptanceCriteria = getSection(issueBody, 'Acceptance Criteria');
 
-            // Use the extracted sections, or provide sensible fallbacks.
-            const finalDescription = description || issueBody; // If no description section, use the whole body.
+            const finalDescription = description || issueBody;
             const finalAcceptanceCriteria = acceptanceCriteria || '*(No acceptance criteria found in issue)*';
 
-            // Define the template to be used.
+            // --- PRESERVE EXISTING CONTENT ---
+            const existingHowToTest = getSection(currentBody, 'How to Test');
+            const existingReadyChecklist = getSection(currentBody, 'Definition of Ready Checklist');
+
+            const preservedHowToTest = existingHowToTest || '*(Please provide clear, step-by-step instructions on how to test this PR.)*\n1. \n2. \n3. ';
+
+            // Preserve checkbox state by finding all lines that start with '- ['
+            const preservedReadyChecklist = existingReadyChecklist ? existingReadyChecklist.split('\n').filter(line => line.trim().startsWith('- [')).join('\n') : '- [ ] Code is documented and commented where needed.\n- [ ] All new and existing tests pass.\n- [ ] A review has been requested from at least one other team member.\n- [ ] All code has been reviewed by the developer for logic and formatting.\n- [ ] All new code has been linted and is free of formatting errors.';
+
+
             const template = [
               `### Linked Issue`,
               `Resolves #${issueNumber}`,
@@ -99,20 +105,12 @@ jobs:
               `---`,
               ``,
               `### Definition of Ready Checklist`,
-              `- [ ] Code is documented and commented where needed.`,
-              `- [ ] All new and existing tests pass.`,
-              `- [ ] A review has been requested from at least one other team member.`,
-              `- [ ] All code has been reviewed by the developer for logic and formatting.`,
-              `- [ ] All new code has been linted and is free of formatting errors.`,
+              `${preservedReadyChecklist}`,
               ``,
               `### How to Test`,
-              `*(Please provide clear, step-by-step instructions on how to test this PR.)*`,
-              `1. `,
-              `2. `,
-              `3. `
+              `${preservedHowToTest}`
             ].join('\n');
 
-            // Update the pull request body using the GitHub REST API.
             await github.rest.pulls.update({
               owner: context.repo.owner,
               repo: context.repo.repo,

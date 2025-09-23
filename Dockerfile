@@ -29,8 +29,8 @@ COPY backend/ backend/
 COPY run.py .
 
 # Copy frontend build files (static assets and templates)
-COPY templates/ templates/
-COPY static/ static/
+COPY frontend/build/ templates/
+COPY frontend/build/static/ static/
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser \

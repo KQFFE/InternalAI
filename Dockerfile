@@ -28,9 +28,22 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ backend/
 COPY run.py .
 
-# Copy frontend build files (static assets and templates)
-COPY frontend/build/ templates/
-COPY frontend/build/static/ static/
+# Install Node.js for frontend build
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Copy frontend source and build
+COPY frontend/package*.json frontend/
+WORKDIR /app/frontend
+RUN npm ci --only=production
+COPY frontend/ .
+RUN npm run build
+
+# Copy built frontend files to Flask locations
+WORKDIR /app
+RUN cp -r frontend/build/* templates/ 2>/dev/null || mkdir -p templates \
+    && cp frontend/build/index.html templates/ \
+    && cp -r frontend/build/static static/ 2>/dev/null || mkdir -p static
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser \

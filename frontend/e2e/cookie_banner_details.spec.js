@@ -1,4 +1,3 @@
-
 import { test, expect } from '@playwright/test';
 
 const LOCATORS = {
@@ -104,5 +103,61 @@ test.describe('Cookie Banner Content and Functionality', () => {
       page.waitForRequest(req => req.url().includes('/test-callback/onSavePreferences')),
       page.locator(LOCATORS.saveCookiePreferencesTestId).click(),
     ]);
+  });
+
+  test('should collapse expanded category when details are hidden and re-shown', async ({ page }) => {
+    await page.goto('/');
+    const showDetailsButton = page.getByRole('button', { name: 'Visa detaljer' });
+    await showDetailsButton.click();
+
+    // Expand a cookie category
+    const functionalCategoryButton = page.getByRole('button', { name: /funktionella/i });
+    await functionalCategoryButton.click();
+
+    // Check for category content
+    const categoryDescription = page.getByText(/Funktionella cookies gör det möjligt att spara uppgifter/i);
+    await expect(categoryDescription).toBeVisible();
+    
+    const optimizelyService = page.getByText('Optimizely', { exact: true });
+    await expect(optimizelyService).toBeVisible();
+
+    // Hide details
+    const hideDetailsButton = page.getByRole('button', { name: 'Dölj detaljer' });
+    await hideDetailsButton.click();
+
+    // Verify the details are hidden
+    await expect(optimizelyService).not.toBeVisible();
+
+    // Show details again
+    const showDetailsAgainButton = page.getByRole('button', { name: 'Visa detaljer' });
+    await showDetailsAgainButton.click();
+
+    // The content of the previously expanded category should not be visible
+    await expect(page.getByText('Optimizely', { exact: true })).not.toBeVisible();
+  });
+
+  test('should show cookie details when a category is expanded and collapse others', async ({ page }) => {
+    await page.goto('/');
+    const showDetailsButton = page.getByRole('button', { name: 'Visa detaljer' });
+    await showDetailsButton.click();
+
+    // Expand the 'Funktionella' category
+    const functionalCategoryButton = page.getByRole('button', { name: /funktionella/i });
+    await functionalCategoryButton.click();
+
+    // Check that a cookie from that category is now visible
+    const optimizelyService = page.getByText('Optimizely', { exact: true });
+    await expect(optimizelyService).toBeVisible();
+
+    // Expand the 'Marketing' category, which should collapse 'Funktionella'
+    const marketingCategoryButton = page.getByRole('button', { name: /marketing/i });
+    await marketingCategoryButton.click();
+
+    // Check that 'Optimizely' is no longer visible
+    await expect(optimizelyService).not.toBeVisible();
+
+    // Check that a cookie from the 'Marketing' category is now visible
+    const hubspotService = page.getByText('HubSpot', { exact: true });
+    await expect(hubspotService.first()).toBeVisible();
   });
 });

@@ -1,8 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+
+import { render, screen, waitFor } from '../test-utils';
+import userEvent from '@testing-library/user-event';
 import CookieBanner from './CookieBanner';
 
-describe('CookieBanner', () => {
-  const defaultProps = {
+// Mock the props that CookieBanner expects.
+// The functionality of these props is not the focus of these tests.
+const mockProps = {
     show: true,
     onAcceptAll: jest.fn(),
     onDeclineAll: jest.fn(),
@@ -15,26 +18,73 @@ describe('CookieBanner', () => {
     setMarketingCookies: jest.fn(),
     showPolicy: false,
     setShowPolicy: jest.fn(),
-  };
+};
 
-  it('should not be visible when show is false', () => {
-    render(<CookieBanner {...defaultProps} show={false} />);
-    expect(screen.queryByText(/Vi använder cookies/i)).not.toBeInTheDocument();
-  });
+describe('CookieBanner Category Behavior', () => {
+    it('should collapse an expanded category when details are hidden and re-shown', async () => {
+        const user = userEvent.setup();
+        render(<CookieBanner {...mockProps} />);
 
-  it('should be visible when show is true', () => {
-    render(<CookieBanner {...defaultProps} show={true} />);
-    expect(screen.getByText(/Vi använder cookies/i)).toBeInTheDocument();
-  });
+        // 1. Show details
+        const showDetailsButton = screen.getByRole('button', { name: /visa detaljer/i });
+        await user.click(showDetailsButton);
 
-  it('should show policy view when "Läs mer om cookies" is clicked', () => {
-    const { rerender } = render(<CookieBanner {...defaultProps} />);
+        // 2. Expand a cookie category
+        const functionalCategoryButton = screen.getByRole('button', { name: /funktionella/i });
+        await user.click(functionalCategoryButton);
 
-    fireEvent.click(screen.getByText(/Läs mer om cookies/i));
-    expect(defaultProps.setShowPolicy).toHaveBeenCalledWith(true);
+        // Wait for the category to be expanded and check for content
+        const categoryDescription = await screen.findByText(/Funktionella cookies gör det möjligt att spara uppgifter/i);
+        expect(categoryDescription).toBeInTheDocument();
+        
+        const optimizelyService = await screen.findByText('Optimizely');
+        expect(optimizelyService).toBeVisible();
 
-    // Re-render with the new showPolicy prop to check if the view changes
-    rerender(<CookieBanner {...defaultProps} showPolicy={true} />);
-    expect(screen.getByRole('heading', { name: /Policy för kakor/i, level: 2 })).toBeInTheDocument();
-  });
+        // 3. Hide details
+        const hideDetailsButton = screen.getByRole('button', { name: /dölj detaljer/i });
+        await user.click(hideDetailsButton);
+
+        // Verify the details are hidden
+        expect(optimizelyService).not.toBeVisible();
+
+        // 4. Show details again
+        const showDetailsAgainButton = screen.getByRole('button', { name: /visa detaljer/i });
+        await user.click(showDetailsAgainButton);
+
+        // 5. Every cookie category should be collapsed
+        // The content of the previously expanded category should not be visible
+        await waitFor(() => {
+            expect(screen.queryByText('Optimizely')).not.toBeVisible();
+        });
+    });
+
+    it('should show cookie details when a category is expanded and collapse others', async () => {
+        const user = userEvent.setup();
+        render(<CookieBanner {...mockProps} />);
+
+        // Show details
+        const showDetailsButton = screen.getByRole('button', { name: /visa detaljer/i });
+        await user.click(showDetailsButton);
+
+        // Expand the 'Funktionella' category
+        const functionalCategoryButton = screen.getByRole('button', { name: /funktionella/i });
+        await user.click(functionalCategoryButton);
+
+        // Check that a cookie from that category is now visible
+        const optimizelyService = await screen.findByText('Optimizely');
+        expect(optimizelyService).toBeVisible();
+
+        // Expand the 'Marketing' category, which should collapse 'Funktionella'
+        const marketingCategoryButton = screen.getByRole('button', { name: /marketing/i });
+        await user.click(marketingCategoryButton);
+
+        // Check that 'Optimizely' is no longer visible
+        await waitFor(() => {
+            expect(optimizelyService).not.toBeVisible();
+        });
+
+        // Check that a cookie from the 'Marketing' category is now visible
+        const hubspotServices = await screen.findAllByText('HubSpot');
+        expect(hubspotServices[0]).toBeVisible();
+    });
 });

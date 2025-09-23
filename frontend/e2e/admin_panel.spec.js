@@ -37,7 +37,6 @@ const LOCATORS = {
 
 test.describe('Admin Panel E2E Tests', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/');
         //await dismissCookieBanner(page);
 
         // Mock the admin team API to prevent errors, as the admin panel might fetch this

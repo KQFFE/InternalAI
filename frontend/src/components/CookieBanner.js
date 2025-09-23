@@ -1,31 +1,193 @@
 import { useState, useEffect, useRef } from 'react';
 import '../cookie-banner.css';
 
+const cookieDefinitions = {
+    'cloudflare-functional': { service: 'Cloudflare', purpose: 'Stödjer webbplatsens tekniska funktioner.', privacyPolicy: 'https://www.cloudflare.com/privacypolicy/', name: '__cf_bm' },
+    'optimizely-functional': { service: 'Optimizely', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen. Informationen används för att spåra och analysera användarbeteendet och att leverera målinriktad annonsering.', privacyPolicy: 'https://www.optimizely.com/privacy', name: 'EPiStateMarker' },
+    'cloudflare-functional-clearance': { service: 'Cloudflare', purpose: 'Krävs för att webbplatsen ska fungera.', privacyPolicy: 'https://www.cloudflare.com/privacypolicy/', name: 'cf_clearance' },
+    'azure-statistic': { service: 'Microsoft Azure', purpose: 'Samlar in information om användarna, som används för marknadsanalys och rapporteringsändamål.', privacyPolicy: 'https://www.microsoft.com/en-us/privacy/privacystatement' },
+    'contentsquare-statistic': { service: 'ContentSquare', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen. Informationen används för att spåra och analysera användarbeteendet och för att möta de enskilda användarnas behov.', privacyPolicy: 'https://contentsquare.com/privacy-center/privacy-policy/' },
+    'google-analytics-statistic': { service: 'Google Analytics', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen för analys och rapportering.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en' },
+    'piwik-pro-statistic': { service: 'Piwik PRO', purpose: 'Samlar anonym information om användarna och deras aktivitet på webbplatsen för analys- och rapporteringsändamål.', privacyPolicy: 'https://piwik.pro/privacy-policy' },
+    'vimeo-statistic': { service: 'Vimeo', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen genom inbyggda videospelare för analys och rapporteringsändamål.', privacyPolicy: 'https://vimeo.com/privacy', name: 'vuid' },
+    'contentsquare-statistic-root': { service: 'ContentSquare', purpose: 'Samlar information om användarna och deras verksamhet på webbplatsen. Används för att leverera personlig kundservice och innehåll.', privacyPolicy: 'https://contentsquare.com/privacy-center/privacy-policy/', name: '_cs_root-domain' },
+    'contentsquare-statistic-same-site': { service: 'ContentSquare', purpose: 'Stöder funktionerna i ett "Content Management System" med inbyggd analys av användarbeteende.', privacyPolicy: 'https://contentsquare.com/privacy-center/privacy-policy/', name: '_cs_same_site' },
+    'hubspot-marketing': { service: 'HubSpot', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen. Informationen används för att spåra och analysera användarbeteendet och att leverera målinriktad annonsering.', privacyPolicy: 'https://legal.hubspot.com/privacy-policy' },
+    'google-marketing': { service: 'Google', purpose: 'Stödjer integrationen av en tredjepartsplattform på webbplatsen för att leverera riktade annonser.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en' },
+    'linkedin-marketing': { service: 'LinkedIn', purpose: 'Stödjer marknadsföring online genom att samla in information om användarna för att marknadsföra produkter via partners och andra plattformar.', privacyPolicy: 'https://www.linkedin.com/legal/privacy-policy' },
+    'facebook-marketing': { service: 'Facebook', purpose: 'Identifierar webbläsare för att tillhandahålla reklam och webbplatsanalystjänster.', privacyPolicy: 'https://www.facebook.com/privacy/explanation', name: '_fbp' },
+    'youtube-marketing': { service: 'Youtube, Google', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen genom inbyggda videospelare med syfte att leverera riktade annonser.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en' },
+    'youtube-marketing-metadata': { service: 'Youtube, Google', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen. Informationen används för att spåra och analysera användarbeteendet, för att möta de enskilda användarnas behov och att leverera målinriktad annonsering.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en', name: 'VISITOR_PRIVACY_METADATA' },
+    'youtube-marketing-rollout': { service: 'Youtube, Google', purpose: 'Stödjer integrationen av en tredjepartsplattform på webbplatsen.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en', name: '__Secure-ROLLOUT_TOKEN' },
+    'youtube-marketing-visitor': { service: 'Youtube, Google', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen genom inbyggda videospelare med syfte att leverera riktade annonser.', privacyPolicy: 'https://policies.google.com/technologies/partner-sites?hl=en', name: 'VISITOR_INFO1_LIVE' },
+    'podbean-marketing': { service: 'Podbean', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen genom webbinnehåll med syfte att leverera riktade annonser.', privacyPolicy: 'https://www.podbean.com/privacy', name: 'PBSECURESUSID' },
+    'google-unclassified': { service: '', purpose: '', privacyPolicy: '', name: 'GCL_AW_P' },
+};
+
+const expandCookies = (cookies) => {
+    return cookies.flatMap(cookie => {
+        if (cookie.providers) {
+            const { providers, ...rest } = cookie;
+            return providers.map(provider => ({
+                ...rest,
+                provider,
+            }));
+        }
+        return cookie;
+    });
+};
+
+const necessaryCookiesCompact = [
+    { service: 'Cookie Information', purpose: 'Stödjer webbplatsens tekniska funktioner.', privacyPolicy: 'https://cookieinformation.com/cookie-and-privacy-policy/', expiry: 'ett år', name: 'CookieInformationConfig', provider: 'policy.app.cookieinformation.com' },
+    { service: 'Microsoft Azure', purpose: 'Krävs för att webbplatsen ska fungera.', privacyPolicy: 'https://www.microsoft.com/en-us/privacy/privacystatement', expiry: 'Session', name: 'ARRAffinity', provider: '.www.knowit.se' },
+    { service: 'Microsoft Azure', purpose: 'Krävs för att webbplatsen ska fungera.', privacyPolicy: 'https://www.microsoft.com/en-us/privacy/privacystatement', expiry: 'Session', name: 'ARRAffinitySameSite', provider: '.www.knowit.se' },
+    { cookieKey: 'cloudflare-functional', expiry: 'Session', providers: ['.hsforms.com', '.info.knowit.se', '.hubspot.com', '.vimeo.com', '.blogg.knowit.se'] },
+    { service: 'Cookie Information', purpose: 'Used to share consent across domains.', privacyPolicy: 'https://cookieinformation.com/cookie-and-privacy-policy/', expiry: 'ett år', name: 'CookieInformationConsent_xxx', provider: 'policy.app.cookieinformation.com' },
+    { service: 'Cookie Information', purpose: 'Stödjer webbplatsens tekniska funktioner.', privacyPolicy: 'https://cookieinformation.com/cookie-and-privacy-policy/', expiry: 'ett år', name: 'CookieInformationConsent', providers: ['www.knowit.se', 'blogg.knowit.se'] },
+    { cookieKey: 'piwik-pro-statistic', expiry: '30 minuter', name: '_pk_sesxxx', provider: '.knowit.se' },
+    { cookieKey: 'piwik-pro-statistic', expiry: '30 minuter', name: '_pk_idxxx', provider: '.knowit.se' },
+    { service: 'Microsoft, ASP.NET', purpose: 'Samlar in information om webbplatsen och dess innehåll för rapportering och säkerhetsändamål.', privacyPolicy: 'https://www.microsoft.com/en-us/privacy/privacystatement', expiry: 'Session', name: '.AspNetCore.Antiforgeryxxx', provider: 'www.knowit.se' },
+];
+
+const functionalCookiesCompact = [
+    { cookieKey: 'cloudflare-functional', expiry: '29 minuter', providers: ['.info.knowit.se', '.hsforms.com', '.hs-analytics.net', '.hsappstatic.net', '.hs-scripts.com', '.hubspot.com', '.hs-banner.com'] },
+    { cookieKey: 'cloudflare-functional', expiry: '4 minuter', provider: '.vimeo.com' },
+    { cookieKey: 'optimizely-functional', expiry: 'Session', provider: 'www.knowit.se' },
+    { cookieKey: 'cloudflare-functional', expiry: '24 minuter', provider: '.hsforms.net' },
+    { cookieKey: 'cloudflare-functional', expiry: '26 minuter', provider: '.hubspot.net' },
+    { cookieKey: 'cloudflare-functional', expiry: 'några sekunder', providers: ['.twitter.com', '.hsstatic.net', '.hubspotvideo.com'] },
+    { cookieKey: 'cloudflare-functional', expiry: '17 minuter', providers: ['.hubspotusercontent-eu1.net', '.blogg.knowit.se', '.hubspotusercontent-na1.net'] },
+    { cookieKey: 'cloudflare-functional-clearance', expiry: 'ett år', provider: '.podbean.com' },
+];
+
+const statisticCookiesCompact = [
+    { cookieKey: 'azure-statistic', expiry: 'ett år', name: 'ai_user', provider: 'www.knowit.se' },
+    { cookieKey: 'azure-statistic', expiry: '30 minuter', name: 'ai_session', provider: 'www.knowit.se' },
+    { cookieKey: 'contentsquare-statistic', expiry: 'ett år', name: '_cs_id', providers: ['.knowit.se', '.blogg.knowit.se'] },
+    { cookieKey: 'contentsquare-statistic', expiry: 'ett år', name: '_cs_c', provider: '.knowit.se' },
+    { cookieKey: 'google-analytics-statistic', expiry: 'ett år', name: '_ga', provider: '.knowit.se' },
+    { cookieKey: 'piwik-pro-statistic', expiry: '30 minuter', name: '_pk_sesxxx', provider: '.knowit.se' },
+    { cookieKey: 'google-analytics-statistic', expiry: 'ett år', name: '_ga_xxx', providers: ['.knowit.se', 'blogg.knowit.se', '.blogg.knowit.se'] },
+    { cookieKey: 'piwik-pro-statistic', expiry: 'ett år', name: '_pk_idxxx', provider: '.knowit.se' },
+    { cookieKey: 'contentsquare-statistic', expiry: '30 minuter', name: '_cs_s', provider: '.knowit.se' },
+    { cookieKey: 'vimeo-statistic', expiry: 'ett år', provider: '.vimeo.com' },
+    { cookieKey: 'contentsquare-statistic', expiry: 'några sekunder', name: '_cs_s', provider: '.blogg.knowit.se' },
+    { cookieKey: 'contentsquare-statistic-root', expiry: 'Session', provider: '.knowit.se' },
+    { cookieKey: 'contentsquare-statistic-same-site', expiry: 'Session', provider: 'blogg.knowit.se' },
+];
+
+const marketingCookiesCompact = [
+    { cookieKey: 'hubspot-marketing', expiry: '6 månader', name: '__hstc', provider: '.knowit.se' },
+    { cookieKey: 'hubspot-marketing', expiry: '6 månader', name: 'hubspotutk', provider: '.knowit.se' },
+    { cookieKey: 'google-marketing', expiry: '3 månader', name: '_gcl_au', provider: '.knowit.se' },
+    { cookieKey: 'linkedin-marketing', expiry: '6 månader', name: 'li_gc', provider: '.linkedin.com' },
+    { cookieKey: 'facebook-marketing', expiry: '3 månader', provider: '.knowit.se' },
+    { cookieKey: 'hubspot-marketing', expiry: 'Session', name: '__hssrc', provider: '.knowit.se' },
+    { cookieKey: 'hubspot-marketing', expiry: '30 minuter', name: '__hssc', provider: '.knowit.se' },
+    { cookieKey: 'linkedin-marketing', expiry: 'ett år', name: 'bcookie', provider: '.linkedin.com' },
+    { cookieKey: 'linkedin-marketing', expiry: 'en dag', name: 'lidc', provider: '.linkedin.com' },
+    { cookieKey: 'youtube-marketing', expiry: 'Session', name: 'YSC', provider: '.youtube.com' },
+    { cookieKey: 'youtube-marketing-metadata', expiry: '6 månader', provider: '.youtube.com' },
+    { cookieKey: 'youtube-marketing-rollout', expiry: '6 månader', provider: '.youtube.com' },
+    { cookieKey: 'youtube-marketing-visitor', expiry: '6 månader', provider: '.youtube.com' },
+    { cookieKey: 'podbean-marketing', expiry: 'Session', provider: '.podbean.com' },
+    { cookieKey: 'google-marketing', expiry: '3 månader', name: '_gcl_aw', provider: '.knowit.se' },
+];
+
+const unclassifiedCookiesCompact = [
+    { cookieKey: 'google-unclassified', expiry: '3 månader', provider: '.googleadservices.com' },
+];
+
 const cookieCategories = [
     {
         name: 'necessary',
         label: 'Nödvändiga',
         description: 'Nödvändiga cookies hjälper dig att göra en hemsida användbar, genom att aktivera grundläggande funktioner såsom sidnavigering åtkomst till säkra områden på hemsidan. Hemsidan kan inte fungera optimalt utan dessa cookies.',
         isMutable: false,
+        cookies: expandCookies(necessaryCookiesCompact)
     },
     {
         name: 'functional',
         label: 'Funktionella',
         description: 'Funktionella cookies gör det möjligt att spara uppgifter som ändrar hemsidans utseende eller funktioner. T.ex ditt föredragna språk eller de region som du befinner dig i.',
         isMutable: true,
+        cookies: expandCookies(functionalCookiesCompact)
     },
     {
         name: 'statistic',
         label: 'Statistiska',
         description: 'Statistiska cookies hjälper hemsidans ägare att förstå hur besökare interagerar med hemsidan, genom att samla in och rapportera uppgifter.',
         isMutable: true,
+        cookies: expandCookies(statisticCookiesCompact)
     },
-    { name: 'marketing', label: 'Marketing', description: 'Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.', isMutable: true },
-    { name: 'unclassified', label: 'Oklassificerade', description: 'Oklassificerade cookies håller vi på att klassificera tillsammans med leverantörerna av leverantörerna av dessa cookies.', isMutable: false }, // Assuming unclassified are not mutable by user
+    { 
+        name: 'marketing', 
+        label: 'Marketing', 
+        description: 'Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.', 
+        isMutable: true, 
+        cookies: expandCookies(marketingCookiesCompact)
+    },
+    { 
+        name: 'unclassified', 
+        label: 'Oklassificerade', 
+        description: 'Oklassificerade cookies håller vi på att klassificera tillsammans med leverantörerna av leverantörerna av dessa cookies.', 
+        isMutable: false, 
+        cookies: expandCookies(unclassifiedCookiesCompact)
+    },
 ];
 
+const CookieDetails = ({ cookies }) => {
+    if (!cookies || cookies.length === 0) {
+        return null;
+    }
 
-const CookieCategory = ({ name, label, description, isOpen, onToggle, children }) => {
+    return (
+        <div role="table" aria-label="Cookie-information" className="coi-consent-banner__found-cookies">
+            {cookies.map((cookie, index) => {
+                const cookieInfo = cookie.cookieKey ? cookieDefinitions[cookie.cookieKey] : cookie;
+                const service = cookieInfo.service;
+                const purpose = cookieInfo.purpose;
+                const privacyPolicy = cookieInfo.privacyPolicy;
+                const expiry = cookie.expiry || cookieInfo.expiry;
+                const name = cookie.name || cookieInfo.name;
+                const provider = cookie.provider || cookieInfo.provider;
+
+                return (
+                    <div role="rowgroup" className="coi-consent-banner__cookie-details" key={index}>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-data-processor-name">
+                            <span role="cell" className="cookie-details__detail-title">Tjänst:</span>
+                            <span role="cell" className="cookie-details__detail-content">{service}</span>
+                        </div>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-purpose">
+                            <span role="cell" className="cookie-details__detail-title">Syfte:</span>
+                            <span role="cell" className="cookie-details__detail-content">{purpose}</span>
+                        </div>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-data-processor-privacy-policy">
+                            <span role="cell" className="cookie-details__detail-title">Integritetspolicy:</span>
+                            <span role="cell" className="cookie-details__detail-content"><a title="Integritetspolicy" rel="noopener noreferrer" tabIndex="0" target="_blank" href={privacyPolicy}>{service} - Integritetspolicy</a></span>
+                        </div>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-expiry">
+                            <span role="cell" className="cookie-details__detail-title">Utgångstid:</span>
+                            <span role="cell" className="cookie-details__detail-content">{expiry}</span>
+                        </div>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-name">
+                            <span role="cell" className="cookie-details__detail-title">Namn:</span>
+                            <span role="cell" className="cookie-details__detail-content">{name}</span>
+                        </div>
+                        <div role="row" className="cookie-details__detail-container cookie-details__detail-container-provider">
+                            <span role="cell" className="cookie-details__detail-title">Leverantör:</span>
+                            <span role="cell" className="cookie-details__detail-content">{provider}</span>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+
+const CookieCategory = ({ name, label, description, isOpen, onToggle, cookies }) => {
+    const headingId = `coi-category-heading-${name}`;
     return (
         <div className="coi-consent-banner__category-container">
             <div className="coi-consent-banner__category-controls">
@@ -35,6 +197,7 @@ const CookieCategory = ({ name, label, description, isOpen, onToggle, children }
                     aria-expanded={isOpen}
                     onClick={onToggle}
                     className="coi-consent-banner__category-name"
+                    id={headingId}
                 >
                     <div aria-hidden="true" className={`ci-arrow ${isOpen ? 'open' : ''}`}></div>
                     <h3 aria-label={label}>{label}</h3>
@@ -47,8 +210,9 @@ const CookieCategory = ({ name, label, description, isOpen, onToggle, children }
                 id={`description-container-cookie_cat_${name}`}
                 aria-hidden={!isOpen}
                 style={{ display: isOpen ? 'block' : 'none' }}
+                aria-labelledby={headingId}
             >
-                {children}
+                <CookieDetails cookies={cookies} />
             </div>
         </div>
     );
@@ -160,6 +324,11 @@ function CookieBanner({
         setOpenCategory(openCategory === category ? null : category);
     }
 
+    const handleHideDetails = () => {
+        setShowDetails(false);
+        setOpenCategory(null);
+    };
+
     // Show the "Save" button if preferences have been changed and at least one optional category is selected.
     const showSaveButton = preferencesChanged && (functionalityCookies || statisticsCookies || marketingCookies);
 
@@ -210,14 +379,14 @@ function CookieBanner({
                             {!showDetails ? (
                                 <button tabIndex="0" id="show_details" aria-label="Visa detaljer" onClick={() => setShowDetails(true)}>Visa detaljer</button>
                             ) : (
-                                <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={() => setShowDetails(false)}>Dölj detaljer</button>
+                                <button tabIndex="0" id="hide_details" aria-label="Dölj detaljer" onClick={handleHideDetails}>Dölj detaljer</button>
                             )}
                         </div>
 
                         {showDetails && (
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
                                 {cookieCategories.map(cat => (
-                                    <CookieCategory key={cat.name} name={cat.name} label={cat.label} description={cat.description} isOpen={openCategory === cat.name} onToggle={() => toggleCategory(cat.name)} />
+                                    <CookieCategory key={cat.name} name={cat.name} label={cat.label} description={cat.description} isOpen={openCategory === cat.name} onToggle={() => toggleCategory(cat.name)} cookies={cat.cookies} />
                                 ))}
                             </div>
                         )}

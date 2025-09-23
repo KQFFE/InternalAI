@@ -528,3 +528,39 @@
         max-width: 98vw;
     }
 }
+
+.coi-consent-banner__found-cookies {
+    margin-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1rem;
+}
+
+.coi-consent-banner__cookie-details {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.coi-consent-banner__cookie-details:last-child {
+    border-bottom: none;
+}
+
+.cookie-details__detail-container {
+    display: flex;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.cookie-details__detail-title {
+    font-weight: 600;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.cookie-details__detail-content {
+    flex-grow: 1;
+}
+
+.cookie-details__detail-content a {
+    color: #111827;
+    text-decoration: underline;
+}

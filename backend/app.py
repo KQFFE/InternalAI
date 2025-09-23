@@ -70,8 +70,8 @@ def get_team_data_from_db():
 def create_app(config_overrides=None):
     """Application factory."""
     app = Flask(__name__,
-                static_folder='static',
-                template_folder='templates',
+                static_folder='../static',
+                template_folder='../templates',
                 static_url_path='/static')
 
     # ================================

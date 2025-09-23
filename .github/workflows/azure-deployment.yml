@@ -156,37 +156,47 @@ jobs:
       run: |
         echo "Creating Flask template and static directories..."
         mkdir -p templates static
-        
+
         echo "Copying React build to Flask structure..."
-        
-        # Copy index.html to templates (Flask will serve this)
-        cp frontend/build/index.html templates/
-        echo "✅ Copied index.html to templates/"
-        
-        # Copy all static assets
+
+        # Copy ALL build files to templates (Flask serves everything from there)
+        cp -r frontend/build/* templates/
+        echo "✅ Copied all build files to templates/"
+
+        # Also copy static folder to root level (in case Flask looks there too)
         if [ -d "frontend/build/static" ]; then
           cp -r frontend/build/static/* static/
           echo "✅ Copied static assets to static/"
         fi
-        
-        # Copy other build files (favicon, manifest, etc.)
-        find frontend/build -maxdepth 1 -type f -name "*.ico" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" | while read file; do
-          cp "$file" static/
-          echo "✅ Copied $(basename "$file") to static/"
-        done
-        
-        # Copy team photos from public/img to static/img
-        if [ -d "frontend/public/img" ]; then
-          mkdir -p static/img
-          cp -r frontend/public/img/* static/img/
-          echo "✅ Copied team photos to static/img/"
-        else
-          echo "⚠️ No team photos found in frontend/public/img/"
-        fi
-        
+
         echo "Final structure:"
         ls -la templates/
         ls -la static/
+
+    # ================================
+    # STEP 12B: COMMIT BUILT FILES
+    # ================================
+    - name: 💾 Commit built frontend files
+      run: |
+        echo "Configuring git..."
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        echo "Adding built files to git..."
+        git add -f templates/ static/
+
+        # Only commit if there are changes
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Committing built frontend files..."
+          git commit -m "Auto-build: Update frontend build files
+
+Built from commit ${{ github.sha }}"
+
+          echo "Pushing changes..."
+          git push
+        fi
     
     # ================================
     # STEP 13: PREPARE DEPLOYMENT PACKAGE

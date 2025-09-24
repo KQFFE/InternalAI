@@ -146,6 +146,9 @@ def create_app(config_overrides=None):
         register_error_handlers(app)
         register_cli_commands(app)
 
+    # Log startup information for debugging
+    log_startup_info(app)
+
     return app
 
 def log_startup_info(app_instance):

@@ -164,14 +164,24 @@ jobs:
 
         echo "Copying React build to Flask structure..."
 
-        # Copy ALL build files to templates (Flask serves everything from there)
-        cp -r frontend/build/* templates/
-        echo "✅ Copied all build files to templates/"
+        # Copy index.html to templates (Flask serves this as main template)
+        cp frontend/build/index.html templates/
+        echo "✅ Copied index.html to templates/"
 
-        # Also copy static folder to root level (in case Flask looks there too)
+        # Copy static JS/CSS bundles to static folder
         if [ -d "frontend/build/static" ]; then
           cp -r frontend/build/static/* static/
-          echo "✅ Copied static assets to static/"
+          echo "✅ Copied JS/CSS bundles to static/"
+        fi
+
+        # Copy root-level files (favicon, manifest, images, etc.) to static folder where Flask expects them
+        find frontend/build -maxdepth 1 -type f \( -name "*.ico" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp {} static/ \;
+        echo "✅ Copied root-level files to static/"
+
+        # Copy img folder (team photos) to static
+        if [ -d "frontend/build/img" ]; then
+          cp -r frontend/build/img static/
+          echo "✅ Copied img folder to static/"
         fi
 
         echo "Final structure:"

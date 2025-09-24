@@ -158,6 +158,9 @@ def log_startup_info(app_instance):
     logger.info(f"📁 Working directory: {os.getcwd()}")
     logger.info(f"📊 Template folder: {app_instance.template_folder}")
     logger.info(f"📊 Static folder: {app_instance.static_folder}")
+    logger.info(f"🔍 Static folder exists: {os.path.exists(app_instance.static_folder)}")
+    if os.path.exists(app_instance.static_folder):
+        logger.info(f"📄 Files in static: {os.listdir(app_instance.static_folder)[:10]}")
     logger.info("⚛️  Frontend: React SPA with routing")
     logger.info("🔗 Backend: Flask REST API")
     logger.info("="*60)

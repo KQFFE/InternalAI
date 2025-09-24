@@ -69,9 +69,13 @@ def get_team_data_from_db():
 
 def create_app(config_overrides=None):
     """Application factory."""
+    # Calculate absolute paths to avoid Flask path resolution issues
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(backend_dir)
+
     app = Flask(__name__,
-                static_folder='../static',
-                template_folder='../templates',
+                static_folder=os.path.join(project_root, 'static'),
+                template_folder=os.path.join(project_root, 'templates'),
                 static_url_path='/static')
 
     # ================================

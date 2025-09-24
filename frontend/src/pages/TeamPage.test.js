@@ -42,11 +42,14 @@ describe('TeamPage Component', () => {
     expect(screen.getByText('Developer')).toBeInTheDocument();
   });
 
-  test('displays a loading message initially', () => {
+  test('displays a loading message with accessibility attributes', () => {
     // Temporarily override the mock to not resolve immediately
     global.fetch.mockImplementationOnce(() => new Promise(() => {}));
     render(<TeamPage />);
-    expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
+    const loadingIndicator = screen.getByTestId('loading-indicator');
+    expect(loadingIndicator).toBeInTheDocument();
+    expect(loadingIndicator).toHaveAttribute('aria-live', 'polite');
+    expect(loadingIndicator).toHaveAttribute('aria-label', 'Loading team members');
   });
 
   test('displays an error message if the fetch fails', async () => {

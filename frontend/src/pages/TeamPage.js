@@ -33,7 +33,12 @@ function TeamPage() {
     }, []);
 
     if (loading) {
-        return <div className="loading" data-testid="loading-indicator">Loading team members...</div>;
+        return <div
+            className="loading"
+            data-testid="loading-indicator"
+            aria-live="polite"
+            aria-label="Loading team members"
+        >Loading team members...</div>;
     }
 
     if (error) {

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿#!/bin/bash
+﻿﻿#!/bin/bash
 # run_all_tests.sh - InternalAI Test Suite (Matching CI/CD Pipeline)
 # Runs the same commands as GitHub Actions pipeline
 # Usage: ./run_all_tests.sh

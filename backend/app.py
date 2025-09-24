@@ -259,7 +259,7 @@ def register_routes(app):
         # Handle static files with extensions (favicon, images, etc.)
         if '.' in path and not path.startswith('api/') and not path.startswith('static/'):
             try:
-                return send_from_directory('static', path)
+                return send_from_directory(app.static_folder, path)
             except:
                 logger.error(f"Static file not found: {path}")
 
@@ -267,7 +267,7 @@ def register_routes(app):
         if path.startswith('static/'):
             static_path = path[7:]  # Remove 'static/' prefix
             try:
-                return send_from_directory('static', static_path)
+                return send_from_directory(app.static_folder, static_path)
             except Exception as e:
                 logger.error(f"Error serving static file {static_path}: {e}")
                 return jsonify({'error': 'File not found'}), 404
@@ -290,7 +290,7 @@ def register_routes(app):
         common_files = ['favicon.ico', 'robots.txt', 'manifest.json', 'team.json']
         if path in common_files:
             try:
-                return send_from_directory('static', path)
+                return send_from_directory(app.static_folder, path)
             except Exception as e:
                 logger.error(f"Error serving {path}: {e}")
                 return jsonify({'error': 'File not found'}), 404

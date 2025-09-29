@@ -7,102 +7,230 @@ on:
       - reopened
       - synchronize
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   sync:
     permissions:
+      contents: read
       issues: read
       pull-requests: write
     runs-on: ubuntu-latest
     
     steps:
-      - name: ✍️ Sync PR Body from Linked Issue
+      - name: 🛎️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ✍️ Sync PR Body from Issue and Template
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Part 1: Get Linked Issue
-            const prBody = context.payload.pull_request.body;
-            console.log(`Searching for linked issue in PR body:\n---\n${prBody}\n---`);
-            if (!prBody) {
-              core.setFailed('PR body is empty. Cannot find linked issue.');
-              return;
-            }
+            const fs = require('fs');
+            const path = require('path');
 
-            const regex = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/i;
-            const match = prBody.match(regex);
+            // --- CONFIGURATION ---
+            const CONFIG = {
+              templatePath: '.github/PR_TEMPLATE/pull_request_template.md',
+              sections: {
+                issue: {
+                  requirement: 'Requirement',
+                  userStory: 'User story',
+                  description: 'Description',
+                  acceptanceCriteria: 'Acceptance criteria',
+                },
+                pr: {
+                  linkedIssue: 'Linked Issue',
+                  description: 'Description',
+                  acceptanceCriteria: 'Acceptance Criteria',
+                  checklist: 'Definition of Ready Checklist',
+                  howToTest: 'How to Test',
+                }
+              },
+              placeholders: {
+                noAcceptanceCriteria: '*(No acceptance criteria found in issue)*',
+                noDescription: '*(No description found in issue)*',
+                linkedIssue: '[Issue #]'
+              }
+            };
 
-            if (!match) {
-              core.setFailed('Could not find a linked issue in the PR body. Use keywords like "resolves #123".');
-              return;
-            }
-
-            const issueNumber = match[1];
-            console.log(`Found linked issue number: ${issueNumber}`);
-
-            const issue = await github.rest.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-            });
-
-            const issueBody = issue.data.body || '';
-            console.log(`Parsing issue #${issueNumber} body:\n---\n${issueBody}\n---`);
-
-            // Part 2: Construct and Update PR Body
+            // --- HELPER FUNCTIONS (Line-based parsing, no Regex) ---
             function getSection(body, title) {
-              const regex = new RegExp(`###\s+${title}:?\s*\n([\s\S]*?)(?=\n###|\n---|\n\s*$)`, 'i');
-              const match = body.match(regex);
-              return match ? match[1].trim() : null;
+              if (!body) return null;
+              const lines = body.split(/\r?\n/);
+              let inSection = false;
+              const sectionLines = [];
+
+              for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine.toLowerCase().startsWith(`### ${title.toLowerCase()}`)) {
+                  inSection = true;
+                  const headerParts = line.split(':');
+                  if (headerParts.length > 1) {
+                      const restOfLine = headerParts.slice(1).join(':').trim();
+                      if (restOfLine) {
+                          sectionLines.push(restOfLine);
+                      }
+                  }
+                  continue;
+                }
+
+                if (inSection) {
+                  if (trimmedLine.startsWith('### ') || trimmedLine.startsWith('---')) {
+                    break;
+                  }
+                  sectionLines.push(line);
+                }
+              }
+              return inSection && sectionLines.length > 0 ? sectionLines.join('\n').trim() : null;
             }
 
-            const description = getSection(issueBody, 'Description');
-            const acceptanceCriteria = getSection(issueBody, 'Acceptance Criteria');
+            function replaceSection(body, title, newContent) {
+                const lines = body.split(/\r?\n/);
+                const resultLines = [];
+                let i = 0;
+                let sectionFound = false;
 
-            const finalDescription = description || issueBody;
-            const finalAcceptanceCriteria = acceptanceCriteria || '*(No acceptance criteria found in issue)*';
+                while (i < lines.length) {
+                    const line = lines[i];
+                    const trimmedLine = line.trim();
 
-            // --- PRESERVE EXISTING CONTENT ---
-            const existingHowToTest = getSection(prBody, 'How to Test');
-            const existingReadyChecklist = getSection(prBody, 'Definition of Ready Checklist');
+                    if (trimmedLine.toLowerCase().startsWith(`### ${title.toLowerCase()}`)) {
+                        sectionFound = true;
+                        resultLines.push(line); // Add the header line
+                        resultLines.push(newContent); // Add new content
 
-            const preservedHowToTest = existingHowToTest || '*(Please provide clear, step-by-step instructions on how to test this PR.)*\n1. \n2. \n3. ';
+                        // Skip old content
+                        let nextSectionIndex = i + 1;
+                        while (nextSectionIndex < lines.length) {
+                            const nextLine = lines[nextSectionIndex].trim();
+                            if (nextLine.startsWith('### ') || nextLine.startsWith('---')) {
+                                break;
+                            }
+                            nextSectionIndex++;
+                        }
+                        i = nextSectionIndex; // Move index to the start of the next section
+                    } else {
+                        resultLines.push(line);
+                        i++;
+                    }
+                }
+                return sectionFound ? resultLines.join('\n') : body;
+            }
 
-            // Preserve checkbox state and ensure all default items are present
-            const defaultChecklistItems = [
-                '- [ ] Code is documented and commented where needed.',
-                '- [ ] All new and existing tests pass.',
-                '- [ ] A review has been requested from at least one other team member.',
-                '- [ ] All code has been reviewed by the developer for logic and formatting.',
-                '- [ ] All new code has been linted and is free of formatting errors.'
-            ];
-            
-            const preservedReadyChecklist = defaultChecklistItems.map(defaultItem => {
-                const existingItem = existingReadyChecklist && existingReadyChecklist.split('\n').find(line => line.trim().endsWith(defaultItem.substring(4)));
-                return existingItem || defaultItem;
-            }).join('\n');
+            function replaceOrInsertSectionAfter(body, title, newContent, afterTitle) {
+                const lines = body.split(/\r?\n/);
+                let sectionFound = false;
+                for (const line of lines) {
+                    if (line.trim().toLowerCase().startsWith(`### ${title.toLowerCase()}`)) {
+                        sectionFound = true;
+                        break;
+                    }
+                }
 
-            const template = [
-              `### Linked Issue`,
-              `Resolves #${issueNumber}`,
-              ``,
-              `### Description`,
-              `${finalDescription}`,
-              ``,
-              `### Acceptance Criteria`,
-              `${finalAcceptanceCriteria}`,
-              ``,
-              `---`,
-              ``,
-              `### Definition of Ready Checklist`,
-              `${preservedReadyChecklist}`,
-              ``,
-              `### How to Test`,
-              `${preservedHowToTest}`
-            ].join('\n');
+                if (sectionFound) {
+                    return replaceSection(body, title, newContent);
+                } else {
+                    const resultLines = [];
+                    let inserted = false;
+                    for (const line of lines) {
+                        resultLines.push(line);
+                        if (!inserted && line.trim().toLowerCase().startsWith(`### ${afterTitle.toLowerCase()}`)) {
+                            resultLines.push('');
+                            resultLines.push(`### ${title}`);
+                            resultLines.push(newContent);
+                            inserted = true;
+                        }
+                    }
+                    if (!inserted) {
+                        resultLines.push('');
+                        resultLines.push(`### ${title}`);
+                        resultLines.push(newContent);
+                    }
+                    return resultLines.join('\n');
+                }
+            }
 
-            await github.rest.pulls.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-              body: template
-            });
+            // --- MAIN LOGIC ---
+            async function run() {
+              try {
+                const pr = context.payload.pull_request;
+                if (!pr) {
+                  console.log('Could not get pull request from context. Exiting.');
+                  return;
+                }
+                const prBody = pr.body || '';
+
+                const issueLinkRegex = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/i;
+                const issueMatch = prBody.match(issueLinkRegex);
+                if (!issueMatch) {
+                  console.log('Could not find a linked issue in the PR body. Exiting.');
+                  return;
+                }
+                const issueNumber = issueMatch[1];
+                const issueLinkText = issueMatch[0];
+
+                let issueBody = '';
+                try {
+                  const issue = await github.rest.issues.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                  });
+                  issueBody = issue.data.body || '';
+                  console.log(`--- Fetched Issue Body for #${issueNumber} ---\n${issueBody}\n-----------------------------------------`);
+                } catch (error) {
+                  core.setFailed(`Failed to fetch issue #${issueNumber}: ${error.message}`);
+                  return;
+                }
+
+                let templateContent = '';
+                try {
+                  templateContent = fs.readFileSync(CONFIG.templatePath, 'utf8');
+                } catch (error) {
+                  core.setFailed(`Failed to read PR template at ${CONFIG.templatePath}: ${error.message}`);
+                  return;
+                }
+                
+                let newBody = templateContent;
+
+                newBody = newBody.replace(CONFIG.placeholders.linkedIssue, issueLinkText);
+
+                const prHowToTest = getSection(prBody, CONFIG.sections.pr.howToTest);
+                if (prHowToTest) {
+                    newBody = replaceSection(newBody, CONFIG.sections.pr.howToTest, prHowToTest);
+                }
+                const prChecklist = getSection(prBody, CONFIG.sections.pr.checklist);
+                if (prChecklist) {
+                    newBody = replaceSection(newBody, CONFIG.sections.pr.checklist, prChecklist);
+                }
+
+                const issueAcceptanceCriteria = getSection(issueBody, CONFIG.sections.issue.acceptanceCriteria);
+                const finalCriteria = issueAcceptanceCriteria || CONFIG.placeholders.noAcceptanceCriteria;
+                newBody = replaceOrInsertSectionAfter(newBody, CONFIG.sections.pr.acceptanceCriteria, finalCriteria, CONFIG.sections.pr.description);
+
+                const issueDescription = getSection(issueBody, CONFIG.sections.issue.description);
+                const finalDescription = issueDescription || CONFIG.placeholders.noDescription;
+                newBody = replaceSection(newBody, CONFIG.sections.pr.description, finalDescription);
+
+                if (newBody.trim() !== prBody.trim()) {
+                  console.log("--- Updating PR Body ---");
+                  await github.rest.pulls.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    body: newBody,
+                  });
+                  console.log("--- PR Body Updated ---");
+                } else {
+                  console.log('PR body is already up-to-date.');
+                }
+
+              } catch (error) {
+                core.setFailed(error.message);
+              }
+            }
+
+            return run();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as XLSX from 'xlsx'; // For .xlsx and .xls files
+import ExcelJS from 'exceljs'; // For .xlsx and .xls files
 import Papa from 'papaparse'; // For .csv files
 import '../License.css'; //
 
@@ -29,13 +29,27 @@ function License() {
         // Handle XLSX/XLS file (existing logic)
         const reader = new FileReader();
 
-        reader.onload = (e) => {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
+        reader.onload = async (e) => {
+          const buffer = e.target.result;
+          const workbook = new ExcelJS.Workbook();
+          await workbook.xlsx.load(buffer);
 
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const json = XLSX.utils.sheet_to_json(worksheet);
+          const worksheet = workbook.getWorksheet(1);
+          const json = [];
+          const header = [];
+          worksheet.getRow(1).eachCell((cell) => {
+            header.push(cell.value);
+          });
+
+          worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 1) {
+              const rowData = {};
+              row.eachCell((cell, colNumber) => {
+                rowData[header[colNumber - 1]] = cell.value;
+              });
+              json.push(rowData);
+            }
+          });
           setExcelData(json);
         };
 

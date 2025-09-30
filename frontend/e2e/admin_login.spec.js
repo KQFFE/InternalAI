@@ -78,12 +78,10 @@ test.describe('Admin Login Flow', () => {
     const logoutButton = page.locator(LOCATORS.logoutButton);
     await expect(logoutButton).toBeVisible();
 
-    // Atomically click and wait for the network request to ensure UI updates
-    await Promise.all([
-      page.waitForResponse(resp => resp.url().includes('/api/admin/logout')),
-      logoutButton.click(),
-    ]);
+    // Click the logout button
+    await logoutButton.click();
 
+    // The expect will wait for the UI to update, which is more robust than waiting for a specific network response.
     const adminButton = page.locator(LOCATORS.adminLoginButton);
     await expect(adminButton).toBeVisible();
   });

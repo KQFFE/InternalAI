@@ -826,9 +826,11 @@ def register_routes(app):
     # ================================
     @app.route('/img/<path:filename>')
     def serve_image(filename):
-        """Serve image files from the UPLOAD_FOLDER, handling special characters"""
+        """Serve image files from static/img folder (temporary fix - see REFACTOR_STATIC_ASSET_SERVING.md)"""
         try:
-            return send_from_directory(UPLOAD_FOLDER, filename)
+            # Images are deployed to static/img/ in production container
+            img_folder = os.path.join(app.static_folder, 'img')
+            return send_from_directory(img_folder, filename)
         except FileNotFoundError:
             return "Image not found.", 404
         except Exception as e:

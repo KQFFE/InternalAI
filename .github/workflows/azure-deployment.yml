@@ -1,5 +1,5 @@
-﻿# .github/workflows/azure-deployment.yml
-# Complete CI/CD pipeline for InternalAI React + Flask app deployment to Azure
+# .github/workflows/azure-deployment.yml
+# CI/CD pipeline for InternalAI React + Flask app - Container-based deployment
 
 name: Build and Deploy InternalAI to Azure
 
@@ -16,23 +16,21 @@ env:
   NODE_VERSION: '18'
 
 jobs:
-  build-and-deploy:
+  # ================================
+  # JOB 1: TEST AND QUALITY CHECKS
+  # ================================
+  test-and-quality:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
+
     steps:
     # ================================
-    # STEP 1: CHECKOUT CODE
+    # CHECKOUT CODE
     # ================================
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-      
+
     # ================================
-    # STEP 2: SETUP NODE.JS FOR REACT
+    # SETUP NODE.JS FOR FRONTEND
     # ================================
     - name: 🟢 Set up Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v4
@@ -40,9 +38,9 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-    
+
     # ================================
-    # STEP 3: INSTALL FRONTEND DEPS
+    # INSTALL FRONTEND DEPENDENCIES
     # ================================
     - name: 📦 Install frontend dependencies
       working-directory: ./frontend
@@ -50,9 +48,9 @@ jobs:
         echo "Installing React dependencies..."
         npm ci --production=false
         echo "✅ Frontend dependencies installed"
-    
+
     # ================================
-    # NEW STEP 4: FRONTEND CODE ANALYSIS  
+    # FRONTEND TESTS AND ANALYSIS
     # ================================
     - name: 🔍 Run ESLint (JavaScript)
       working-directory: ./frontend
@@ -60,9 +58,6 @@ jobs:
         npx eslint src/ --format=compact --max-warnings=0
       continue-on-error: false
 
-    # ================================
-    # NEW STEP 5: FRONTEND CODE COVERAGE
-    # ================================
     - name: 📊 Run Frontend Tests with Coverage
       working-directory: ./frontend
       run: |
@@ -76,27 +71,16 @@ jobs:
         flags: frontend
 
     # ================================
-    # STEP 6: BUILD REACT APPLICATION
-    # ================================
-    - name: 🏗️ Build React application
-      working-directory: ./frontend
-      run: |
-        echo "Building React application..."
-        npm run build
-        echo "✅ React build completed"
-        ls -la build/
-    
-    # ================================
-    # STEP 7: SETUP PYTHON FOR FLASK
+    # SETUP PYTHON FOR BACKEND
     # ================================
     - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
-    
+
     # ================================
-    # STEP 8: INSTALL PYTHON DEPS
+    # INSTALL PYTHON DEPENDENCIES
     # ================================
     - name: 📦 Install Python dependencies
       run: |
@@ -107,7 +91,7 @@ jobs:
         echo "✅ Python dependencies installed"
 
     # ================================
-    # NEW STEP 9: BACKEND CODE COVERAGE  
+    # BACKEND TESTS AND ANALYSIS
     # ================================
     - name: 📊 Run Backend Tests with Coverage
       run: |
@@ -120,9 +104,9 @@ jobs:
       with:
         file: ./coverage.xml
         flags: backend
-    
+
     # ================================
-    # NEW STEP 10: BACKEND SECURITY ANALYSIS
+    # SECURITY SCANNING
     # ================================
     - name: 🛡️ Run Bandit (Python Security)
       run: |
@@ -130,9 +114,6 @@ jobs:
         bandit -r backend/ -f json -o bandit-report.json || true
         echo "✅ Security scan completed"
 
-    # ================================
-    # STEP 11: GENERATE SARIF REPORTS
-    # ================================
     - name: 🔍 Generate ESLint SARIF
       working-directory: ./frontend
       run: |
@@ -140,7 +121,7 @@ jobs:
         npx eslint src/ --format @microsoft/eslint-formatter-sarif --output-file eslint-report.sarif || true
       continue-on-error: true
 
-    - name: 📤 Upload ESLint results  
+    - name: 📤 Upload ESLint results
       uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -154,8 +135,56 @@ jobs:
         name: bandit-security-report
         path: bandit-report.json
 
+  # ================================
+  # JOB 2: BUILD AND DEPLOY
+  # ================================
+  build-and-deploy:
+    needs: test-and-quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
     # ================================
-    # STEP 12: INTEGRATE REACT WITH FLASK
+    # CHECKOUT CODE
+    # ================================
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # ================================
+    # SETUP NODE.JS FOR FRONTEND BUILD
+    # ================================
+    - name: 🟢 Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    # ================================
+    # BUILD FRONTEND
+    # ================================
+    - name: 📦 Install frontend dependencies
+      working-directory: ./frontend
+      run: |
+        echo "Installing React dependencies..."
+        npm ci --production=false
+        echo "✅ Frontend dependencies installed"
+
+    - name: 🏗️ Build React application
+      working-directory: ./frontend
+      run: |
+        echo "Building React application..."
+        npm run build
+        echo "✅ React build completed"
+        ls -la build/
+
+    # ================================
+    # INTEGRATE FRONTEND WITH FLASK
     # ================================
     - name: 🔧 Integrate React build with Flask
       run: |
@@ -174,7 +203,7 @@ jobs:
           echo "✅ Copied JS/CSS bundles to static/"
         fi
 
-        # Copy root-level files (favicon, manifest, images, etc.) to static folder where Flask expects them
+        # Copy root-level files (favicon, manifest, images, etc.) to static folder
         find frontend/build -maxdepth 1 -type f \( -name "*.ico" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp {} static/ \;
         echo "✅ Copied root-level files to static/"
 
@@ -188,101 +217,18 @@ jobs:
         ls -la templates/
         ls -la static/
 
-    
     # ================================
-    # STEP 13: PREPARE DEPLOYMENT PACKAGE
-    # ================================
-    - name: 📦 Create deployment package
-      run: |
-        echo "Creating deployment package..."
-        
-        # Instead of creating a subfolder, modify files in place for Azure deployment
-        # Azure's Oryx will build from the repository root, so files need to be there
-        # Debug: Check if run.py exists
-        echo "🔍 Checking if run.py exists:"
-        ls -la run.py || echo "❌ run.py not found!"
-
-        # Ensure run.py is in root (it should be already)
-        echo "📄 Verifying run.py is in repository root for Azure deployment..."
-        ls -la run.py && echo "✅ run.py found in root"
-
-        # Clean up test files and cache from repository for deployment
-        echo "🧹 Cleaning up test files and cache..."
-        rm -rf backend/tests/
-        rm -rf backend/__pycache__/
-        rm -rf backend/.pytest_cache/
-        rm -rf backend/htmlcov/
-        rm -f backend/.coverage
-        rm -f backend/coverage.xml 
-        
-        echo "📋 Repository ready for deployment:"
-        echo "📄 Key files in repository root:"
-        ls -la run.py requirements.txt 2>/dev/null || echo "Some files missing"
-        echo "📂 Backend directory:"
-        ls -la backend/ | head -5
-        echo "📂 Templates and static directories:"
-        ls -la templates/ static/ 2>/dev/null || echo "Frontend build folders ready"
-        
-        echo "✅ Repository prepared for Azure deployment"
-
-    
-    # ================================
-    # STEP 14: DEPLOY TO AZURE (MAIN BRANCH ONLY)
+    # CONTAINER BUILD AND DEPLOYMENT
     # ================================
     - name: 🔐 Azure Login
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
 
-    - name: 📦 Create atomic deployment zip
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        echo "Creating deployment zip to prevent race conditions..."
-
-        # Copy requirements.txt to root for Oryx
-        echo "📄 Copying requirements.txt to root for Oryx build..."
-        cp backend/requirements.txt requirements.txt
-        echo "✅ requirements.txt copied to root"
-        
-        # Verify requirements.txt exists before zipping
-        echo "🔍 Verifying requirements.txt exists in root..."
-        ls -la requirements.txt && echo "✅ requirements.txt confirmed in root"
-        
-        # Create zip with all necessary files, explicitly include requirements.txt
-        zip -r deployment.zip . \
-          -i "run.py" \
-          -i "requirements.txt" \
-          -i "backend/*" \
-          -i "templates/*" \
-          -i "static/*" \
-          -i "web.config" \
-          -x "frontend/node_modules/*" \
-          -x "frontend/build/*" \
-          -x "backend/__pycache__/*" \
-          -x "backend/.pytest_cache/*" \
-          -x "backend/tests/*" \
-          -x ".git/*" \
-          -x ".github/*" \
-          -x "*.pyc" \
-          -x "coverage.xml" \
-          -x "bandit-report.json"
-        
-        echo "✅ Atomic deployment zip created: $(du -h deployment.zip | cut -f1)"       
-        # Verify zip contents include requirements.txt
-        echo "🔍 Verifying zip contents..."
-        unzip -l deployment.zip | grep -E "(run\.py|requirements\.txt|backend/)" | head -10
-
-    # ================================
-    # STEP 14: CONTAINER DEPLOYMENT (BYPASS ORYX)
-    # ================================
     - name: 🔧 Set up Docker Buildx
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: docker/setup-buildx-action@v3
 
     - name: 🔑 Log in to Azure Container Registry
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: docker/login-action@v3
       with:
         registry: rginternalai.azurecr.io
@@ -290,7 +236,6 @@ jobs:
         password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
     - name: 🏗️ Build and push container image
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -302,7 +247,6 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: 🚀 Deploy container to Azure App Service
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "🚀 Deploying container to Azure App Service..."
 
@@ -329,27 +273,20 @@ jobs:
 
         echo "✅ Container deployment completed"
 
-
-
     # ================================
-    # STEP 14.5: VERIFY DEPLOYMENT
+    # VERIFY DEPLOYMENT
     # ================================
     - name: 🔍 Verify deployment and check logs
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "⏳ Waiting for app service to restart..."
         sleep 45
-        
-        echo "🔍 Checking application logs for database initialization..."
-        az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group rg-internalai-prod --output table --timeout 30 || echo "No logs available yet"
-        
+
         echo "🌐 App should be available at: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
 
     # ================================
-    # STEP 15: DEPLOYMENT SUMMARY
+    # DEPLOYMENT SUMMARY
     # ================================
     - name: 📊 Deployment Summary
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "🎉 Deployment completed successfully!"
         echo "🌐 Your app should be available at: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"

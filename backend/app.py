@@ -90,8 +90,20 @@ def create_app(config_overrides=None):
     # This ensures that 'flask db' and the app itself always use the same file.
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     default_db_path = os.path.join(project_root, 'instance', 'app.db')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', f'sqlite:///{default_db_path}')
+    database_url = os.environ.get('DATABASE_URL', f'sqlite:///{default_db_path}')
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Connection pool configuration for Azure SQL to prevent timeout issues
+    # SQLite doesn't support connection pooling, only apply for production databases
+    if not database_url.startswith('sqlite'):
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'pool_size': 5,           # Number of connections to maintain in pool
+            'max_overflow': 10,       # Maximum overflow connections beyond pool_size
+            'pool_timeout': 30,       # Seconds to wait for connection from pool
+            'pool_recycle': 3600,     # Recycle connections after 1 hour
+            'pool_pre_ping': True,    # Verify connections are alive before using them
+        }
 
     # Admin authentication configuration
     app.config['ADMIN_PASSWORD'] = os.environ.get('ADMIN_PASSWORD')

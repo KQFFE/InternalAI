@@ -75,7 +75,8 @@ echo "Command: npx playwright install-deps"
 echo "------------------------------------------------------"
 # This command installs system dependencies for WebKit, etc.
 # It will prompt for sudo password if needed.
-npx playwright install-deps
+# Updateed using --with-deps to ensure all dependencies are installed (GitHub issue #326)
+npx playwright install --with-deps
 FRONTEND_DEPS_EXIT=$?
 
 if [ $FRONTEND_DEPS_EXIT -eq 0 ]; then

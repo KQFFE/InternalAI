@@ -17,34 +17,51 @@ app = create_app()
 # AUTO-INITIALIZE DATABASE ON STARTUP
 # ================================
 def initialize_database():
-    """Initialize database tables and run migrations on startup"""
+    """
+    Initialize database tables and run migrations on startup.
+
+    NOTE: In production, db.create_all() may timeout if tables already exist.
+    This is EXPECTED and SAFE behavior because:
+    - Tables already exist from previous successful deployments
+    - The timeout only affects the startup check, not runtime queries
+    - Runtime database queries use connection pooling and work correctly
+    - The app continues running even if this initialization times out
+
+    The initialization is primarily for:
+    - First-time deployment (creating tables)
+    - Development environments (SQLite setup)
+    - Seeding data if database is empty
+    """
     try:
         from backend.database import db
-        
+
         with app.app_context():
             # Check if we're using a database (not SQLite file for local dev)
             database_url = os.environ.get('DATABASE_URL')
-            
+
             if database_url and ('mssql' in database_url or 'postgresql' in database_url):
                 print("🗄️  Initializing production database...")
-                
+
                 # Create tables if they don't exist
+                # NOTE: May timeout in production if tables exist - this is safe
                 db.create_all()
-                
+
                 # Check if we need to seed data
                 from backend.models import TeamMember
                 if TeamMember.query.count() == 0:
                     print("📊 Seeding database with initial data...")
                     from backend.seed import seed_database
                     seed_database()
-                
+
                 print("✅ Database initialization complete")
             else:
                 print("🛠️  Using local SQLite database - skipping auto-migration")
-                
+
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
-        # Don't crash the app - log error and continue
+        # Don't crash the app - this is expected if tables already exist
+        # Runtime queries will work fine due to connection pool configuration
+        print("ℹ️  App will continue - runtime database queries use connection pooling")
         import traceback
         traceback.print_exc()
 

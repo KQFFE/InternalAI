@@ -1290,33 +1290,47 @@ on:
 
 ## 🔄 **What Happens Automatically**
 
+The pipeline is split into **two separate jobs** for better organization and faster feedback:
+
 ### 📤 **On Push to Main:**
 ```
-You push → GitHub detects push → Pipeline starts → Full deployment
+You push → GitHub detects push → Pipeline starts → Job 1 (tests) → Job 2 (deployment)
 ```
 
-**Pipeline Steps (All Automatic):**
+**Job 1: test-and-quality (Runs on all branches)**
+1. ✅ **Checkout code** from your repository
+2. ✅ **Setup Node.js 18** and cache npm dependencies
+3. ✅ **Install frontend dependencies** (npm ci)
+4. ✅ **Run ESLint** (JavaScript code quality)
+5. ✅ **Run frontend tests** with coverage (Jest)
+6. ✅ **Upload frontend coverage** to Codecov
+7. ✅ **Setup Python 3.11** and cache pip dependencies
+8. ✅ **Install Python dependencies** from requirements.txt
+9. ✅ **Run backend tests** with coverage (pytest)
+10. ✅ **Upload backend coverage** to Codecov
+11. ✅ **Run security scans** (Bandit for Python, ESLint SARIF)
+
+**Job 2: build-and-deploy (Only on main branch)**
 1. ✅ **Checkout code** from your repository
 2. ✅ **Setup Node.js 18** and cache npm dependencies
 3. ✅ **Build React app** (npm ci, npm run build)
-4. ✅ **Setup Python 3.11** and cache pip dependencies
-5. ✅ **Install Flask dependencies** from requirements.txt
-6. ✅ **Integrate React with Flask** (copy build to templates/static)
-7. ✅ **Create deployment package** with dummy startup.sh
-8. ✅ **Deploy to Azure** App Service
-9. ✅ **Your app is live** at `https://qss-ai-webapp.azurewebsites.net`
+4. ✅ **Integrate React with Flask** (copy build to templates/static)
+5. ✅ **Login to Azure** and Azure Container Registry
+6. ✅ **Build Docker container** with React + Flask
+7. ✅ **Push container** to Azure Container Registry
+8. ✅ **Deploy container** to Azure App Service
+9. ✅ **Restart app service** and verify deployment
+10. ✅ **Your app is live** at `https://qss-ai-webapp.azurewebsites.net`
 
 ### 🧪 **On Pull Request:**
 ```
-You create PR → GitHub detects PR → Pipeline starts → Build & test only
+You create PR → GitHub detects PR → Pipeline starts → Job 1 (tests only)
 ```
 
 **Pipeline Steps (No Deployment):**
-1. ✅ **Checkout code** from PR branch
-2. ✅ **Build React app** (test if it builds successfully)
-3. ✅ **Setup Python** and install Flask dependencies
-4. ✅ **Integration test** (verify React + Flask integration works)
-5. ❌ **Skip deployment** (only builds/tests, no Azure deployment)
+1. ✅ **Runs Job 1 (test-and-quality)** - All tests, linting, and security scans
+2. ❌ **Skips Job 2 (build-and-deploy)** - Only runs on main branch
+3. ✅ **Provides fast feedback** - Tests fail quickly without waiting for deployment steps
 
 ## 🎯 **Deployment Conditions**
 
@@ -1422,11 +1436,13 @@ env:
 ```
 
 ### 🛠️ **Technical Details:**
-- **Azure Actions Version**: azure/login@v2, azure/webapps-deploy@v2
+- **Azure Actions Version**: azure/login@v2, docker/build-push-action@v5
 - **Node Setup**: actions/setup-node@v4 with npm caching
 - **Python Setup**: actions/setup-python@v4 with pip caching
-- **Deployment Package**: Creates dummy startup.sh to satisfy Azure Oryx build system
+- **Deployment Method**: Docker containerization (not Oryx build system)
+- **Container Registry**: rginternalai.azurecr.io
 - **Static Files**: React build integrated into Flask templates/static structure
+- **Job Dependencies**: build-and-deploy job requires test-and-quality to pass first
 
 ## 📋 **Summary**
 

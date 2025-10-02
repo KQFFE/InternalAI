@@ -2,238 +2,238 @@
   {
     "name": "Amanda Halvordsson",
     "role": "Tester",
-    "profilePicture": "/img/amanda-halvordsson.jpg",
+    "profilePicture": "/static/img/amanda-halvordsson.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/amandahalvordsson/",
     "active": true
   },
   {
     "name": "Bharti Ahuja",
     "role": "Tester",
-    "profilePicture": "/img/bharti-ahuja.jpg",
+    "profilePicture": "/static/img/bharti-ahuja.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/bharti-ahuja-018798160/",
     "active": true
   },
   {
     "name": "Christian Jepson",
     "role": "Tester",
-    "profilePicture": "/img/fallback-knowit.png",
+    "profilePicture": "/static/img/fallback-knowit.png",
     "linkedinUrl": "https://www.linkedin.com/in/christianjepson-example",
     "active": true
   },
   {
     "name": "Christina Wilen Krutzfeldt",
     "role": "Tester",
-    "profilePicture": "/img/christina-wilen-krutzfeldt.jpg",
+    "profilePicture": "/static/img/christina-wilen-krutzfeldt.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/christina-wilen-kr%C3%BCtzfeldt-75464521/",
     "active": true
   },
   {
     "name": "Christoffer Grönvall",
     "role": "Tester",
-    "profilePicture": "/img/christoffer-grönvall.jpg",
+    "profilePicture": "/static/img/christoffer-gronvall.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/christoffer-gr%C3%B6nvall-369b0876/",
     "active": true
   },
   {
     "name": "Christoffer Sundman-Yoshida",
     "role": "Tester",
-    "profilePicture": "/img/christoffer-sundman-yoshida.jpg",
+    "profilePicture": "/static/img/christoffer-sundman-yoshida.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/christoffersundman/",
     "active": true
   },
   {
     "name": "Daniel Bosevski",
     "role": "Tester",
-    "profilePicture": "/img/daniel-bosevski.jpg",
+    "profilePicture": "/static/img/daniel-bosevski.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/daniel-bosevski-880a401a/",
     "active": true
   },
   {
     "name": "Dmitriy Gallev",
     "role": "Tester",
-    "profilePicture": "/img/fallback-knowit.png",
+    "profilePicture": "/static/img/fallback-knowit.png",
     "linkedinUrl": "https://www.linkedin.com/in/dmitriygallev-example",
     "active": true
   },
   {
     "name": "Emma Persson",
     "role": "Tester",
-    "profilePicture": "/img/emma-persson.jpg",
+    "profilePicture": "/static/img/emma-persson.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/emma-persson-85947130/",
     "active": true
   },
   {
     "name": "Hampus Thern",
     "role": "Tester",
-    "profilePicture": "/img/hampus-thern.jpg",
+    "profilePicture": "/static/img/hampus-thern.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/hampus-thern-a3a504159/",
     "active": true
   },
   {
     "name": "Hans Baldetorp",
     "role": "Tester",
-    "profilePicture": "/img/hans-baldetorp.jpg",
+    "profilePicture": "/static/img/hans-baldetorp.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/hans-baldetorp/",
     "active": true
   },
   {
     "name": "Ikechukwu Attah",
     "role": "Tester",
-    "profilePicture": "/img/ikechukwu-attah.jpg",
+    "profilePicture": "/static/img/ikechukwu-attah.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/christopherattah/",
     "active": true
   },
   {
     "name": "Jennie Holmér",
     "role": "Tester",
-    "profilePicture": "/img/jennie-holmér.jpg",
+    "profilePicture": "/static/img/jennie-holmer.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/jennieholmer/",
     "active": true
   },
   {
     "name": "Jox Ahlström",
     "role": "Tester",
-    "profilePicture": "/img/jox-ahlström.jpg",
+    "profilePicture": "/static/img/jox-ahlstrom.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/joxahlstrom/",
     "active": true
   },
   {
     "name": "Kim Jankowski",
     "role": "Tester",
-    "profilePicture": "/img/kim-jankowski.jpg",
+    "profilePicture": "/static/img/kim-jankowski.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/jankowskikim/",
     "active": true
   },
   {
     "name": "Kristoffer Olsson",
     "role": "Tester",
-    "profilePicture": "/img/kristoffer-olsson.jpg",
+    "profilePicture": "/static/img/kristoffer-olsson.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/kristoffer-olsson-144bb9129/",
     "active": true
   },
   {
     "name": "Magnus Walter",
     "role": "Tester",
-    "profilePicture": "/img/magnus-walter.jpg",
+    "profilePicture": "/static/img/magnus-walter.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/magnus-walter-85627132/",
     "active": false
   },
   {
     "name": "Mia Nilsson",
     "role": "Tester",
-    "profilePicture": "/img/mia-nilsson.jpg",
+    "profilePicture": "/static/img/mia-nilsson.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/mia-nilsson-b591b23/",
     "active": true
   },
   {
     "name": "Mikael Rosquist",
     "role": "Tester",
-    "profilePicture": "/img/mikael-rosquist.jpg",
+    "profilePicture": "/static/img/mikael-rosquist.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/mikael-rosquist-2a017076/",
     "active": true
   },
   {
     "name": "Morris Friberg-Numminen",
     "role": "Tester",
-    "profilePicture": "/img/morris-friberg-numminen.jpg",
+    "profilePicture": "/static/img/morris-friberg-numminen.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/morris-friberg-numminen-574787228/",
     "active": true
   },
   {
     "name": "Oliver Werthén",
     "role": "Tester",
-    "profilePicture": "/img/oliver-werthén.jpg",
+    "profilePicture": "/static/img/oliver-werthen.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/oliver-werth%C3%A9n-501741220/",
     "active": true
   },
   {
     "name": "Riaheen Ali",
     "role": "Tester",
-    "profilePicture": "/img/riaheen-ali.jpg",
+    "profilePicture": "/static/img/riaheen-ali.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/riaheen-ali-470b7379/",
     "active": true
   },
   {
     "name": "Robert Pal",
     "role": "Tester",
-    "profilePicture": "/img/robert-pal.jpg",
+    "profilePicture": "/static/img/robert-pal.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/robert-pal-4b9915141/",
     "active": true
   },
   {
     "name": "Sakshi Chaudhary",
     "role": "Tester",
-    "profilePicture": "/img/sakshi-chaudhary.jpg",
+    "profilePicture": "/static/img/sakshi-chaudhary.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/sakshi-chaudhary-2b87941a/",
     "active": true
   },
   {
     "name": "Sanna Fohlman",
     "role": "Tester",
-    "profilePicture": "/img/sanna-fohlman.jpg",
+    "profilePicture": "/static/img/sanna-fohlman.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/sanna-fohlman-a5914422/",
     "active": true
   },
   {
     "name": "Sasan Fallahi",
     "role": "Tester",
-    "profilePicture": "/img/fallback-knowit.png",
+    "profilePicture": "/static/img/sasan-fallahi.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/sasan-fallahi/",
     "active": true
   },
   {
     "name": "Tomme Stankoski",
     "role": "Tester",
-    "profilePicture": "/img/tomme-stankoski.jpg",
+    "profilePicture": "/static/img/tomme-stankoski.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/tome-stankoski-89784227/",
     "active": true
   },
   {
     "name": "Daniel Burén",
     "role": "Business Analyst",
-    "profilePicture": "/img/daniel-buren.jpg",
+    "profilePicture": "/static/img/daniel-buren.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/daniel-bur%C3%A9n/",
     "active": true
   },
   {
     "name": "Johanna Schulze",
     "role": "Business Analyst & Product Owner",
-    "profilePicture": "/img/johanna-schulze.jpg",
+    "profilePicture": "/static/img/johanna-schulze.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/johanna-schulze-92818914a/",
     "active": true
   },
   {
     "name": "Håkan Ramberg",
     "role": "Manager",
-    "profilePicture": "/img/håkan-ramberg.jpg",
+    "profilePicture": "/static/img/hakan-ramberg.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/hakanramberg/",
     "active": true
   },
   {
     "name": "Johnny Hildenborg",
     "role": "Manager",
-    "profilePicture": "/img/johnny-hildenborg.jpg",
+    "profilePicture": "/static/img/johnny-hildenborg.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/johnnyhildenborg-example",
     "active": false
   },
   {
     "name": "Patrik Blomqvist",
     "role": "Manager",
-    "profilePicture": "/img/patrik-blomqvist.jpg",
+    "profilePicture": "/static/img/patrik-blomqvist.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/patrik-blomqvist-48a2775a/",
     "active": true
   },
   {
     "name": "Per Ekelund",
     "role": "Manager",
-    "profilePicture": "/img/per-ekelund.jpg",
+    "profilePicture": "/static/img/per-ekelund.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/per-ekelund-893aa83/",
     "active": true
   },
   {
     "name": "Sofie Wallenman",
     "role": "Manager",
-    "profilePicture": "/img/sofie-wallenman.jpg",
+    "profilePicture": "/static/img/sofie-wallenman.jpg",
     "linkedinUrl": "https://www.linkedin.com/in/sofie-wallenman-8ba185185/",
     "active": true
   }

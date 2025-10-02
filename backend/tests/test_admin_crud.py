@@ -162,7 +162,7 @@ class TestAdminCRUDEndpoints:
                     
                     assert response.status_code == 201
                     data = response.get_json()
-                    assert data['member']['profilePicture'] == '/img/test-image.jpg'
+                    assert data['member']['profilePicture'] == '/static/img/test-image.jpg'
 
     def test_add_team_member_with_invalid_file_type(self, admin_session):
         """Test POST /api/admin/team/add - with invalid file type"""
@@ -182,7 +182,7 @@ class TestAdminCRUDEndpoints:
         
         assert response.status_code == 201 # The backend defaults to a fallback image
         data = response.get_json()
-        assert data['member']['profilePicture'] == '/img/fallback-knowit.png'
+        assert data['member']['profilePicture'] == '/static/img/fallback-knowit.png'
 
     def test_add_team_member_with_image_too_large(self, admin_session, app):
         """Test POST /api/admin/team/add - with image too large"""
@@ -231,7 +231,7 @@ class TestAdminCRUDEndpoints:
                     assert response.status_code == 200
                     data = response.get_json()
                     assert data['success'] is True
-                    assert data['member']['profilePicture'] == '/img/new-test-image.jpg'
+                    assert data['member']['profilePicture'] == '/static/img/new-test-image.jpg'
 
     def test_update_team_member_success(self, admin_session, init_database, app):
         """Test POST /api/admin/team/<int:id>/update - successful update"""

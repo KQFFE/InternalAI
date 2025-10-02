@@ -73,8 +73,14 @@ def create_app(config_overrides=None):
     backend_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(backend_dir)
 
+    # Determine static folder based on environment
+    # In development: use frontend/public (contains static/img/)
+    # In production: deployment workflow creates static/ at project root
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    static_folder = os.path.join(project_root, 'static') if is_production else os.path.join(project_root, 'frontend', 'public')
+
     app = Flask(__name__,
-                static_folder=os.path.join(project_root, 'static'),
+                static_folder=static_folder,
                 template_folder=os.path.join(project_root, 'templates'),
                 static_url_path='/static')
 
@@ -643,7 +649,7 @@ def register_routes(app):
                 }), 400
             
             # Handle file upload
-            image_filename = '/img/fallback-knowit.png'  # Default fallback image
+            image_filename = '/static/img/fallback-knowit.png'  # Default fallback image
             
             if 'image' in request.files:
                 file = request.files['image']
@@ -657,7 +663,7 @@ def register_routes(app):
                     
                         # Save the file directly
                         file.save(filepath)
-                        image_filename = f'/img/{filename}'
+                        image_filename = f'/static/img/{filename}'
                         logger.info(f"Image saved: {filepath}")
                     
                     except Exception as e:
@@ -736,7 +742,7 @@ def register_routes(app):
 
                         # Save new image
                         file.save(filepath)
-                        member.profilePicture = f'/img/{filename}'
+                        member.profilePicture = f'/static/img/{filename}'
                         logger.info(f"Updated image for {member.name}: {filepath}")
 
                     except Exception as e:
@@ -833,21 +839,6 @@ def register_routes(app):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    # ================================
-    # IMAGE SERVING ROUTE
-    # ================================
-    @app.route('/img/<path:filename>')
-    def serve_image(filename):
-        """Serve image files from static/img folder (temporary fix - see REFACTOR_STATIC_ASSET_SERVING.md)"""
-        try:
-            # Images are deployed to static/img/ in production container
-            img_folder = os.path.join(app.static_folder, 'img')
-            return send_from_directory(img_folder, filename)
-        except FileNotFoundError:
-            return "Image not found.", 404
-        except Exception as e:
-            logger.error(f"Error serving image '{filename}': {e}")
-            return "Internal server error.", 500
 
 def register_error_handlers(app):
     @app.errorhandler(404)

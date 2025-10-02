@@ -7,7 +7,7 @@ const mockTeamData = [
     id: 1,
     name: 'John Doe',
     role: 'Senior Developer',
-    profilePicture: '/img/john-doe.jpg',
+    profilePicture: '/static/img/john-doe.jpg',
     linkedinUrl: 'https://linkedin.com/in/johndoe',
     active: true,
   },
@@ -15,7 +15,7 @@ const mockTeamData = [
     id: 2,
     name: 'Jane Smith',
     role: 'Product Manager',
-    profilePicture: '/img/jane-smith.jpg',
+    profilePicture: '/static/img/jane-smith.jpg',
     linkedinUrl: 'https://linkedin.com/in/janesmith',
     active: true,
   },
@@ -23,7 +23,7 @@ const mockTeamData = [
     id: 3,
     name: 'Bob Wilson',
     role: 'Designer',
-    profilePicture: '/img/bob-wilson.jpg',
+    profilePicture: '/static/img/bob-wilson.jpg',
     linkedinUrl: null, // Member without a LinkedIn profile
     active: false, // Inactive member
   },
@@ -128,7 +128,7 @@ test.describe('Team Page', () => {
     // Test to ensure the placeholder image is used when a profile picture fails to load.
     test('should use placeholder image on error', async ({ page }) => {
       // Intercept all image requests and make them fail
-      await page.route('**/img/*.jpg', (route) => {
+      await page.route('**/static/img/*.jpg', (route) => {
         route.abort('failed');
       });
 
@@ -143,7 +143,7 @@ test.describe('Team Page', () => {
 
       // The src should have been replaced with the placeholder image URL from the component's onError handler
       // Note: The component now uses a local fallback image.
-      await expect(profilePics.first()).toHaveAttribute('src', '/img/fallback-knowit.png');
+      await expect(profilePics.first()).toHaveAttribute('src', '/static/img/fallback-knowit.png');
     });
   });
 

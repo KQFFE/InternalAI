@@ -31,7 +31,8 @@ InternalAI/
 │   ├── 📁 public/                   # Static assets served by the browser
 │   │   ├── index.html              # Main HTML template for the React app
 │   │   ├── favicon.ico             # Website icon
-│   │   └── 📁 img/                 # Team member photos
+│   │   └── 📁 static/               # Static files (served at /static/ in both dev and prod)
+│   │       └── 📁 img/             # Team member photos
 │   ├── 📁 src/                     # React source code - organized for scalability
 │   │   ├── 📁 api/                  # API call logic (e.g., fetching team data)
 │   │   ├── 📁 assets/               # Local assets (images, fonts) imported by components
@@ -1059,6 +1060,27 @@ When you change the database structure (e.g., add a column to `backend/models.py
     *   This creates a new file in `backend/migrations/versions/`.
 
 3.  **Commit the new migration file** along with your other changes. Your teammates will run `flask db upgrade` to apply it to their local databases.
+
+### 🔄 Reseeding Database (Data Changes)
+
+Sometimes the seed data changes (like image paths or team member info), but the database **structure** stays the same. In these cases, you need to delete and reseed:
+
+```bash
+# Delete your local database
+rm instance/app.db
+
+# Recreate tables
+flask db upgrade
+
+# Load updated seed data
+flask seed-db
+```
+
+**When to reseed:**
+- After pulling changes that update `backend/data/team.json`
+- When you see old data that doesn't match what's in the seed file
+- If instructed in a PR description
+
 ---
 
 ## 5. Creating a New Release Tag
@@ -1314,7 +1336,7 @@ You push → GitHub detects push → Pipeline starts → Job 1 (tests) → Job 2
 1. ✅ **Checkout code** from your repository
 2. ✅ **Setup Node.js 18** and cache npm dependencies
 3. ✅ **Build React app** (npm ci, npm run build)
-4. ✅ **Integrate React with Flask** (copy build to templates/static)
+4. ✅ **Integrate React with Flask** (copy build to templates/, static assets to static/)
 5. ✅ **Login to Azure** and Azure Container Registry
 6. ✅ **Build Docker container** with React + Flask
 7. ✅ **Push container** to Azure Container Registry

@@ -66,7 +66,7 @@ function TeamPage() {
                                     src={member.profilePicture}
                                     alt={member.name}
                                     className="member-photo"
-                                    onError={(e) => { e.target.onerror = null; e.target.src = '/img/fallback-knowit.png'; }} 
+                                    onError={(e) => { e.target.onerror = null; e.target.src = '/static/img/fallback-knowit.png'; }} 
                                 />
                                 <div className="member-text-content">
                                     <div className="name-role-wrapper">

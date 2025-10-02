@@ -207,8 +207,8 @@ CONTAINER_DEPLOYMENT_STATUS.md
 # Node.js / React build artifacts
 node_modules/
 build/
-static/
-templates/
+/static/
+/templates/
 *.tgz
 *.tar.gz
 .npm

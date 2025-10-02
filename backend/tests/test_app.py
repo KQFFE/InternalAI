@@ -36,7 +36,7 @@ def sample_team_data():
         {
             "name": "Test Person One",
             "role": "Tester",
-            "profilePicture": "/img/test-person-one.jpg",
+            "profilePicture": "/static/img/test-person-one.jpg",
             "linkedinUrl": "https://www.linkedin.com/in/test-person-one/",
             "active": True,
             "id": 1
@@ -44,7 +44,7 @@ def sample_team_data():
         {
             "name": "Test Person Two",
             "role": "Manager",
-            "profilePicture": "/img/test-person-two.jpg", 
+            "profilePicture": "/static/img/test-person-two.jpg", 
             "linkedinUrl": "https://www.linkedin.com/in/test-person-two/",
             "active": False,
             "id": 2
@@ -139,7 +139,7 @@ def test_team_endpoint_no_active_members(mock_query, client):
         {
             "name": "Inactive Person",
             "role": "Tester",
-            "profilePicture": "/img/inactive.jpg",
+            "profilePicture": "/static/img/inactive.jpg",
             "linkedinUrl": "https://linkedin.com/in/inactive",
             "active": False
         }
@@ -235,7 +235,8 @@ def test_app_configuration(app):
     assert app.config['SECRET_KEY'] is not None
     assert 'DEBUG' in app.config
     assert app.static_folder is not None
-    assert 'static' in app.static_folder
+    # In dev: frontend/public, in prod: static
+    assert 'public' in app.static_folder or 'static' in app.static_folder
     assert app.template_folder is not None
     assert 'templates' in app.template_folder
 
@@ -281,7 +282,7 @@ def test_large_team_data(mock_query, client):
         large_dataset.append({
             "name": f"Person {i}",
             "role": "Tester" if i % 2 == 0 else "Manager",
-            "profilePicture": f"/img/person-{i}.jpg",
+            "profilePicture": f"/static/img/person-{i}.jpg",
             "linkedinUrl": f"https://linkedin.com/in/person-{i}",
             "active": i % 3 == 0  # Every third person is active
         })

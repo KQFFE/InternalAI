@@ -203,14 +203,14 @@ jobs:
           echo "✅ Copied JS/CSS bundles to static/"
         fi
 
-        # Copy root-level files (favicon, manifest, images, etc.) to static folder
+        # Copy root-level files (favicon, manifest, etc.) to static folder
         find frontend/build -maxdepth 1 -type f \( -name "*.ico" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp {} static/ \;
         echo "✅ Copied root-level files to static/"
 
-        # Copy img folder (team photos) to static
-        if [ -d "frontend/build/img" ]; then
-          cp -r frontend/build/img static/
-          echo "✅ Copied img folder to static/"
+        # Copy static/img folder (team photos) to static
+        if [ -d "frontend/build/static/img" ]; then
+          cp -r frontend/build/static/img static/
+          echo "✅ Copied static/img folder to static/"
         fi
 
         echo "Final structure:"

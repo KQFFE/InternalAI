@@ -65,10 +65,7 @@ def run_migrations_offline():
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
-        target_metadata=get_metadata(),
-        literal_binds=True,
-        render_as_batch=False  # Disable batch mode for MSSQL compatibility
+        url=url, target_metadata=get_metadata(), literal_binds=True
     )
 
     with context.begin_transaction():
@@ -96,9 +93,6 @@ def run_migrations_online():
     conf_args = current_app.extensions['migrate'].configure_args
     if conf_args.get("process_revision_directives") is None:
         conf_args["process_revision_directives"] = process_revision_directives
-
-    # Disable batch mode for MSSQL compatibility
-    conf_args["render_as_batch"] = False
 
     connectable = get_engine()
 

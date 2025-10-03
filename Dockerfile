@@ -49,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Start application with gunicorn
 # Run migrations before starting the app
-CMD ["sh", "-c", "echo '🔄 Running database migrations...' && flask db upgrade || echo '❌ Migration failed with exit code:' $? && echo '✅ Starting application server...' && gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 run:app"]
+CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 run:app"]

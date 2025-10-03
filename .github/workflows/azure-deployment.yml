@@ -265,6 +265,13 @@ jobs:
             DATABASE_URL="${{ secrets.DATABASE_CONNECTION_STRING }}" \
             FLASK_ENV=production
 
+        # Set startup command to run migrations before starting app
+        echo "🔧 Configuring startup command with migrations..."
+        az webapp config set \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --resource-group rg-internalai-prod \
+          --startup-file "sh -c 'echo \"🔄 Running migrations...\" && python -m flask db upgrade && echo \"✅ Starting app...\" && python -m gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 600 --log-level debug --pythonpath /home/site/wwwroot run:app'"
+
         echo "⏳ Waiting for container deployment..."
         sleep 60
 

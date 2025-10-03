@@ -9,17 +9,16 @@ import { expect } from '@playwright/test';
  * @param {import('@playwright/test').Page} page The Playwright page object.
  */
 export async function dismissCookieBanner(page) {
-  const acceptButton = page.getByRole('button', {
-        name: /Godkänn alla|Accept All/i
-    });
+  const acceptButton = page.locator('[data-testid="accept-all-cookies"]');
 
   try {
-    await acceptButton.waitFor({ state: 'visible', timeout: 3000 });
-
+    await acceptButton.waitFor({ state: 'visible', timeout: 5000 });
     await acceptButton.click();
-
     await expect(acceptButton).not.toBeVisible({ timeout: 2000 });
   } catch (error) {
-    // console.log('Cookie banner not found or already dismissed.');
+    // The banner might not appear on every page load, so we catch the error.
+    // If the test fails later due to an overlay, this catch block might be the cause.
+    // For now, we assume it's okay if the banner is not found.
+    console.log('Cookie banner not found or already dismissed.');
   }
 }

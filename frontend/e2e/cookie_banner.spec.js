@@ -22,16 +22,37 @@ const COOKIE_BANNER_LOCATORS = {
     functionalCategoryButton: /funktionella/i,
     marketingCategoryButton: /marketing/i,
     categoryDescription: /Funktionella cookies gör det möjligt att spara uppgifter/i,
-    optimizelyService: 'Optimizely',
-    hubspotService: 'HubSpot',
+    optimizelyService: 'Optimizely Service',
+    hubspotService: 'HubSpot Service',
     cookieInfoLink: 'Cookie Information',
     statisticsToggle: '#cookie_cat_statistic',
     marketingToggle: '#cookie_cat_marketing',
     banner: '#coi-banner-wrapper',
 };
 
+const mockCookieInformation = {
+    getConsent: () => ({
+        cookies: [
+            { name: 'optimizely-cookie', type: 'functional', service: 'Optimizely Service', purpose: 'A/B testing', privacyPolicy: 'https://www.optimizely.com/privacy', expiry: '1 year', provider: 'Optimizely Provider' },
+            { name: 'hubspot-cookie', type: 'marketing', service: 'HubSpot Service', purpose: 'Marketing automation', privacyPolicy: 'https://legal.hubspot.com/privacy-policy', expiry: '1 year', provider: 'HubSpot Provider' },
+        ],
+    }),
+    getCookieCategories: () => Promise.resolve([
+        { name: 'necessary', label: 'Nödvändiga', description: 'Description 1', isMutable: false },
+        { name: 'functional', label: 'Funktionella', description: 'Funktionella cookies gör det möjligt att spara uppgifter', isMutable: true },
+        { name: 'statistic', label: 'Statistiska', description: 'Description 3', isMutable: true },
+        { name: 'marketing', label: 'Marketing', description: 'Description 4', isMutable: true },
+    ]),
+};
+
 test.describe('Cookie Banner Accessibility', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript((mockData) => {
+      window.CookieInformation = {
+        getConsent: () => mockData.consent,
+        getCookieCategories: () => Promise.resolve(mockData.categories),
+      };
+    }, { consent: mockCookieInformation.getConsent(), categories: await mockCookieInformation.getCookieCategories() });
     await page.goto('/');
   });
 
@@ -77,6 +98,15 @@ test.describe('Cookie Banner Accessibility', () => {
 });
 
 test.describe('Cookie Banner Content and Functionality', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript((mockData) => {
+      window.CookieInformation = {
+        getConsent: () => mockData.consent,
+        getCookieCategories: () => Promise.resolve(mockData.categories),
+      };
+    }, { consent: mockCookieInformation.getConsent(), categories: await mockCookieInformation.getCookieCategories() });
+  });
+
   test('should display the correct initial content', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: COOKIE_BANNER_LOCATORS.heading })).toBeVisible();
@@ -201,6 +231,15 @@ test.describe('Cookie Banner Content and Functionality', () => {
 const COOKIE_PREFERENCES_KEY = 'cookie_preferences';
 
 test.describe('Cookie Banner Persistence', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript((mockData) => {
+      window.CookieInformation = {
+        getConsent: () => mockData.consent,
+        getCookieCategories: () => Promise.resolve(mockData.categories),
+      };
+    }, { consent: mockCookieInformation.getConsent(), categories: await mockCookieInformation.getCookieCategories() });
+  });
+
   test('should save "accept all" preferences and not show banner on subsequent visit', async ({ page }) => {
     await page.goto('/');
 

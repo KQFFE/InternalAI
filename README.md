@@ -123,7 +123,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```powershell
     cd C:\Path\To\Your\InternalAI\Project
     ```
-    *(**Important:** Replace `C:\Path\To\Your\InternalAI\Project` with the actual folder path where you cloned or copied the `InternalAI` project on your computer.)*
+    *(`**Important:** Replace `C:\Path\To\Your\InternalAI\Project` with the actual folder path where you cloned or copied the `InternalAI` project on your computer.)*
 3.  **Activate your Python virtual environment:**
     ```powershell
     .\venv\Scripts\Activate.ps1
@@ -140,7 +140,7 @@ Once you've completed the "First-Time Setup" steps below for your chosen environ
     ```powershell
     cd C:\Path\To\Your\InternalAI\Project
     ```
-    *(**Important:** Again, replace this with your actual project path.)*
+    *(`**Important:** Again, replace this with your actual project path.)*
 7.  **Navigate to the `frontend` folder:**
     ```powershell
     cd frontend
@@ -278,7 +278,7 @@ All frontend test commands should be run from within the `frontend` directory.
         ```
     *   **For Windows (with WSL):**
         ```bash
-        cd ~/projects/InternalAI/frontend
+        cd ~\projects\InternalAI\frontend
         ```
 
 2.  **Run Unit Tests (Jest + React Testing Library):**
@@ -325,7 +325,7 @@ Backend tests verify that the Flask API endpoints and server-side logic are work
         ```
     *   **For Windows (with WSL):**
         ```bash
-        cd ~/projects/InternalAI
+        cd ~\projects\InternalAI
         source .venv/bin/activate
         ```
     *   You must see `(venv)` at the start of your terminal prompt before proceeding.
@@ -570,7 +570,7 @@ This is the traditional way to set up your development environment directly on W
         ```powershell
         .\venv\Scripts\Activate.ps1
         ```
-        You'll know it worked because your PowerShell prompt will change to include `(venv)` at the beginning, like this: `(venv) PS D:\Projects\InternalAI>`.
+        You'll know it worked because your PowerShell prompt will change to include `(venv)` at the beginning, like this: `(venv) PS D:\Projects\InternalAI> `.
         *   **Remember:** You need to run this `Activate.ps1` command **every time you open a new PowerShell window** to work on this project.
 
 6.  **Configure Environment Variables:**
@@ -613,7 +613,7 @@ This is the traditional way to set up your development environment directly on W
         ```powershell
         cd frontend
         ```
-        Your prompt should now be `(venv) PS D:\Projects\InternalAI\frontend>`.
+        Your prompt should now be `(venv) PS D:\Projects\InternalAI\frontend> `.
     6.  **Install Frontend Dependencies:**
         ```powershell
         npm install
@@ -737,7 +737,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         cd ~
         ```
-        *   Your prompt should look like `your_username@your_wsl_distro_name:~.
+        *   Your prompt should look like `your_username@your_wsl_distro_name:~`.
     2.  **Create a dedicated folder for your projects:**
         ```bash
         mkdir -p ~/projects
@@ -756,7 +756,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         cd InternalAI
         ```
-        *   Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI. This is your main project folder!
+        *   Your prompt should now be `your_username@your_wsl_distro_name:~/projects/InternalAI`. This is your main project folder!
     6.  **Configure Git for line endings:**
         ```bash
         git config --global core.autocrlf input
@@ -777,7 +777,7 @@ This method involves setting up a Linux environment within Windows using WSL. Th
         ```bash
         source .venv/bin/activate
         ```
-        *   Your prompt will change to `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI, showing it's active.
+        *   Your prompt will change to `(venv) your_username@your_wsl_distro_name:~/projects/InternalAI`, showing it's active.
     4.  **Install backend dependencies:**
         ```bash
         pip install -r backend/requirements.txt
@@ -1143,7 +1143,7 @@ This project uses [Semantic Versioning](https://semver.org/) with the pattern `M
 **Step 1: Prepare Your Environment**
 Navigate to your project's root directory in your terminal:
 ```bash
-cd ~/projects/InternalAI  # For WSL
+cd ~\projects\InternalAI  # For WSL
 # OR
 cd C:\Path\To\Your\InternalAI  # For Windows
 ```
@@ -1565,7 +1565,7 @@ python --version
 **Solutions:**
 ```bash
 # Make sure you're in project root
-cd ~/projects/InternalAI
+cd ~\projects\InternalAI
 
 # Create venv if it doesn't exist
 python3.11 -m venv .venv
@@ -1927,3 +1927,23 @@ We're excited to have you contribute to InternalAI! If you get stuck at any poin
 
 
 Remember: **Don't give up!** These setup challenges are normal, especially when learning. Each error you solve makes you a better developer! 🚀
+
+---
+
+## 8. Testing Special Features
+
+This section covers how to test specific, non-standard features that require special setup.
+
+### Testing Dynamic Cookie Loading
+
+The cookie banner has a feature to load cookie definitions dynamically from a `window.CookieInformation` object. To test this without a live `CookieInformation` script, you can use a special URL parameter to inject a mock object.
+
+1.  **Start the frontend development server** as usual (`npm start`).
+2.  **Open your browser** and navigate to the following URL:
+    ```
+    http://localhost:3000/?test_dynamic_cookies=true
+    ```
+3.  The `?test_dynamic_cookies=true` parameter will trigger a script in `public/index.html` that creates a mock `window.CookieInformation` object.
+4.  When the cookie banner appears, it will now display the mock cookie data, allowing you to test the dynamic loading functionality.
+
+```

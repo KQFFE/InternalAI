@@ -34,6 +34,15 @@ export const CookieConsentProvider = ({ children }) => {
     const persistPreferences = (prefs) => {
         localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs)); // Use the key and stringify
         setShowCookieModal(false);
+
+        // Inform the Cookie Information service about the user's consent
+        if (window.CookieInformation) {
+            window.CookieInformation.submitConsent(
+                prefs.functional,
+                prefs.statistic,
+                prefs.marketing
+            );
+        }
     };
 
     const acceptAllCookies = () => {

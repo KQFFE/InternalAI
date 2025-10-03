@@ -27,6 +27,26 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>InternalAI - Building the Future with AI</title>
+    <script>
+      // This script is for manual testing of the dynamic cookie banner feature.
+      // It injects a mock CookieInformation object if the URL contains ?test_dynamic_cookies=true.
+      // This feature is also covered by automated E2E tests in cookie_banner_dynamic.spec.js.
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('test_dynamic_cookies') === 'true') {
+        window.CookieInformation = {
+          getConsent: () => ({
+            cookies: [
+              { type: 'necessary', service: 'Test Service', purpose: 'To test dynamic loading.', privacyPolicy: '#', expiry: 'Session', name: 'test_cookie_1', provider: 'Test Provider' },
+              { type: 'functional', service: 'Another Service', purpose: 'Another test.', privacyPolicy: '#', expiry: '1 year', name: 'test_cookie_2', provider: 'Another Provider' },
+            ]
+          }),
+          getCookieCategories: () => Promise.resolve([
+            { name: 'necessary', label: 'Nödvändiga (Dynamisk)', description: 'Dynamiskt laddade nödvändiga cookies.', isMutable: false },
+            { name: 'functional', label: 'Funktionella (Dynamisk)', description: 'Dynamiskt laddade funktionella cookies.', isMutable: true },
+          ])
+        };
+      }
+    </script>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

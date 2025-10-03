@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../cookie-banner.css';
 
+// --- Start of data from user prompt ---
 const cookieDefinitions = {
     'cloudflare-functional': { service: 'Cloudflare', purpose: 'Stödjer webbplatsens tekniska funktioner.', privacyPolicy: 'https://www.cloudflare.com/privacypolicy/', name: '__cf_bm' },
     'optimizely-functional': { service: 'Optimizely', purpose: 'Samlar in information om användarna och deras verksamhet på webbplatsen. Informationen används för att spåra och analysera användarbeteendet och att leverera målinriktad annonsering.', privacyPolicy: 'https://www.optimizely.com/privacy', name: 'EPiStateMarker' },
@@ -98,7 +99,7 @@ const unclassifiedCookiesCompact = [
     { cookieKey: 'google-unclassified', expiry: '3 månader', provider: '.googleadservices.com' },
 ];
 
-const cookieCategories = [
+const staticCookieCategories = [
     {
         name: 'necessary',
         label: 'Nödvändiga',
@@ -120,27 +121,27 @@ const cookieCategories = [
         isMutable: true,
         cookies: expandCookies(statisticCookiesCompact)
     },
-    { 
-        name: 'marketing', 
-        label: 'Marketing', 
-        description: 'Marketingcookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.', 
-        isMutable: true, 
+    {
+        name: 'marketing',
+        label: 'Marketing',
+        description: 'Marketing cookies används för att spåra besökare gränsöverskridande på hemsidor. Avsikten är att visa annonser som är relevanta och engagerande för den enskilda användaren och därmed vara mer värdefulla för utgivare och tredjepartsannonsörer.',
+        isMutable: true,
         cookies: expandCookies(marketingCookiesCompact)
     },
-    { 
-        name: 'unclassified', 
-        label: 'Oklassificerade', 
-        description: 'Oklassificerade cookies håller vi på att klassificera tillsammans med leverantörerna av leverantörerna av dessa cookies.', 
-        isMutable: false, 
+    {
+        name: 'unclassified',
+        label: 'Oklassificerade',
+        description: 'Oklassificerade cookies håller vi på att klassificera tillsammans med leverantörerna av leverantörerna av dessa cookies.',
+        isMutable: false,
         cookies: expandCookies(unclassifiedCookiesCompact)
     },
 ];
+// --- End of data from user prompt ---
 
 const CookieDetails = ({ cookies }) => {
     if (!cookies || cookies.length === 0) {
         return null;
     }
-
     return (
         <div role="table" aria-label="Cookie-information" className="coi-consent-banner__found-cookies">
             {cookies.map((cookie, index) => {
@@ -234,9 +235,39 @@ function CookieBanner({
 }) {
     const [showDetails, setShowDetails] = useState(false);
     const [preferencesChanged, setPreferencesChanged] = useState(false);
+    const [cookieCategories, setCookieCategories] = useState(staticCookieCategories);
     const [openCategory, setOpenCategory] = useState(null);
     const bannerRef = useRef(null);
     const policyHeadlineRef = useRef(null); // Ref for the policy headline
+
+    useEffect(() => {
+        const fetchCookieData = async () => {
+            if (window.CookieInformation && typeof window.CookieInformation.getConsent === 'function' && typeof window.CookieInformation.getCookieCategories === 'function') {
+                try {
+                    const consent = window.CookieInformation.getConsent();
+                    const categoriesFromApi = await window.CookieInformation.getCookieCategories();
+
+                    if (consent && categoriesFromApi && Array.isArray(categoriesFromApi)) {
+                        const updatedCategories = categoriesFromApi.map(apiCategory => {
+                            const cookiesForCategory = consent.cookies.filter(cookie => cookie.type.toLowerCase() === apiCategory.name.toLowerCase());
+                            return {
+                                name: apiCategory.name,
+                                label: apiCategory.label,
+                                description: apiCategory.description,
+                                isMutable: apiCategory.isMutable !== false,
+                                cookies: cookiesForCategory,
+                            };
+                        });
+                        setCookieCategories(updatedCategories);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch dynamic cookie information, using static data as fallback:", error);
+                }
+            }
+        };
+
+        fetchCookieData();
+    }, []);
 
     useEffect(() => {
         if (!show) {
@@ -386,7 +417,15 @@ function CookieBanner({
                         {showDetails && (
                             <div className="coi-consent-banner__categories-wrapper" aria-label="Policy för kakor" id="coiConsentBannerCategoriesWrapper" aria-hidden="false" tabIndex="-1">
                                 {cookieCategories.map(cat => (
-                                    <CookieCategory key={cat.name} name={cat.name} label={cat.label} description={cat.description} isOpen={openCategory === cat.name} onToggle={() => toggleCategory(cat.name)} cookies={cat.cookies} />
+                                    <CookieCategory
+                                        key={cat.name}
+                                        name={cat.name}
+                                        label={cat.label}
+                                        description={cat.description}
+                                        isOpen={openCategory === cat.name}
+                                        onToggle={() => toggleCategory(cat.name)}
+                                        cookies={cat.cookies}
+                                    />
                                 ))}
                             </div>
                         )}

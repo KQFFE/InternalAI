@@ -59,6 +59,10 @@ test.describe('Admin Login Flow', () => {
   });
 
   test('should be able to log out', async ({ page }) => {
+    // Explicitly clear storage to ensure a clean state
+    await page.context().clearCookies();
+    await page.evaluate(() => window.localStorage.clear());
+
     // Unroute the handler from beforeEach to override the initial state
     await page.unroute('/api/admin/status');
 

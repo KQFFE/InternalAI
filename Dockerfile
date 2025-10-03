@@ -20,6 +20,9 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
 # Set working directory
 WORKDIR /app
 
+# Set Flask app environment variable for migrations
+ENV FLASK_APP=run:app
+
 # Copy Python requirements and install dependencies
 COPY backend/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

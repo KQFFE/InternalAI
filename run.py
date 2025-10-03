@@ -40,19 +40,9 @@ def initialize_database():
             database_url = os.environ.get('DATABASE_URL')
 
             if database_url and ('mssql' in database_url or 'postgresql' in database_url):
-                print("🗄️  Initializing production database...")
-
-                # Create tables if they don't exist
-                # NOTE: May timeout in production if tables exist - this is safe
-                db.create_all()
-
-                # Check if we need to seed data
-                from backend.models import TeamMember
-                if TeamMember.query.count() == 0:
-                    print("📊 Seeding database with initial data...")
-                    from backend.seed import seed_database
-                    seed_database()
-
+                print("🗄️  Production database detected")
+                print("ℹ️  Migrations handle schema - skipping db.create_all()")
+                print("ℹ️  To seed data, run: flask seed-db")
                 print("✅ Database initialization complete")
             else:
                 print("🛠️  Using local SQLite database - skipping auto-migration")
